@@ -8,7 +8,7 @@ The `network` Default Metadata File is used to dynamically create collections ba
 
 Supported Library Types: Show
 
-## Collections Section 04
+## Collections Section 050
 
 | Collection                          | Key                                 | Description                                                                 |
 |:------------------------------------|:------------------------------------|:----------------------------------------------------------------------------|
@@ -47,8 +47,8 @@ This file contains a [Separator](../separators) so all [Shared Separator Variabl
 | `addons`                      | **Description:** Overrides the [default addons dictionary](#default-addons). Defines how multiple keys can be combined under a parent key. The parent key doesn't have to already exist in Plex<br>**Values:** Dictionary List of Networks found in your library |
 | `append_include`              | **Description:** Appends to the [default include list](#default-include).<br>**Values:** List of Networks found in your library                                                                                                                                  |
 | `append_addons`               | **Description:** Appends to the [default addons dictionary](#default-addons).<br>**Values:** Dictionary List of Networks found in your library                                                                                                                   |
-| `network_name`                | **Description:** Changes the title format of the Dynamic Collections.<br>**Default:** `<<key_name>>`<br>**Values:** Any string with `<<key_name>>` in it.                                                                                                        |
-| `network_summary`             | **Description:** Changes the summary format of the Dynamic Collections.<br>**Default:** `<<library_translationU>>s broadcast on <<key_name>>.`<br>**Values:** Any string.                                                                                        |
+| `name_format`                 | **Description:** Changes the title format of the Dynamic Collections.<br>**Default:** `<<key_name>>`<br>**Values:** Any string with `<<key_name>>` in it.                                                                                                        |
+| `summary_format`              | **Description:** Changes the summary format of the Dynamic Collections.<br>**Default:** `<<library_translationU>>s broadcast on <<key_name>>.`<br>**Values:** Any string.                                                                                        |
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
@@ -75,254 +75,448 @@ These are lists provided for reference to show what values will be in use if you
 ### Default `include`
 
 ```yaml
-include:
-  - A&E
-  - ABC
-  - Amazon
-  - AMC
-  - Animal Planet
-  - BBC
-  - BET
-  - Cartoon Network
-  - Channel 4
-  - Channel 5
-  - CBC
-  - CBS
-  - Comedy Central
-  - Discovery
-  - Disney Channel
-  - E!
-  - ESPN
-  - Food Network
-  - FOX
-  - Hallmark
-  - HBO
-  - HGTV
-  - History
-  - ITV
-  - Lifetime
-  - MTV
-  - National Geographic
-  - NBC
-  - Nickelodeon
-  - PBS
-  - Showtime
-  - Sky
-  - Starz
-  - The CW
-  - TLC
-  - TNT
-  - UKTV
-  - USA
-  - YouTube
-```
+    include:
+      # TMDB Most Common & Most Watched Network Rankings
+      - ABC # American Broadcasting Company
+      - CBS
+      - Discovery
+      - FOX
+      - History
+      - MTV
+      - National Geographic
+      - NBC
+      - TBS
 
-### Default `addons`
+      ## TMDB Most Common & Top Streaming Service
+      - Prime Video # Amazon
+      - discovery+
+      - iQiyi
+      - Netflix
+      - Tencent Video
 
-```yaml
-addons:
-  A&E:
-    - A+E Networks UK
-  ABC:
-    - ABC (AU)
-    - ABC (US)
-    - ABC Comedy
-    - ABC Family
-    - ABC Kids
-    - ABC Me
-    - ABC Signature
-    - ABC Spark
-    - ABC Studios
-    - ABC.com
-    - Freeform
-  Amazon:
-    - Amazon (Japan)
-    - Amazon Kids+
-    - Amazon Prime Video
-    - Amazon Productions
-    - Amazon Studios
-    - Prime
-    - Prime Video
-  AMC:
-    - AMC+
-  Animal Planet:
-    - Animal Planet (CA)
-    - Animal Planet (UK)
-  BBC:
-    - BBC Alba
-    - BBC America
-    - BBC Choice
-    - BBC First
-    - BBC Four
-    - BBC HD
-    - BBC iPlayer
-    - BBC Kids
-    - BBC Knowledge
-    - BBC News
-    - BBC One
-    - BBC One Northern Ireland
-    - BBC Scotland
-    - BBC Television
-    - BBC Three
-    - BBC Two
-    - BBC UKTV
-    - BBC Wales
-    - BBC World News
-    - CBBC
-    - CBeebies
-  BET:
-    - BET+
-  Cartoon Network:
-    - Cartoonito
-  Channel 4:
-    - 4seven
-    - All 4
-    - E4
-    - More4
-  Channel 5:
-    - Channel 5 (UK)
-    - 5Action
-    - 5Select
-    - 5Star
-    - 5USA
-  CBC:
-    - CBC (CA)
-    - CBC Gem
-    - CBC Television
-  CBS:
-    - CBS All Access
-    - CBS Reality
-    - CBS Reality (UK)
-    - CBS.com
-  Comedy Central:
-    - Comedy Central (UK)
-  Discovery:
-    - Discovery Asia
-    - Discovery Channel
-    - Discovery Channel (Asia)
-    - Discovery Channel (AU)
-    - Discovery Channel (CA)
-    - Discovery Channel (UK)
-    - Discovery Family
-    - Discovery Health Channel
-    - Discovery Kids
-    - Discovery Life
-    - Discovery Real Time
-    - Discovery Turbo
-    - Discovery Turbo UK
-    - discovery+
-    - Discovery+ (IN)
-    - Discovery+ (NO)
-    - Discovery+ (SE)
-    - Discovery+ (UK)
-  Disney Channel:
-    - Disney Channel (CZ)
-    - Disney Channel (UK)
-    - Disney Junior
-    - Disney XD
-    - Disney+
-    - Playhouse Disney
-    - Toon Disney
-  E!:
-    - e.tv
-  ESPN:
-    - ESPN+
-  Food Network:
-    - Cooking Channel
-  FOX:
-    - Fox Action Movies
-    - Fox Business Network
-    - FOX España
-    - Fox Kids
-    - Fox Nation
-    - Fox Premium Series
-    - FOX Sports 1
-    - Fox Sports Networks
-    - Fox8
-    - FX
-    - FXX
-  Hallmark:
-    - Hallmark Channel
-    - Hallmark Movies & Mysteries
-    - Hallmark Movies Now
-  HBO:
-    - HBO2
-    - HBO Asia
-    - HBO Canada
-    - HBO Comedy
-    - HBO España
-    - HBO Europe
-    - HBO Family
-    - HBO Latin America
-    - HBO Nordic
-    - HBO Signature
-    - HBO Zone
-  History:
-    - History (CA)
-    - History (UK)
-  ITV:
-    - ITV Encore
-    - ITV Wales
-    - ITV1
-    - ITV2
-    - ITV4
-    - ITVBe
-    - CITV
-    - STV
-  Lifetime:
-    - Lifetime Movies
-  MTV:
-    - MTV (AU/NZ)
-    - MTV (UK)
-    - MTV Japan
-    - MTV Nederland
-    - MTV2
-    - MTV3
-  National Geographic:
-    - Nat Geo Wild
-    - National Geographic Brasil
-    - National Geographic Channel
-    - National Geographic Wild
-  Nickelodeon:
-    - Nick at Nite
-    - Nick Jr.
-    - Nicktoons
-    - TeenNick
-  PBS:
-    - PBS Kids
-  Sky:
-    - Sky 1
-    - Sky Arts
-    - Sky Atlantic
-    - "Sky Atlantic "
-    - Sky Atlantic (UK)
-    - Sky Cinema
-    - Sky Crime
-    - Sky Deutschland
-    - Sky Documentaries
-    - Sky History
-    - Sky Living
-    - Sky Max
-    - Sky Nature
-    - Sky One
-    - Sky Showcase
-    - Sky Sports
-    - Sky Two
-    - Sky Witness
-    - Sky1
-  The CW:
-    - CW seed
-  TLC:
-    - TLC Go
-    - TLC UK
-  TNT:
-    - TNT (US)
-  UKTV:
-    - UKTV Food
-    - UKTV History
-    - UKTV Yesterday
-  USA:
-    - USA Network
-  YouTube:
-    - YouTube Premium
+      ## Most Watched Network & Top Streaming Service
+      - AMC # 78 shows across networks
+
+      ## TMDB Most Common ##
+      - ABC TV # Australian Broadcasting Corporation
+      - ABS-CBN # ABS-CBN Corporation
+      - AT-X # Japanese anime television network
+      - ARD # Joint organisation of Germany's regional public-service broadcasters
+      - Arte # European public service channel dedicated to culture
+      - BBC One # British free-to-air public broadcast television channel
+      - BBC Two # British free-to-air public broadcast television channel
+      - BBC Four # British free-to-air public broadcast television channel
+      - bilibili # B Site, a video sharing website based in Shanghai
+      - CBC Television # Canadian English-language broadcast television network
+      - Channel 3 # Thai free-to-air television network
+      - Channel 4 # British free-to-air public broadcast television channel
+      - Channel 5 # British free-to-air public broadcast television channel
+      - Fuji TV # Japanese television station based
+      - GMA Network # Philippine free-to-air television
+      - ITV # British free-to-air public broadcast television network
+      - KBS2 # Korean Broadcasting System, an entertainment oriented network
+      - Las Estrellas # A TelevisaUnivision network
+      - MBC # Munhwa Broadcasting Corporation - South Korea Channel 11
+      - Nippon TV # JOAX-DTV, the flagship station of the Nippon News Network and the Nippon Television Network System
+      - PBS # Public Broadcasting Service is an American public broadcaster and non-commercial, free-to-air television network
+      - SVT1 # Swedish public service broadcaster Sveriges Television
+      - TF1 # French commercial television network owned by TF1 Group
+      - Tokyo MX # JOMX-DTV, an independent television station in Tokyo, Japan, owned by the Tokyo Metropolitan Television Broadcasting Corporation
+      - tv asahi # JOEX-DTV, a television station owned and operated by the TV Asahi Corporation
+      - TV Globo # Brazilian free-to-air television network
+      - TV Tokyo # JOTX-DTV, a television station headquartered in the Sumitomo Fudosan Roppongi Grand Tower in Roppongi, Minato, Tokyo, Japan
+      - TVB Jade # Hong Kong Cantonese-language free-to-air television channel
+      - tvN # South Korean nationwide pay television network owned by CJ E&M
+      - RTL # Luxembourg-based international media conglomerate
+      - Youku # A video hosting service based in Beijing, China
+      - YouTube # online video sharing and social media platform headquartered in San Bruno, California
+      - ZDF # German public-service television broadcaster based in Mainz, Rhineland-Palatinate
+
+      ## Identical Network Names in TMDB (but different id's)
+      - SBS # Special Broadcasting Service & Seoul Broadcasting System appears to be identical in TMDB
+      - TV 2 # Norwegian terrestrial television channel & Danish government-owned broadcast and subscription television station
+      - TV3 # Catalan public broadcaster Televisió de Catalunya & Malaysian free-to-air television channel
+
+      ## Most Watched Network Rankings ##
+      - A&E
+      - Animal Planet
+      - BET
+      - Bravo
+      - CNN
+      - Comedy Central
+      - ESPN
+      - Food Network
+      - Freeform
+      - FX
+      - Game Show Network
+      - Hallmark
+      - HGTV
+      - Investigation Discovery
+      - ION Television
+      - Lifetime
+      - Nickelodeon
+      - Oxygen
+      - Paramount Network # 24 shows, probably gets rolled into Paramount+ or vice versa
+      - Syfy
+      - Telemundo
+      - The CW
+      - TLC
+      - TNT
+      - Travel Channel
+      - TV Land
+      - UniMás # TelevisaUnivision channel
+      - Univision # Now TelevisaUnivision
+      - USA Network
+      - WE tv
+
+      ## Most Subscribed Streaming Service w/ min 50 shows
+      - ALTBalaji # 61 shows
+      - Apple TV+ # 153 shows
+      - BluTV # 58 shows
+      - Canal+ # 296 shows across networks
+      - Disney+ # 285 shows
+      - Globoplay # 118 shows
+      - Hulu # 258 shows
+      - Max # 206 shows
+      - Paramount+ # 125 shows
+      - Peacock # 124 shows
+      - Shahid # 193 shows
+      - Starz # 65 shows across networks
+      - tving # 82 shows
+      - Viaplay # 168 shows
+      - ViuTV # 59 shows
+      - ZEE5 # 184 shows
+
+      ## Addtional Thoughts
+      - ABC Family # 92 shows - addon to ABC or Freeform depending on user pref
+      - BET+ # 19 shows
+      - Network 10
+
+      ## Networks with posters already made
+      - "#0" # 89 shows
+      - ABC Kids # Should be ABC TV addon
+      - Acorn TV # 17 shows
+      - Adult Swim # 126 shows
+      - AHC # 26 shows
+      - Alibi # 5 shows
+      - Amazon Kids+ # 5 shows
+      - Antena 3 # 179 shows
+      - Atresplayer Premium # 88 shows
+      - Audience # 19 shows
+      - AXN # 12 shows
+      - Azteca Uno # 14 shows
+      - BBC America # 37 shows
+      - BBC iPlayer # 54 shows
+      - Boomerang # 20 shows
+      - BritBox # 17 shows
+      - C More # 57 shows
+      - Canale 5 # 169 shows
+      - Cartoon Network # 236 shows across networks
+      - Cartoonito # 5 shows
+      - CBC # 93 shows across networks - Different than CBC Television
+      - Cbeebies # 121 shows
+      - CHCH-DT # 11 shows
+      - Cinemax # 36 shows across networks
+      - Citytv # 38 shows
+      - Cooking Channel # 48 shows
+      - Crackle # 26 shows
+      - Crunchyroll # 14 shows
+      - CTV # 233 shows across networks
+      - Cuatro # 98 shows
+      - Curiosity Stream # 54 shows
+      - Dave # 55 shows
+      - DC Universe # 8 shows
+      - Discovery Kids # 38 shows across network
+      - Disney Channel # 532 shows across networks
+      - Disney Junior # 89 shows across networks
+      - Disney XD # 82 shows - could get rolled to Disney+ or Disney Channel depending on user pref
+      - DR1 # 313 shows
+      - E! # 149 shows
+      - Eden # 2 shows
+      - Elisa Viihde # 12 shows
+      - Elisa Viihde Viaplay # 9 shows
+      - Epix # 30 shows
+      - Facebook Watch # 37 shows
+      - Ficción Producciones # 1 show
+      - Flooxer # 21 shows
+      - France 2 # 348 shows
+      - FXX # 16 shows - mostly all also part of FX
+      - Family Channel # 40 shows
+      - Fox Kids # 29 shows across networks
+      - Freevee # 15 shows
+      - GAİN # 53 shows
+      - Global TV # 86 shows
+      - HBO # 462 shows across networks
+      - HOT3 # 44 shows
+      - ICTV # 11 shows
+      - IFC # 50 shows across networks
+      - IMDb TV # 11 shows
+      - joyn # 32 shows
+      - Kan 11 # 54 shows
+      - La 1 # 203 shows
+      - La Une # 39 shows
+      - Lionsgate+ # 1 show ?
+      - Logo # 36 shows
+      - M-Net # 22 shows
+      - mitele # 48 shows
+      - MGM+ # 9 shows
+      - NHK # 354 shows
+      - Nick Jr # 35 shows
+      - Nicktoons # 27 shows
+      - Nine Network # 318 shows
+      - NRK1 # 311 shows
+      - OCS City # 12 shows
+      - OCS Max # 25 shows
+      - ORF # 197 shows
+      - Pantaya # 8 shows
+      - PBS Kids # 45 shows
+      - Planète+ A&E # 9 shows
+      - Rai 1 # 329 shows
+      - ReelzChannel # 48 shows
+      - RTÉ One # 231 shows
+      - RTL Télé # 2 shows
+      - RTP1 # 231 shows
+      - RÚV # 24 shows
+      - S4C # 39 shows
+      - SAT.1 # 302 shows
+      - Science # 113 shows
+      - Showcase # 35 shows
+      - Showmax # 19 shows
+      - Showtime # 212 shows
+      - Shudder # 18 shows
+      - Sky # a lot
+      - Smithsonian # 125 shows across networks
+      - Space # 27 shows
+      - Spectrum # 11 shows
+      - Spike # 139 shows
+      - Stan # 24 shows
+      - STAR+ # 71 shows
+      - Sundance TV # 33 shows
+      - Syndication # 322 shows
+      - Telecinco # 154 shows
+      - Telefe # 106 shows
+      - Televisión de Galicia # 16 shows
+      - Televisión Pública Argentina # 28 shows
+      - The Roku Channel # 38 shows
+      - The WB # 143 shows
+      - Turner Classic Movies # 5 shows
+      - truTV # 99 shows
+      - TV4 # 168 shows
+      - TVNZ 1 # 147 shows
+      - TVP1 # 75 shows
+      - UPN # 108 shows
+      - USA Network #155 shows
+      - Universal Kids # 23 shows
+      - Universal TV
+      - VH1 # 225 shows
+      - Virgin Media One # 11 shows
+      - ViX+ # 22 shows
+      - Vice # (Vice TV 48 shows)
+      - VRT 1 # 232 shows
+      - VTM # 214 shows
+      - W # 15 shows
+      - YLE #70 shows
+
+    addons:
+      ABC:
+        - ABC.com
+      ABC TV:
+        - ABC Comedy
+        - ABC Me
+        - ABC News
+        - ABC iview
+      AMC:
+        - AMC.com
+      Animal Planet:
+        - Animal Planet Brasil
+        - Animal Planet Deutschland
+      BET:
+        - BET Her
+      Canal+:
+        - Canal+ Poland
+        - Canal+ Family
+        - Canal+ Discovery
+        - Canal+ Afrique
+      Cartoon Network:
+        - Cartoon Network Latin America
+        - Cartoon Network Anything
+      CBC:
+        - CBCDrama
+      CBC Television:
+        - CBC Gem
+        - CBC News Network
+        - CBC Comedy
+      CBS:
+        - CBS.com
+      CTV:
+        - CTV Two
+        - CTV News Channel
+        - CTV Sci-Fi Channel
+        - CTV Comedy Channel
+        - CTV Life Channel
+        - ctv.ca
+      The CW:
+        - CW seed
+      Discovery:
+        - Discovery Health Channel
+        - Discovery Channel
+        - Discovery Home & Health Brasil
+        - Discovery Family
+        - Discovery Real Time
+        - Discovery Asia
+        - Discovery Home & Health
+        - Discovery Life
+        - Discovery World
+        - Discovery Science
+      Disney Channel:
+        - Toon Disney
+        - Playhouse Disney
+        - Disney Channel Asia
+        - disney.com
+        - Disney Channel Middle East
+      Disney Junior:
+        - Disney Junior Latin America
+        - Disney Junior Brasil
+      Disney+:
+        - Disney+ Hotstar
+      ESPN:
+        - ESPN2
+        - ESPN+
+        - ESPN Classic
+        - ESPNU
+        - ESPNews
+        - ESPN Australia
+        - Sony ESPN
+        - ESPN.com
+        - ESPN Deportes
+      FOX:
+        - Fox
+        - Fox News Channel
+        - Fox Sports
+        - Fox Reality Channel
+        - Fox Sports Networks
+        - Fox Latin America
+        - Fox Brasil
+        - Fox Soccer
+        - Fox Sports 2
+        - Fox Nation
+        - Fox Sports 1
+        - fox.com
+        - Fox Sports Detroit
+      Freevee:
+        - Amazon Freevee
+      Hallmark:
+        - Hallmark Channel
+        - Hallmark Drama
+        - Hallmark Movie & Mysteries
+        - Hallmark Movies Now
+      HBO:
+        - HBO Brasil
+        - HBO Europe
+        - HBO Asia
+        - HBO Latin America
+        - HBO España
+        - HBO Nordic
+        - HBO Canada
+        - HBO Family
+        - HBO Mundi
+      HGTV:
+        - HGTV Canada
+      History:
+        - History Channel Italia
+        - H2
+      ITV:
+        - ITV1
+        - ITVX
+        - ITV Encore
+      Lifetime:
+        - Lifetime Movies
+      Max:
+        - HBO Go
+        - MAX
+        - HBO Max
+      MTV:
+        - MTV2
+        - MTV3
+        - MTV Lebanon
+        - MTV Latin America
+        - MTV Italia
+        - MTV Australia
+        - MTV Canada
+        - MTV Global
+        - MTV Nederland
+      National Geographic:
+        - National Geographic Channel
+        - National Geographic Brasil
+        - National Geographic Latinoamerica
+        - National Geographic India
+      NBC:
+        - CNBC
+        - MSNBC
+        - NBCSN
+        - CNBC Europe
+        - CNBC Asia
+        - WNBC
+        - Nikkei CNBC
+        - KNBC
+        - CNBC World
+        - CNBC TV18
+        - NBC Weather Plus
+        - NBC Radio Network
+      Nickelodeon:
+        - Nick at Nite
+      Paramount+:
+        - CBS All Access # Rebranded on Mar 4, 2021
+      ReelzChannel:
+        - Reelz
+      Sky:
+        - Sky One
+        - Sky Atlantic
+        - Sky Arts
+        - Sky History
+        - Sky Living
+        - Sky Crime
+        - Sky Uno
+        - Sky Max
+        - Sky Sports
+        - Sky Documentaries
+        - Sky Nature
+        - Sky News
+        - Sky Cinema
+        - Sky News Australia
+        - Sky Italia
+        - Sky Comedy
+        - Sky Sports F1
+        - Sky Two
+        - Sky Witness
+        - sky Travel
+        - Sky Vision
+        - Sky News Weather Channel
+        - SkyShowtime
+      Smithsonian:
+        - Smithsonian Channel
+        - Smithsonian Earth
+      Spike:
+        - Spike TV
+      Starz:
+        - Starz Encore
+      Sundance TV:
+        - SundanceTV
+      TBS:
+        - TBS.com
+        - TBS Brasil
+      TNT:
+        - TNT Comedy
+        - TNT Latin America
+        - TNT España
+        - TNT Serie
+        - TNT Glitz
+      Travel Channel:
+        - Travel Channel United Kingdom
+      VH1:
+        - VH1 Classic
+      Vice:
+        - Viceland
+        - Vice TV
+        - Vice.com
 ```

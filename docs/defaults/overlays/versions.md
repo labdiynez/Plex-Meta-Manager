@@ -22,10 +22,10 @@ libraries:
       - pmm: versions
       - pmm: versions
         template_variables:
-          overlay_level: season
+          builder_level: season
       - pmm: versions
         template_variables:
-          overlay_level: episode
+          builder_level: episode
 ```
 
 ## Template Variables
@@ -49,7 +49,7 @@ All [Shared Overlay Variables](../overlay_variables) are available with the defa
 
 | Variable        | Description & Values                                                            |
 |:----------------|:--------------------------------------------------------------------------------|
-| `overlay_level` | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode` |
+| `builder_level` | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode` |
 
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
 
@@ -59,5 +59,5 @@ libraries:
     overlay_path:
       - pmm: versions
         template_variables:
-          font_color: "#FFFFFF99"
+          back_color: "#FFFFFF99"
 ```

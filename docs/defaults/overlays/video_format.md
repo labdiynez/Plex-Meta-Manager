@@ -35,10 +35,10 @@ libraries:
       - pmm: video_format
       - pmm: video_format
         template_variables:
-          overlay_level: season
+          builder_level: season
       - pmm: video_format
         template_variables:
-          overlay_level: episode
+          builder_level: episode
 ```
 
 ## Template Variables
@@ -62,7 +62,7 @@ All [Shared Overlay Variables](../overlay_variables) are available with the defa
 
 | Variable                     | Description & Values                                                                                                                                                                                                                                                                                                                                                                                         |
 |:-----------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `overlay_level`              | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode`                                                                                                                                                                                                                                                                                                                              |
+| `builder_level`              | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode`                                                                                                                                                                                                                                                                                                                              |
 | `font`                       | **Description:** Choose the font for the Overlay.<br>**Default:** `fonts/Inter-Medium.ttf`<br>**Values:** Path to font file                                                                                                                                                                                                                                                                                  |
 | `font_style`                 | **Description:** Font style for Variable Fonts.<br>**Values:** Variable Font Style                                                                                                                                                                                                                                                                                                                           |
 | `font_size`                  | **Description:** Choose the font size for the Overlay.<br>**Default:** `55`<br>**Values:** Any Number greater then 0                                                                                                                                                                                                                                                                                         |
@@ -73,7 +73,7 @@ All [Shared Overlay Variables](../overlay_variables) are available with the defa
 | `weight_<<key>>`<sup>1</sup> | **Description:** Controls the weight of the Overlay. Higher numbers have priority.<br>**Values:** Any Number                                                                                                                                                                                                                                                                                                 |
 | `regex_<<key>>`<sup>1</sup>  | **Description:** Controls the regex of the Overlay Search.<br>**Values:** Any Proper Regex                                                                                                                                                                                                                                                                                                                   |
 
-1. Each default overlay has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
+1. Each default overlay has a `key` that when calling to effect a specific overlay you must replace `<<key>>` with when calling.
 
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
 

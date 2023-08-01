@@ -14,7 +14,7 @@ except ModuleNotFoundError:
     windows = False
 
 
-logger: MyLogger = None
+logger: MyLogger = None # noqa
 
 class TimeoutExpired(Exception):
     pass
@@ -44,13 +44,13 @@ class NotScheduledRange(NotScheduled):
     pass
 
 class ImageData:
-    def __init__(self, attribute, location, prefix="", is_poster=True, is_url=True):
+    def __init__(self, attribute, location, prefix="", is_poster=True, is_url=True, compare=None):
         self.attribute = attribute
         self.location = location
         self.prefix = prefix
         self.is_poster = is_poster
         self.is_url = is_url
-        self.compare = location if is_url else os.stat(location).st_size
+        self.compare = compare if compare else location if is_url else os.stat(location).st_size
         self.message = f"{prefix}{'poster' if is_poster else 'background'} to [{'URL' if is_url else 'File'}] {location}"
 
     def __str__(self):
@@ -97,8 +97,10 @@ collection_mode_options = {
     "hide_items": "hideItems", "hideitems": "hideItems",
     "show_items": "showItems", "showitems": "showItems"
 }
+image_content_types = ["image/png", "image/jpeg", "image/webp"]
 parental_types = ["nudity", "violence", "profanity", "alcohol", "frightening"]
 parental_values = ["None", "Mild", "Moderate", "Severe"]
+parental_levels = {"none": [], "mild": ["None"], "moderate": ["None", "Mild"], "severe": ["None", "Mild", "Moderate"]}
 parental_labels = [f"{t.capitalize()}:{v}" for t in parental_types for v in parental_values]
 previous_time = None
 start_time = None
@@ -163,11 +165,22 @@ def parse_version(version, text="develop"):
     split_version = version.split(f"-{text}")
     return version, split_version[0], int(split_version[1]) if len(split_version) > 1 else 0
 
-def download_image(title, image_url, download_directory, filename):
+def quote(data):
+    return requests.utils.quote(str(data))
+
+def download_image(title, image_url, download_directory, filename=None):
     response = requests.get(image_url, headers=header())
-    if response.status_code >= 400 or "Content-Type" not in response.headers or response.headers["Content-Type"] not in ["image/png", "image/jpeg"]:
+    if response.status_code >= 400:
         raise Failed(f"Image Error: Failed to download Image URL: {image_url}")
-    new_image = os.path.join(download_directory, f"{filename}{'.png' if response.headers['Content-Type'] == 'image/png' else '.jpg'}")
+    if "Content-Type" not in response.headers or response.headers["Content-Type"] not in image_content_types:
+        raise Failed("Image Not PNG, JPG, or WEBP")
+    new_image = os.path.join(download_directory, f"{filename}") if filename else download_directory
+    if response.headers["Content-Type"] == "image/jpeg":
+        new_image += ".jpg"
+    elif response.headers["Content-Type"] == "image/webp":
+        new_image += ".webp"
+    else:
+        new_image += ".png"
     with open(new_image, "wb") as handler:
         handler.write(response.content)
     return ImageData("asset_directory", new_image, prefix=f"{title}'s ", is_url=False)
@@ -195,63 +208,25 @@ def pick_image(title, images, prioritize_assets, download_url_assets, item_dir, 
         logger.debug(f"{len(images)} {image_type}{'s' if len(images) > 1 else ''} found:")
         for i in images:
             logger.debug(f"Method: {i} {image_type.capitalize()}: {images[i]}")
-        is_url = True
-        final_attr = None
         if prioritize_assets and "asset_directory" in images:
             return images["asset_directory"]
-        elif f"url_{image_type}" in images:
-            if download_url_assets and item_dir:
-                if "asset_directory" in images:
-                    return images["asset_directory"]
-                else:
-                    try:
-                        return download_image(title, images[f"url_{image_type}"], item_dir, image_name)
-                    except Failed as e:
-                        logger.error(e)
-            final_attr = f"url_{image_type}"
-        elif f"file_{image_type}" in images:
-            final_attr = f"file_{image_type}"
-            is_url = False
-        elif f"tmdb_{image_type}" in images:
-            final_attr = f"tmdb_{image_type}"
-        elif "tmdb_profile" in images:
-            final_attr = "tmdb_profile"
-        elif "tmdb_list_poster" in images:
-            final_attr = "tmdb_list_poster"
-        elif "tvdb_list_poster" in images:
-            final_attr = "tvdb_list_poster"
-        elif f"tvdb_{image_type}" in images:
-            final_attr = f"tvdb_{image_type}"
-        elif "asset_directory" in images:
-            return images["asset_directory"]
-        elif "tmdb_person" in images:
-            final_attr = "tmdb_person"
-        elif "tmdb_collection_details" in images:
-            final_attr = "tmdb_collection_details"
-        elif "tmdb_actor_details" in images:
-            final_attr = "tmdb_actor_details"
-        elif "tmdb_crew_details" in images:
-            final_attr = "tmdb_crew_details"
-        elif "tmdb_director_details" in images:
-            final_attr = "tmdb_director_details"
-        elif "tmdb_producer_details" in images:
-            final_attr = "tmdb_producer_details"
-        elif "tmdb_writer_details" in images:
-            final_attr = "tmdb_writer_details"
-        elif "tmdb_movie_details" in images:
-            final_attr = "tmdb_movie_details"
-        elif "tmdb_list_details" in images:
-            final_attr = "tmdb_list_details"
-        elif "tvdb_list_details" in images:
-            final_attr = "tvdb_list_details"
-        elif "tvdb_movie_details" in images:
-            final_attr = "tvdb_movie_details"
-        elif "tvdb_show_details" in images:
-            final_attr = "tvdb_show_details"
-        elif "tmdb_show_details" in images:
-            final_attr = "tmdb_show_details"
-        if final_attr:
-            return ImageData(final_attr, images[final_attr], is_poster=is_poster, is_url=is_url)
+        for attr in ["style_data", f"url_{image_type}", f"file_{image_type}", f"tmdb_{image_type}", "tmdb_profile",
+                     "tmdb_list_poster", "tvdb_list_poster", f"tvdb_{image_type}", "asset_directory", f"pmm_{image_type}",
+                     "tmdb_person", "tmdb_collection_details", "tmdb_actor_details", "tmdb_crew_details", "tmdb_director_details",
+                     "tmdb_producer_details", "tmdb_writer_details", "tmdb_movie_details", "tmdb_list_details",
+                     "tvdb_list_details", "tvdb_movie_details", "tvdb_show_details", "tmdb_show_details"]:
+            if attr in images:
+                if attr in ["style_data", f"url_{image_type}"] and download_url_assets and item_dir:
+                    if "asset_directory" in images:
+                        return images["asset_directory"]
+                    else:
+                        try:
+                            return download_image(title, images[attr], item_dir, image_name)
+                        except Failed as e:
+                            logger.error(e)
+                if attr in ["asset_directory", f"pmm_{image_type}"]:
+                    return images[attr]
+                return ImageData(attr, images[attr], is_poster=is_poster, is_url=attr != f"file_{image_type}")
 
 def add_dict_list(keys, value, dict_map):
     for key in keys:
@@ -316,7 +291,7 @@ def logger_input(prompt, timeout=60):
     else:                                   raise SystemError("Input Timeout not supported on this system")
 
 def header(language="en-US,en;q=0.5"):
-    return {"Accept-Language": "eng" if language == "default" else language, "User-Agent": "Mozilla/5.0 Firefox/102.0"}
+    return {"Accept-Language": "eng" if language == "default" else language, "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0"}
 
 def alarm_handler(signum, frame):
     raise TimeoutExpired
@@ -333,7 +308,7 @@ def windows_input(prompt, timeout=5):
     sys.stdout.write(f"| {prompt}: ")
     sys.stdout.flush()
     result = []
-    start_time = time.time()
+    s_time = time.time()
     while True:
         if msvcrt.kbhit():
             char = msvcrt.getwche()
@@ -344,7 +319,7 @@ def windows_input(prompt, timeout=5):
                 return out
             elif ord(char) >= 32: #space_char
                 result.append(char)
-        if (time.time() - start_time) > timeout:
+        if (time.time() - s_time) > timeout:
             print("")
             raise TimeoutExpired
 
@@ -432,11 +407,15 @@ def time_window(tw):
     else:
         return tw
 
-def load_files(files_to_load, method, schedule=None, lib_vars=None):
+def load_files(files_to_load, method, err_type="Config", schedule=None, lib_vars=None, single=False):
     files = []
+    had_scheduled = False
     if not lib_vars:
         lib_vars = {}
-    for file in get_list(files_to_load, split=False):
+    files_to_load = get_list(files_to_load, split=False)
+    if single and len(files_to_load) > 1:
+        raise Failed(f"{err_type} Error: {method} can only have one entry")
+    for file in files_to_load:
         if isinstance(file, dict):
             temp_vars = {}
             if "template_variables" in file and file["template_variables"] and isinstance(file["template_variables"], dict):
@@ -450,7 +429,7 @@ def load_files(files_to_load, method, schedule=None, lib_vars=None):
                     if os.path.exists(asset_path):
                         asset_directory.append(asset_path)
                     else:
-                        logger.error(f"Config Error: Asset Directory Does Not Exist: {asset_path}")
+                        logger.error(f"{err_type} Error: Asset Directory Does Not Exist: {asset_path}")
 
             current = []
             def check_dict(attr, name):
@@ -461,25 +440,25 @@ def load_files(files_to_load, method, schedule=None, lib_vars=None):
                         else:
                             current.append((name, file[attr], temp_vars, asset_directory))
                     else:
-                        logger.error(f"Config Error: {method} {attr} is blank")
+                        logger.error(f"{err_type} Error: {method} {attr} is blank")
 
             check_dict("url", "URL")
             check_dict("git", "Git")
             check_dict("pmm", "PMM Default")
             check_dict("repo", "Repo")
             check_dict("file", "File")
-            if "folder" in file:
+            if not single and "folder" in file:
                 if file["folder"] is None:
-                    logger.error(f"Config Error: {method} folder is blank")
+                    logger.error(f"{err_type} Error: {method} folder is blank")
                 elif not os.path.isdir(file["folder"]):
-                    logger.error(f"Config Error: Folder not found: {file['folder']}")
+                    logger.error(f"{err_type} Error: Folder not found: {file['folder']}")
                 else:
                     yml_files = glob_filter(os.path.join(file["folder"], "*.yml"))
                     yml_files.extend(glob_filter(os.path.join(file["folder"], "*.yaml")))
                     if yml_files:
                         current.extend([("File", yml, temp_vars, asset_directory) for yml in yml_files])
                     else:
-                        logger.error(f"Config Error: No YAML (.yml|.yaml) files found in {file['folder']}")
+                        logger.error(f"{err_type} Error: No YAML (.yml|.yaml) files found in {file['folder']}")
 
             if schedule and "schedule" in file and file["schedule"]:
                 current_time, run_hour, ignore_schedules = schedule
@@ -493,6 +472,7 @@ def load_files(files_to_load, method, schedule=None, lib_vars=None):
                     if not ignore_schedules:
                         err = e
                 if err:
+                    had_scheduled = True
                     logger.info(f"Metadata Schedule:{err}\n")
                     for file_type, file_path, temp_vars, asset_directory in current:
                         logger.warning(f"{file_type}: {file_path} not scheduled to run")
@@ -503,8 +483,8 @@ def load_files(files_to_load, method, schedule=None, lib_vars=None):
             if os.path.exists(file):
                 files.append(("File", file, {}, None))
             else:
-                logger.error(f"Config Error: Path not found: {file}")
-    return files
+                logger.error(f"{err_type} Error: Path not found: {file}")
+    return files, had_scheduled
 
 def check_num(num, is_int=True):
     try:
@@ -760,7 +740,7 @@ def parse(error, attribute, data, datatype=None, methods=None, parent=None, defa
         return []
     elif datatype == "listdict":
         final_list = []
-        for dict_data in get_list(value):
+        for dict_data in get_list(value, split=False):
             if isinstance(dict_data, dict):
                 final_list.append(dict_data)
             else:
@@ -771,7 +751,7 @@ def parse(error, attribute, data, datatype=None, methods=None, parent=None, defa
             if datatype == "dict":
                 return value
             elif datatype == "dictlist":
-                return {k: v if isinstance(v, list) else [v] for k, v in value.items()}
+                return {k: v if isinstance(v, list) else [v] if v else [] for k, v in value.items()}
             elif datatype == "dictliststr":
                 return {str(k): [str(y) for y in v] if isinstance(v, list) else [str(v)] for k, v in value.items()}
             elif datatype == "strdict":
@@ -804,9 +784,9 @@ def parse(error, attribute, data, datatype=None, methods=None, parent=None, defa
             return value
         elif isinstance(value, (int, float)):
             return value > 0
-        elif str(value).lower() in ["t", "true"]:
+        elif str(value).lower() in ["t", "true", "y", "yes"]:
             return True
-        elif str(value).lower() in ["f", "false"]:
+        elif str(value).lower() in ["f", "false", "n", "no"]:
             return False
         else:
             message = f"{display} must be either true or false"
@@ -838,16 +818,21 @@ def parse(error, attribute, data, datatype=None, methods=None, parent=None, defa
         logger.warning(f"{error} Warning: {message} using {default} as default")
         return translation[default] if translation is not None else default
 
-def parse_cords(data, parent, required=False):
-    horizontal_align = parse("Overlay", "horizontal_align", data["horizontal_align"], parent=parent,
+def parse_cords(data, parent, required=False, err_type="Overlay", default=None):
+    dho, dha, dvo, dva = default if default else (None, None, None, None)
+    horizontal_align = parse(err_type, "horizontal_align", data["horizontal_align"], parent=parent,
                              options=["left", "center", "right"]) if "horizontal_align" in data else None
-    if required and horizontal_align is None:
-        raise Failed(f"Overlay Error: {parent} horizontal_align is required")
+    if horizontal_align is None:
+        if required:
+            raise Failed(f"{err_type} Error: {parent} horizontal_align is required")
+        horizontal_align = dha
 
-    vertical_align = parse("Overlay", "vertical_align", data["vertical_align"], parent=parent,
+    vertical_align = parse(err_type, "vertical_align", data["vertical_align"], parent=parent,
                            options=["top", "center", "bottom"]) if "vertical_align" in data else None
-    if required and vertical_align is None:
-        raise Failed(f"Overlay Error: {parent} vertical_align is required")
+    if vertical_align is None:
+        if required:
+            raise Failed(f"{err_type} Error: {parent} vertical_align is required")
+        vertical_align = dva
 
     horizontal_offset = None
     if "horizontal_offset" in data and data["horizontal_offset"] is not None:
@@ -857,7 +842,7 @@ def parse_cords(data, parent, required=False):
             x_off = x_off[:-1]
             per = True
         x_off = check_num(x_off)
-        error = f"Overlay Error: {parent} horizontal_offset: {data['horizontal_offset']} must be a number"
+        error = f"{err_type} Error: {parent} horizontal_offset: {data['horizontal_offset']} must be a number"
         if x_off is None:
             raise Failed(error)
         if horizontal_align != "center" and not per and x_off < 0:
@@ -867,8 +852,10 @@ def parse_cords(data, parent, required=False):
         elif horizontal_align == "center" and per and (x_off > 50 or x_off < -50):
             raise Failed(f"{error} between -50% and 50%")
         horizontal_offset = f"{x_off}%" if per else x_off
-    if required and horizontal_offset is None:
-        raise Failed(f"Overlay Error: {parent} horizontal_offset is required")
+    if horizontal_offset is None:
+        if required:
+            raise Failed(f"{err_type} Error: {parent} horizontal_offset is required")
+        horizontal_offset = dho
 
     vertical_offset = None
     if "vertical_offset" in data and data["vertical_offset"] is not None:
@@ -878,7 +865,7 @@ def parse_cords(data, parent, required=False):
             y_off = y_off[:-1]
             per = True
         y_off = check_num(y_off)
-        error = f"Overlay Error: {parent} vertical_offset: {data['vertical_offset']} must be a number"
+        error = f"{err_type} Error: {parent} vertical_offset: {data['vertical_offset']} must be a number"
         if y_off is None:
             raise Failed(error)
         if vertical_align != "center" and not per and y_off < 0:
@@ -888,8 +875,10 @@ def parse_cords(data, parent, required=False):
         elif vertical_align == "center" and per and (y_off > 50 or y_off < -50):
             raise Failed(f"{error} between -50% and 50%")
         vertical_offset = f"{y_off}%" if per else y_off
-    if required and vertical_offset is None:
-        raise Failed(f"Overlay Error: {parent} vertical_offset is required")
+    if vertical_offset is None:
+        if required:
+            raise Failed(f"{err_type} Error: {parent} vertical_offset is required")
+        vertical_offset = dvo
 
     return horizontal_offset, horizontal_align, vertical_offset, vertical_align
 
@@ -988,5 +977,3 @@ class YAML:
         if self.path:
             with open(self.path, 'w', encoding="utf-8") as fp:
                 self.yaml.dump(self.data, fp)
-
-

@@ -10,31 +10,32 @@ Below is an example of a separator, which can be seen surrounded by a red square
 
 ## Separator Files
 
-These are all the files that contain a separator.
+These are all the files that contain a separator 
 
-| Collection Name               | Default File        | Collection Section |
-|-------------------------------|:--------------------|:-------------------|
-| Seasonal Collections          | `seasonal`          | `00`               |
-| Chart Collections             | `separator_chart`   | `01`               |
-| Universe Collections          | `universe`          | `02`               |
-| Streaming Collections         | `streaming`         | `03`               |
-| Network Collections           | `network`           | `04`               |
-| Genre Collections             | `genre`             | `06`               |
-| Studio Collections            | `studio`            | `07`               |
-| Country Collections           | `country`           | `09`               |
-| Audio Language Collections    | `audio_language`    | `10`               |
-| Subtitle Language Collections | `subtitle_language` | `11`               |
-| Decade Collections            | `decade`            | `12`               |
-| Year Collections              | `year`              | `13`               |
-| Ratings Collections           | `content_rating*`   | `14`               |
-| Resolution Collections        | `resolution*`       | `15`               |
-| Award Collections             | `separator_award`   | `16`               |
-| Actors Collections            | `actor`             | `17`               |
-| Directors Collections         | `director`          | `18`               |
-| Producers Collections         | `producer`          | `19`               |
-| Writers Collections           | `writer`            | `20`               |
+| Collection Name               | Default File        |
+|-------------------------------|:--------------------|
+| Seasonal Collections          | `seasonal`          |
+| Chart Collections             | `separator_chart`   |
+| Universe Collections          | `universe`          |
+| Streaming Collections         | `streaming`         |
+| Network Collections           | `network`           |
+| Genre Collections             | `genre`             |
+| Studio Collections            | `studio`            |
+| Country Collections           | `country`           |
+| Audio Language Collections    | `audio_language`    |
+| Subtitle Language Collections | `subtitle_language` |
+| Decade Collections            | `decade`            |
+| Year Collections              | `year`              |
+| Ratings Collections           | `content_rating*`   |
+| Resolution Collections        | `resolution*`       |
+| Award Collections             | `separator_award`   |
+| Actors Collections            | `actor`             |
+| Directors Collections         | `director`          |
+| Producers Collections         | `producer`          |
+| Writers Collections           | `writer`            |
+| Based On... Collections       | `based`             |
 
-## Shared Separator Variables 
+## Shared Separator Variables
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
 
@@ -45,7 +46,9 @@ Note that the `template_variables:` section only needs to be used if you do want
 | Variable                 | Description & Values                                                                                                                                                                                                                                                                                                                                                                  |
 |:-------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `use_separator`          | **Description:** Turn the [Separator Collection](#use-separators) off.<br>**Values:** `false` to turn of the collection                                                                                                                                                                                                                                                               |
-| `sep_style`              | **Description:** Choose the [Separator Style](#separator-styles).<br>**Default:** `orig`<br>**Values:** `orig`, `red`, `blue`, `green`, `gray`, `purple`, or `stb`                                                                                                                                                                                                                    |         
+| `sep_style`              | **Description:** Choose the [Separator Style](#separator-styles).<br>**Default:** `orig`<br>**Values:** `amethyst`, `aqua`, `blue`, `forest`, `fuchsia`, `gold`, `gray`, `green`, `navy`, `ocean`, `olive`, `orchid`, `orig`, `pink`, `plum`, `purple`, `red`, `rust`, `salmon`, `sand`, `stb`, or `tan`                                                                              |         
+| `sort_prefix`            | **Description:** Changes the prefix of the sort title.<br>**Default:** `!`<br>**Values:** Any String                                                                                                                                                                                                                                                                                  |
+| `sort_title`             | **Description:** Changes the sort title of all collections.<br>**Default:** `<<sort_prefix>><<collection_section>>_!<<title>>`<br>**Values:** Any String                                                                                                                                                                                                                              |
 | `placeholder_tmdb_movie` | **Description:** Add a placeholder Movie to the Separator.<br>**Values:** TMDb Movie ID                                                                                                                                                                                                                                                                                               |
 | `placeholder_tvdb_show`  | **Description:** Add a placeholder Show to the Separator.<br>**Values:** TVDb Show ID                                                                                                                                                                                                                                                                                                 |
 | `placeholder_imdb_id`    | **Description:** Add a placeholder Movie/Show to the Separator.<br>**Values:** IMDb ID                                                                                                                                                                                                                                                                                                |
@@ -59,7 +62,7 @@ Note that the `template_variables:` section only needs to be used if you do want
 
 Separators are enabled by default, but can be disabled/enabled per-file and per-library.
 
-An example of disabling separators at the library-level cam be seen here
+An example of disabling separators at the library-level can be seen here
 
 ```yaml
 libraries:
@@ -85,23 +88,36 @@ Multiple styles are available for Separators, to match Plex's "categories" featu
 
 The available styles available are:
 
-| Style    | Value    |
-|:---------|:---------|
-| Original | `orig`   |  
-| Blue     | `blue`   |  
-| Brown    | `stb`    |   
-| Gray     | `gray`   |  
-| Green    | `green`  | 
-| Purple   | `purple` |
-| Red      | `red`    |   
+| Style    | Value      |
+|:---------|:-----------|
+| Original | `orig`     |  
+| Amethyst | `amethyst` |  
+| Aqua     | `aqua`     |   
+| Blue     | `blue`     |  
+| Forest   | `green`    | 
+| Fuchsia  | `fuchsia`  |
+| Gold     | `gold`     |   
+| Gray     | `gray`     |  
+| Green    | `green`    |   
+| Navy     | `navy`     |  
+| Ocean    | `ocean`    | 
+| Olive    | `olive`    |
+| Orchid   | `orchid`   |   
+| Pink     | `pink`     |  
+| Plum     | `plum`     |   
+| Purple   | `purple`   |  
+| Red      | `red`      | 
+| Rust     | `rust`     |
+| Salmon   | `salmon`   |   
+| Sand     | `sand`     |  
+| Brown    | `stb`      |   
+| Tan      | `tan`      |  
 
 This image shows an example separator in each of the above styles
 
 ![](images/separators2.jpg)
 
-The style of separator can be defined per-file and per-library.
-
-An example of disabling separators at the library-level cam be seen here
+An example of changing the separator style at the library-level can be seen here
 
 ```yaml
 libraries:

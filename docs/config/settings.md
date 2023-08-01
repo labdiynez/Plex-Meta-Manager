@@ -138,8 +138,16 @@ and `assets/Movies/Star Wars/poster.png` and `assets/Movies/Star Wars.png` are b
 </table>
 
 ## Create Asset Folders
-Whilst searching for assets, if an asset folder cannot be found within the `asset_directory`, create one. This only applies to library items utilized in a Metadata/Playlist file (i.e. Star Wars Collection)
-* This may create hundreds/thousands of folders if `plex_all` is used, which can cause performance issues when loading the directory. 
+
+Whilst searching for assets, if an asset folder cannot be found within the `asset_directory` one will be created.
+
+Asset Searches can happen in a number of ways.
+* Any Collection specified under the `collections` header in a Metadata File.
+* Any Item specified under the `metadata` header in a Metadata File.
+* Any Playlist specified under the `playlists` header in a Playlist File.
+* Any Item in a library that is running the `assets_for_all` Library Operation.
+* Any Item that has an Overlay applied to it.
+* Any Item found by a Builder while the definition also has `item_assets: true` specified. 
 
 <table class="dualTable colwidths-auto align-default table">
   <tr>
@@ -570,7 +578,7 @@ Set `playlist_report` to true to print out a playlist report at the end of the l
 </table>
 
 ## Custom Repo
-Specify where the `repo` attribute's base is when defining `metadata_paths` and `playlist_files`.
+Specify where the `repo` attribute's base is when defining `metadata_path`, `playlist_file` and `overlay_path`.
 * Ensure you are using the raw GitHub link (i.e. https://github.com/meisnate12/Plex-Meta-Manager-Configs/tree/master/meisnate12 )
 
 <table class="dualTable colwidths-auto align-default table">

@@ -1,21 +1,22 @@
-import argparse, os, platform, psutil, sys, time, uuid
+import argparse, os, platform, sys, time, uuid
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from modules.logs import MyLogger
 
+if sys.version_info[0] != 3 or sys.version_info[1] < 7:
+    print("Version Error: Version: %s.%s.%s incompatible please use Python 3.7+" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+    sys.exit(0)
+
 try:
-    import plexapi, requests, schedule
+    import plexapi, psutil, requests, schedule
+    from dotenv import load_dotenv
     from PIL import ImageFile
     from plexapi import server
     from plexapi.exceptions import NotFound
     from plexapi.video import Show, Season
 except (ModuleNotFoundError, ImportError):
     print("Requirements Error: Requirements are not installed")
-    sys.exit(0)
-
-if sys.version_info[0] != 3 or sys.version_info[1] < 7:
-    print("Version Error: Version: %s.%s.%s incompatible please use Python 3.7+" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     sys.exit(0)
 
 parser = argparse.ArgumentParser()
@@ -45,17 +46,20 @@ parser.add_argument("-nc", "--no-countdown", dest="no_countdown", help="Run with
 parser.add_argument("-nm", "--no-missing", dest="no_missing", help="Run without running the missing section", action="store_true", default=False)
 parser.add_argument("-nr", "--no-report", dest="no_report", help="Run without saving a report", action="store_true", default=False)
 parser.add_argument("-ro", "--read-only-config", dest="read_only_config", help="Run without writing to the config", action="store_true", default=False)
-parser.add_argument("-pu", "--plex-url", dest="plex_url", help="Plex URL for Plex ENV URLs", default="", type=str)
-parser.add_argument("-pt", "--plex-token", dest="plex_token", help="Plex Token for Plex ENV Tokens", default="", type=str)
 parser.add_argument("-d", "--divider", dest="divider", help="Character that divides the sections (Default: '=')", default="=", type=str)
 parser.add_argument("-w", "--width", dest="width", help="Screen Width (Default: 100)", default=100, type=int)
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
+default_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
+load_dotenv(os.path.join(default_dir, ".env"))
+
+static_envs = []
 test_value = None
 def get_arg(env_str, default, arg_bool=False, arg_int=False):
     global test_value
     env_vars = [env_str] if not isinstance(env_str, list) else env_str
     final_value = None
+    static_envs.extend(env_vars)
     for env_var in env_vars:
         env_value = os.environ.get(env_var)
         if env_var == "BRANCH_NAME":
@@ -83,7 +87,7 @@ def get_arg(env_str, default, arg_bool=False, arg_int=False):
 try:
     from git import Repo, InvalidGitRepositoryError
     try:
-        git_branch = Repo(path=".").head.ref.name
+        git_branch = Repo(path=".").head.ref.name # noqa
     except InvalidGitRepositoryError:
         git_branch = None
 except ImportError:
@@ -91,7 +95,6 @@ except ImportError:
 env_version = get_arg("BRANCH_NAME", "master")
 is_docker = get_arg("PMM_DOCKER", False, arg_bool=True)
 is_linuxserver = get_arg("PMM_LINUXSERVER", False, arg_bool=True)
-run_arg = " ".join([f'"{s}"' if " " in s else s for s in sys.argv[:]])
 config_file = get_arg("PMM_CONFIG", args.config)
 times = get_arg("PMM_TIME", args.times)
 run = get_arg("PMM_RUN", args.run, arg_bool=True)
@@ -120,8 +123,35 @@ timeout = get_arg("PMM_TIMEOUT", args.timeout, arg_int=True)
 debug = get_arg("PMM_DEBUG", args.debug, arg_bool=True)
 trace = get_arg("PMM_TRACE", args.trace, arg_bool=True)
 log_requests = get_arg("PMM_LOG_REQUESTS", args.log_requests, arg_bool=True)
-plex_url = get_arg("PMM_PLEX_URL", args.plex_url)
-plex_token = get_arg("PMM_PLEX_TOKEN", args.plex_token)
+
+secret_args = {}
+plex_url = None
+plex_token = None
+i = 0
+while i < len(unknown):
+    test_var = str(unknown[i]).lower().replace("_", "-")
+    if test_var.startswith("--pmm-") or test_var in ["-pu", "--plex-url", "-pt", "--plex-token"]:
+        if test_var in ["-pu", "--plex-url"]:
+            plex_url = str(unknown[i + 1])
+        elif test_var in ["-pt", "--plex-token"]:
+            plex_token = str(unknown[i + 1])
+        else:
+            secret_args[test_var[6:]] = str(unknown[i + 1])
+        i += 1
+    i += 1
+
+plex_url = get_arg("PMM_PLEX_URL", plex_url)
+plex_token = get_arg("PMM_PLEX_TOKEN", plex_token)
+
+env_secrets = []
+for env_name, env_data in os.environ.items():
+    if str(env_name).upper().startswith("PMM_") and str(env_name).upper() not in static_envs:
+        secret_args[str(env_name).lower()[4:].replace("_", "-")] = env_data
+
+run_arg = " ".join([f'"{s}"' if " " in s else s for s in sys.argv[:]])
+for _, v in secret_args.items():
+    if v in run_arg:
+        run_arg = run_arg.replace(v, "(redacted)")
 
 if collections:
     collection_only = True
@@ -130,7 +160,6 @@ if screen_width < 90 or screen_width > 300:
     print(f"Argument Error: width argument invalid: {screen_width} must be an integer between 90 and 300 using the default 100")
     screen_width = 100
 
-default_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
 if config_file and os.path.exists(config_file):
     default_dir = os.path.join(os.path.dirname(os.path.abspath(config_file)))
 elif config_file and not os.path.exists(config_file):
@@ -258,18 +287,21 @@ def start(attrs):
     logger.debug(f"--no-missing (PMM_NO_MISSING): {no_missing}")
     logger.debug(f"--no-report (PMM_NO_REPORT): {no_report}")
     logger.debug(f"--read-only-config (PMM_READ_ONLY_CONFIG): {read_only_config}")
-    logger.debug(f"--plex-url (PMM_PLEX_URL): {'Used' if plex_url else ''}")
-    logger.debug(f"--plex-token (PMM_PLEX_TOKEN): {'Used' if plex_token else ''}")
     logger.debug(f"--divider (PMM_DIVIDER): {divider}")
     logger.debug(f"--width (PMM_WIDTH): {screen_width}")
     logger.debug(f"--debug (PMM_DEBUG): {debug}")
     logger.debug(f"--trace (PMM_TRACE): {trace}")
     logger.debug("")
+    if secret_args:
+        logger.debug("PMM Secrets Read:")
+        for sec in secret_args:
+            logger.debug(f"--pmm-{sec} (PMM_{sec.upper().replace('-', '_')}): (redacted)")
+        logger.debug("")
     logger.separator(f"Starting {start_type}Run")
     config = None
     stats = {"created": 0, "modified": 0, "deleted": 0, "added": 0, "unchanged": 0, "removed": 0, "radarr": 0, "sonarr": 0, "names": []}
     try:
-        config = ConfigFile(default_dir, attrs)
+        config = ConfigFile(default_dir, attrs, secret_args)
     except Exception as e:
         logger.stacktrace()
         logger.critical(e)
@@ -535,7 +567,8 @@ def run_libraries(config):
                 for library_type in library_types:
                     for item in library.get_all(builder_level=library_type):
                         try:
-                            library.edit_tags("label", item, sync_tags=[])
+                            sync = ["Overlay"] if "Overlay" in [i.tag for i in item.labels] else []
+                            library.edit_tags("label", item, sync_tags=sync)
                         except NotFound:
                             logger.error(f"{item.title[:25]:<25} | Labels Failed to be Removed")
                 library_status[library.name]["All Labels Deleted"] = str(datetime.now() - time_start).split('.')[0]
@@ -575,6 +608,23 @@ def run_libraries(config):
                 run_operations_and_overlays()
 
             if not operations_only and not overlays_only and not playlist_only:
+                time_start = datetime.now()
+                for images in library.images_files:
+                    images_name = images.get_file_name()
+                    if config.requested_metadata_files and images_name not in config.requested_metadata_files:
+                        logger.info("")
+                        logger.separator(f"Skipping {images_name} Images File")
+                        continue
+                    logger.info("")
+                    logger.separator(f"Running {images_name} Images File\n{images.path}")
+                    if not test and not resume and not collection_only:
+                        try:
+                            images.update_metadata()
+                        except Failed as e:
+                            library.notify(e)
+                            logger.error(e)
+                library_status[library.name]["Library Images Files"] = str(datetime.now() - time_start).split('.')[0]
+
                 time_start = datetime.now()
                 for metadata in library.metadata_files:
                     metadata_name = metadata.get_file_name()
@@ -650,9 +700,11 @@ def run_collection(config, library, metadata, requested_collections):
         try:
             builder = CollectionBuilder(config, metadata, mapping_name, collection_attrs, library=library, extra=output_str)
             library.stats["names"].append(builder.name)
+            if builder.build_collection:
+                library.collection_names.append(builder.name)
             logger.info("")
 
-            logger.separator(f"Running {mapping_name} Collection", space=False, border=False)
+            logger.separator(f"Running {builder.name} Collection", space=False, border=False)
 
             if len(builder.schedule) > 0:
                 logger.info(builder.schedule)
@@ -675,7 +727,7 @@ def run_collection(config, library, metadata, requested_collections):
                     logger.info("")
                     try:
                         builder.filter_and_save_items(builder.gather_ids(method, value))
-                    except NonExisting as e:
+                    except Failed as e:
                         if builder.ignore_blank_results:
                             logger.warning(e)
                         else:
@@ -774,8 +826,8 @@ def run_collection(config, library, metadata, requested_collections):
                 library.notify_delete(e)
                 library.stats["deleted"] += 1
                 library.status[str(mapping_name)]["status"] = "Deleted Not Scheduled"
-            elif str(e).startswith("Skipped because allowed_library_types"):
-                library.status[str(mapping_name)]["status"] = "Skipped Invalid Library Type"
+            elif str(e).startswith("Skipped because run_definition"):
+                library.status[str(mapping_name)]["status"] = "Skipped Run Definition"
             else:
                 library.status[str(mapping_name)]["status"] = "Not Scheduled"
         except FilterFailed:
@@ -996,7 +1048,9 @@ if __name__ == "__main__":
             valid_times = []
             for time_to_run in times_to_run:
                 try:
-                    valid_times.append(datetime.strftime(datetime.strptime(time_to_run, "%H:%M"), "%H:%M"))
+                    final_time = datetime.strftime(datetime.strptime(time_to_run, "%H:%M"), "%H:%M")
+                    if final_time not in valid_times:
+                        valid_times.append(final_time)
                 except ValueError:
                     if time_to_run:
                         raise Failed(f"Argument Error: time argument invalid: {time_to_run} must be in the HH:MM format between 00:00-23:59")
@@ -1023,7 +1077,7 @@ if __name__ == "__main__":
                         minutes = int((seconds % 3600) // 60)
                         time_str = f"{hours} Hour{'s' if hours > 1 else ''} and " if hours > 0 else ""
                         time_str += f"{minutes} Minute{'s' if minutes > 1 else ''}"
-                        logger.ghost(f"Current Time: {current_time} | {time_str} until the next run at {og_time_str} | Runs: {', '.join(times_to_run)}")
+                        logger.ghost(f"Current Time: {current_time} | {time_str} until the next run at {og_time_str} | Runs: {', '.join(valid_times)}")
                     else:
                         logger.error(f"Time Error: {valid_times}")
                 time.sleep(60)

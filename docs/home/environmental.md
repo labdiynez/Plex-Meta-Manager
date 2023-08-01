@@ -6,6 +6,8 @@ If you run into a race condition where you have set an Environment Variable with
 
 These docs are assuming you have a basic understanding of Docker concepts.  One place to get familiar with Docker would be the [official tutorial](https://www.docker.com/101-tutorial/).
 
+Environment Variables can also be placed inside a `.env` file inside your config folder.
+
 | Attribute                                             | Shell Command                                 | Environment Variable     |
 |:------------------------------------------------------|:----------------------------------------------|:-------------------------|
 | [Config](#config)                                     | `-c` or `--config`                            | `PMM_CONFIG`             |
@@ -34,10 +36,9 @@ These docs are assuming you have a basic understanding of Docker concepts.  One 
 | [No Missing](#no-missing)                             | `-nm` or `--no-missing`                       | `PMM_NO_MISSING`         |
 | [No Report](#no-report)                               | `-nr` or `--no-report`                        | `PMM_NO_REPORT`          |
 | [Read Only Config](#read-only-config)                 | `-ro` or `--read-only-config`                 | `PMM_READ_ONLY_CONFIG`   |
-| [ENV Plex URL](#env-plex-url--token)                  | `-pu` or `--plex-url`                         | `PMM_PLEX_URL`           |
-| [ENV Plex Token](#env-plex-url--token)                | `-pt` or `--plex-token`                       | `PMM_PLEX_TOKEN`         |
 | [Divider Character](#divider-character--screen-width) | `-d` or `--divider`                           | `PMM_DIVIDER`            |
 | [Screen Width](#divider-character--screen-width)      | `-w` or `--width`                             | `PMM_WIDTH`              |
+| [Config Secrets](#config-secrets)                     | `--pmm-***`                                   | `PMM_***`                |
 
 Further explanation and examples of each command can be found below.
 
@@ -280,7 +281,7 @@ Run with every network request printed to the Logs. **This can potentially have 
   <tr>
     <th>Example</th>
     <td><code>--log-requests</code></td>
-    <td><code>PMM_NETWORK=true</code></td>
+    <td><code>PMM_LOG_REQUESTS=true</code></td>
   </tr>
 </table>
 
@@ -297,7 +298,7 @@ docker run -it -v "X:\Media\Plex Meta Manager\config:/config:rw" meisnate12/plex
 
 ### Timeout
 
-Change the main Plex Meta Manager timeout. This timeout is overwritten by those in your config file for those services.
+Change the timeout for all non-Plex services (such as TMDb, Radarr, and Trakt). This is overwritten by any timeouts mentioned for specific services in the Configuration File.
 
 <table class="dualTable colwidths-auto align-default table">
   <tr>
@@ -945,62 +946,6 @@ docker run -it -v "X:\Media\Plex Meta Manager\config:/config:rw" meisnate12/plex
 ```
 ````
 
-### ENV Plex URL & Token
-
-Replaces `ENV` when it is used plex `url` or `token`. 
-
-#### Plex URL
-
-<table class="dualTable colwidths-auto align-default table">
-  <tr>
-    <th style="background-color: #1d1d1d;"></th>
-    <th>Shell</th>
-    <th>Environment</th>
-  </tr>
-  <tr>
-    <th>Flags</th>
-    <td><code>-pu</code> or <code>--plex-url</code></td>
-    <td><code>PMM_PLEX_URL</code></td>
-  </tr>
-  <tr>
-    <th>Example</th>
-    <td><code>--plex-url 192.168.1.12:32400</code></td>
-    <td><code>PMM_PLEX_URL=192.168.1.12:32400</code></td>
-  </tr>
-</table>
-
-#### Plex Token
-
-<table class="dualTable colwidths-auto align-default table">
-  <tr>
-    <th style="background-color: #1d1d1d;"></th>
-    <th>Shell</th>
-    <th>Environment</th>
-  </tr>
-  <tr>
-    <th>Flags</th>
-    <td><code>-pt</code> or <code>--plex-token</code></td>
-    <td><code>PMM_PLEX_TOKEN</code></td>
-  </tr>
-  <tr>
-    <th>Example</th>
-    <td><code>--plex-token AB23HE4588</code></td>
-    <td><code>PMM_PLEX_TOKEN=AB23HE4588</code></td>
-  </tr>
-</table>
-
-````{tab} Local Environment
-```
-python plex_meta_manager.py --plex-url 192.168.1.12:32400 --plex-token AB23HE4588
-```
-````
-````{tab} Docker Environment
-```
-docker run -it -v "X:\Media\Plex Meta Manager\config:/config:rw" meisnate12/plex-meta-manager --plex-url 192.168.1.12:32400 --plex-token AB23HE4588
-```
-````
-
-
 ### Divider Character & Screen Width
 
 Change the terminal output divider character or width.
@@ -1071,3 +1016,45 @@ python plex_meta_manager.py --divider * --width 200
 docker run -it -v "X:\Media\Plex Meta Manager\config:/config:rw" meisnate12/plex-meta-manager --divider * --width 200
 ```
 ````
+
+### Config Secrets
+
+All Run Commands that start with `--pmm-***` and Environment Variables that start with `PMM_***` will be loaded in as Config Secrets.
+
+These Config Secrets can be loaded into the config by placing `<<***>>` in any field in the config, where `***` is whatever name you want to call the variable.  
+
+<table class="dualTable colwidths-auto align-default table">
+  <tr>
+    <th style="background-color: #1d1d1d;"></th>
+    <th>Shell</th>
+    <th>Environment</th>
+  </tr>
+  <tr>
+    <th>Flags</th>
+    <td><code>--pmm-***</code></td>
+    <td><code>PMM_***</code></td>
+  </tr>
+  <tr>
+    <th>Example</th>
+    <td><code>--pmm-mysecret 123456789</code></td>
+    <td><code>PMM_MYSECRET=123456789</code></td>
+  </tr>
+</table>
+
+````{tab} Local Environment
+```
+python plex_meta_manager.py --pmm-mysecret 123456789
+```
+````
+````{tab} Docker Environment
+```
+docker run -it -v "X:\Media\Plex Meta Manager\config:/config:rw" meisnate12/plex-meta-manager --pmm-mysecret 123456789
+```
+````
+
+#### Example Config Usage
+
+```yaml
+tmdb:
+  apikey: <<mysecret>>
+```

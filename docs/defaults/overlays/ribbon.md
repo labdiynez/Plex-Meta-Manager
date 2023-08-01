@@ -10,14 +10,17 @@ Supported Overlay Level: Movie, Show
 
 ## Supported Ribbon
 
-| Ribbon                          | Key          | Weight |
-|:--------------------------------|:-------------|:-------|
-| Oscars Best Picture             | `oscars`     | `50`   |
-| IMDb Top 250                    | `imdb`       | `40`   |
-| Rotten Tomatoes Certified Fresh | `rotten`     | `30`   |
-| Metacritic Must See             | `metacritic` | `20`   |
-| Commonsense Selection           | `common`     | `10`   |
-
+| Ribbon                          | Key               | Weight |
+|:--------------------------------|:------------------|:-------|
+| Oscars Best Picture             | `oscars`          | `50`   |
+| Oscars Best Director            | `oscars_director` | `45`   |
+| IMDb Top 250                    | `imdb`            | `40`   |
+| Rotten Tomatoes Certified Fresh | `rotten`          | `30`   |
+| Metacritic Must See             | `metacritic`      | `20`   |
+| Commonsense Selection           | `common`          | `10`   |
+| Golden Globe Winner             | `golden`          | `6`    |
+| Emmys Winner                    | `emmys`           | `4`    |
+| Razzies Winner                  | `razzie`          | `2`    |
 ## Config
 
 The below YAML in your config.yml will create the overlays:
@@ -51,7 +54,7 @@ All [Shared Overlay Variables](../overlay_variables) are available with the defa
 |:-------------------------------|:-------------------------------------------------------------------------------------------------------------|
 | `weight_<<key>>`<sup>1</sup>   | **Description:** Controls the weight of the Overlay. Higher numbers have priority.<br>**Values:** Any Number |
 
-1. Each default overlay has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
+1. Each default overlay has a `key` that when calling to effect a specific overlay you must replace `<<key>>` with when calling.
 
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
 

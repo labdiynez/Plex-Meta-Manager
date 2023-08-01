@@ -14,10 +14,11 @@ Supported Overlay Level: Movie, Show
 |:------------|:------------|:-------|
 | Netflix     | `netflix`   | `60`   |
 | Disney+     | `disney`    | `50`   |
-| HBO         | `hbo`       | `40`   |
+| MAX         | `max`       | `40`   |
 | Hulu        | `hulu`      | `30`   |
 | Paramount+  | `paramount` | `20`   |
 | Prime Video | `prime`     | `10`   |
+| Apple+      | `apple`     | `9`    |
 
 ## Config
 
@@ -74,7 +75,7 @@ All [Shared Overlay Variables](../overlay_variables) except `horizontal_offset`,
 | `addon_offset`                    | **Description:** Text Addon Image Offset from the text.<br>**Default:** `30`<br>**Values:** Any Number greater then 0                                                                                                             |
 | `addon_position`                  | **Description:** Text Addon Image Alignment in relation to the text.<br>**Default:** `top`<br>**Values:** `left`, `right`, `top`, `bottom`                                                                                        |
 
-1. Each default overlay has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
+1. Each default overlay has a `key` that when calling to effect a specific overlay you must replace `<<key>>` with when calling.
 
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
 

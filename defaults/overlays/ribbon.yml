@@ -8,8 +8,15 @@
 external_templates:
   pmm: templates
   template_variables:
+    conditionals:
+      pmm:
+        conditions:
+          - file.exists: false
+            url.exists: false
+            git.exists: false
+            repo.exists: false
+            value: ribbon/<<key>>
     group: ribbon
-    pmm: ribbon/<<key>>
     horizontal_offset: 0
     horizontal_align: right
     vertical_offset: 0
@@ -30,6 +37,11 @@ overlays:
     template: {name: standard, allowed_libraries: movie}
     imdb_list: https://www.imdb.com/search/title/?groups=best_picture_winner
 
+  Oscars Best Director:
+    variables: {key: oscars_director, weight: 45}
+    template: {name: standard, allowed_libraries: movie}
+    imdb_list: https://www.imdb.com/search/title/?groups=best_director_winner
+
   IMDb Top 250:
     variables: {key: imdb, weight: 40, imdb_key: top}
     template: [name: standard, name: ribbon]
@@ -46,3 +58,17 @@ overlays:
     variables: {key: common, weight: 10, mdb_key: cssfamilies}
     template: [name: standard, name: ribbon]
 
+  Golden Globe Winner:
+    variables: {key: golden, weight: 6}
+    template: [name: standard, name: ribbon]
+    imdb_list: https://www.imdb.com/search/title/?groups=golden_globe_winner
+
+  Emmys Winner:
+    variables: {key: emmys, weight: 4}
+    template: [name: standard, name: ribbon]
+    imdb_list: https://www.imdb.com/search/title/?groups=emmy_winner
+
+  Razzies Winner:
+    variables: {key: razzie, weight: 2}
+    template: {name: standard, allowed_libraries: movie}
+    imdb_list: https://www.imdb.com/search/title/?groups=razzie_winner

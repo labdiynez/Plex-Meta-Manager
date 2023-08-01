@@ -1,6 +1,6 @@
 import os, re
 from datetime import datetime
-from modules import plex, util
+from modules import plex, util, anidb
 from modules.util import Failed, LimitReached, YAML
 from plexapi.exceptions import BadRequest, NotFound
 
@@ -38,6 +38,7 @@ class Operations:
         logger.debug(f"Mass Original Title Update: {self.library.mass_original_title_update}")
         logger.debug(f"Mass Originally Available Update: {self.library.mass_originally_available_update}")
         logger.debug(f"Mass IMDb Parental Labels: {self.library.mass_imdb_parental_labels}")
+        logger.debug(f"Mass Episode IMDb Parental Labels: {self.library.mass_episode_imdb_parental_labels}")
         logger.debug(f"Mass Poster Update: {self.library.mass_poster_update}")
         logger.debug(f"Mass Background Update: {self.library.mass_background_update}")
         logger.debug(f"Mass Collection Mode Update: {self.library.mass_collection_mode}")
@@ -95,7 +96,7 @@ class Operations:
                     continue
                 logger.info("")
                 logger.info(f"Processing: {i}/{len(items)} {item.title}")
-                current_labels = [la.tag for la in self.library.item_labels(item)] if self.library.assets_for_all or self.library.mass_imdb_parental_labels else []
+                current_labels = [la.tag for la in self.library.item_labels(item)] if self.library.label_operations else []
 
                 if self.library.assets_for_all and self.library.asset_directory:
                     self.library.find_and_upload_assets(item, current_labels)
@@ -116,7 +117,7 @@ class Operations:
                 if self.library.mass_imdb_parental_labels:
                     try:
                         parental_guide = self.config.IMDb.parental_guide(imdb_id)
-                        parental_labels = [f"{k.capitalize()}:{v}" for k, v in parental_guide.items() if self.library.mass_imdb_parental_labels == "with_none" or v != "None"]
+                        parental_labels = [f"{k.capitalize()}:{v}" for k, v in parental_guide.items() if v not in util.parental_levels[self.library.mass_imdb_parental_labels]]
                         add_labels = [la for la in parental_labels if la not in current_labels]
                         remove_labels = [la for la in current_labels if la in util.parental_labels and la not in parental_labels]
                         if add_labels or remove_labels:
@@ -186,10 +187,10 @@ class Operations:
                         if item.ratingKey in reverse_mal:
                             mal_id = reverse_mal[item.ratingKey]
                         elif not anidb_id:
-                            logger.warning(f"Covert Warning: No AniDB ID to Convert to MyAnimeList ID for Guid: {item.guid}")
+                            logger.warning(f"Convert Warning: No AniDB ID to Convert to MyAnimeList ID for Guid: {item.guid}")
                             mal_id = None
                         elif anidb_id not in self.config.Convert._anidb_to_mal:
-                            logger.warning(f"Covert Warning: No MyAnimeList Found for AniDB ID: {anidb_id} of Guid: {item.guid}")
+                            logger.warning(f"Convert Warning: No MyAnimeList Found for AniDB ID: {anidb_id} of Guid: {item.guid}")
                             mal_id = None
                         else:
                             mal_id = self.config.Convert._anidb_to_mal[anidb_id]
@@ -321,8 +322,10 @@ class Operations:
                                 new_genres = omdb_item.genres
                             elif tvdb_item and self.library.mass_genre_update == "tvdb":
                                 new_genres = tvdb_item.genres
-                            elif anidb_item and self.library.mass_genre_update == "anidb":
-                                new_genres = [str(t).title() for t in anidb_item.tags]
+                            elif anidb_item and self.library.mass_genre_update in anidb.weights:
+                                logger.trace(anidb_item.main_title)
+                                logger.trace(anidb_item.tags)
+                                new_genres = [str(t).title() for t, w in anidb_item.tags.items() if w >= anidb.weights[self.library.mass_genre_update]]
                             elif mal_item and self.library.mass_genre_update == "mal":
                                 new_genres = mal_item.genres
                             else:
@@ -435,7 +438,7 @@ class Operations:
                         item.editField("studio", None, locked=self.library.mass_studio_update == "remove")
                         batch_display += f"\nStudio | None"
                     elif self.library.mass_studio_update in ["unlock", "reset"] and "studio" in locked_fields:
-                        self.library.edit_query(item, {"originalTitle.locked": 0})
+                        self.library.edit_query(item, {"studio.locked": 0})
                         batch_display += f"\nStudio | Unlocked"
                     elif self.library.mass_studio_update in ["lock", "remove"] and "studio" not in locked_fields:
                         self.library.edit_query(item, {"studio.locked": 1})
@@ -508,11 +511,17 @@ class Operations:
                         name = None
                         new_poster = None
                         new_background = None
-                    self.library.poster_update(item, new_poster, tmdb=tmdb_item.poster_url if tmdb_item else None)
-                    self.library.background_update(item, new_background, tmdb=tmdb_item.backdrop_url if tmdb_item else None)
+                    if self.library.mass_poster_update:
+                        self.library.poster_update(item, new_poster, tmdb=tmdb_item.poster_url if tmdb_item else None)
+                    if self.library.mass_background_update:
+                        self.library.background_update(item, new_background, tmdb=tmdb_item.backdrop_url if tmdb_item else None)
 
                     if self.library.is_show:
-                        real_show = tmdb_item.load_show() if tmdb_item else None
+                        real_show = None
+                        try:
+                            real_show = tmdb_item.load_show() if tmdb_item else None
+                        except Failed as e:
+                            logger.error(e)
                         tmdb_seasons = {s.season_number: s for s in real_show.seasons} if real_show else {}
                         for season in self.library.query(item.seasons):
                             try:
@@ -521,12 +530,15 @@ class Operations:
                                 season_poster = None
                                 season_background = None
                             tmdb_poster = tmdb_seasons[season.seasonNumber].poster_url if season.seasonNumber in tmdb_seasons else None
-                            self.library.poster_update(season, season_poster, tmdb=tmdb_poster, title=season.title if season else None)
-                            self.library.background_update(season, season_background, title=season.title if season else None)
+                            if self.library.mass_poster_update:
+                                self.library.poster_update(season, season_poster, tmdb=tmdb_poster, title=season.title if season else None)
+                            if self.library.mass_background_update:
+                                self.library.background_update(season, season_background, title=season.title if season else None)
 
                             tmdb_episodes = {}
                             if season.seasonNumber in tmdb_seasons:
                                 for episode in tmdb_seasons[season.seasonNumber].episodes:
+                                    episode._partial = False
                                     try:
                                         tmdb_episodes[episode.episode_number] = episode
                                     except NotFound:
@@ -539,10 +551,15 @@ class Operations:
                                     episode_poster = None
                                     episode_background = None
                                 tmdb_poster = tmdb_episodes[episode.episodeNumber].still_url if episode.episodeNumber in tmdb_episodes else None
-                                self.library.poster_update(episode, episode_poster, tmdb=tmdb_poster, title=episode.title if episode else None)
-                                self.library.background_update(episode, episode_background, title=episode.title if episode else None)
+                                if self.library.mass_poster_update:
+                                    self.library.poster_update(episode, episode_poster, tmdb=tmdb_poster, title=episode.title if episode else None)
+                                if self.library.mass_background_update:
+                                    self.library.background_update(episode, episode_background, title=episode.title if episode else None)
 
-                episode_ops = [self.library.mass_episode_audience_rating_update, self.library.mass_episode_critic_rating_update, self.library.mass_episode_user_rating_update]
+                episode_ops = [
+                    self.library.mass_episode_audience_rating_update, self.library.mass_episode_critic_rating_update,
+                    self.library.mass_episode_user_rating_update, self.library.mass_episode_imdb_parental_labels
+                ]
 
                 if any([x is not None for x in episode_ops]):
 
@@ -550,7 +567,8 @@ class Operations:
                         logger.info(f"No IMDb ID for Guid: {item.guid}")
 
                     for ep in item.episodes():
-                        ep.batchEdits()
+                        #ep.batchEdits()
+                        ep = self.library.reload(ep)
                         batch_display = ""
                         item_title = self.library.get_item_sort_title(ep, atr="title")
                         logger.info("")
@@ -597,7 +615,7 @@ class Operations:
                             batch_display += update_episode_rating(self.library.mass_episode_user_rating_update, "userRating", "User Rating")
 
                         if len(batch_display) > 0:
-                            ep.saveEdits()
+                            #ep.saveEdits()
                             logger.info(f"Batch Edits:{batch_display}")
 
             if self.library.Radarr and self.library.radarr_add_all_existing:
@@ -647,7 +665,7 @@ class Operations:
             else:
                 if "PMM" not in labels:
                     unmanaged_collections.append(col)
-                if col.title not in self.library.collections:
+                if col.title not in self.library.collection_names:
                     unconfigured_collections.append(col)
 
         if self.library.show_unmanaged and len(unmanaged_collections) > 0:

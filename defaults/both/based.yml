@@ -8,18 +8,14 @@
 external_templates:
   pmm: templates
   template_variables:
-    collection_section: "14"
-
-translations:
-  pmm: translations
+    collection_section: "085"
 
 collections:
-  Based On... Collections:
+  Based on... Collections:
     template:
       - name: separator
         separator: based
-      - name: translation
-        key_name: Based On...
+        key_name: Based on...
         translation_key: separator
 
 dynamic_collections:
@@ -33,7 +29,6 @@ dynamic_collections:
     title_format: Based on a <<key_name>>
     template:
       - mdb_smart
-      - translation
       - shared
       - arr
     template_variables:
@@ -43,3 +38,5 @@ dynamic_collections:
         default: based/<<key_name_encoded>>
       translation_key:
         default: based
+      dynamic:
+        default: true
