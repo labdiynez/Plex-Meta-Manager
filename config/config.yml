@@ -1,0 +1,142 @@
+libraries:
+    Movies:                                                               # ชื่อไลบรารี่เพล็กซ์ เช่น Movies
+      overlay_path:
+      - pmm: resolution
+        template_variables:
+          use_edition: false
+      - pmm: audio_codec
+      - pmm: ratings
+        template_variables:
+          rating1: user
+          rating2: critic
+          rating3: audience
+          rating1_image: rt_tomato
+          rating2_image: imdb
+          rating3_image: tmdb
+      - pmm: flixpatrol
+        template_variables:
+          location: thailand
+      - pmm: commonsense
+      - pmm: languages
+        template_variables:
+          languages:
+            - en
+            - ja
+            - cn
+            - ko
+            - th
+          style: square
+      - pmm: languages
+        template_variables:
+          languages:
+            - en
+            - ja
+            - cn
+            - ko
+            - th
+          use_subtitles: true
+          style: square
+      - pmm: streaming         
+    Movies Operations:                                                  # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
+      library_name: Movies                                              # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
+      schedule: weekly(monday)
+      operations:
+        mass_user_rating_update: mdb_tomatoes
+        mass_critic_rating_update: imdb
+        mass_audience_rating_update: tmdb
+    # 4K:                                                               # กรณีใช้งานกับไลบรารี่อื่น ๆ เช่น 4K หากต้องการใช้งานลบโค้ดคอมเม้นออกครับ
+    #   overlay_path:
+    #   - pmm: resolution
+    #     template_variables:
+    #       use_edition: false
+    #   - pmm: audio_codec
+    #   - pmm: ratings
+    #     template_variables:
+    #       rating1: user
+    #       rating2: critic
+    #       rating3: audience
+    #       rating1_image: rt_tomato
+    #       rating2_image: imdb
+    #       rating3_image: tmdb
+    #   - pmm: flixpatrol
+    #     template_variables:
+    #       location: thailand
+    #   - pmm: commonsense
+    #   - pmm: languages
+    #     template_variables:
+    #       languages:
+    #         - en
+    #         - ja
+    #         - cn
+    #         - ko
+    #         - th
+    #       style: square
+    #   - pmm: languages
+    #     template_variables:
+    #       languages:
+    #         - en
+    #         - ja
+    #         - cn
+    #         - ko
+    #         - th
+    #       use_subtitles: true
+    #       style: square
+    #   - pmm: streaming        
+    # 4K Operations:                                                  # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
+    #   library_name: 4K                                              # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
+    #   schedule: weekly(monday)
+    #   operations:
+    #     mass_user_rating_update: mdb_tomatoes
+    #     mass_critic_rating_update: imdb
+    #     mass_audience_rating_update: tmdb
+settings:
+  cache: true
+  cache_expiration: 60
+  asset_directory:
+  asset_folders: true
+  assets_for_all: false
+  asset_depth: 0
+  create_asset_folders: false
+  prioritize_assets: false
+  dimensional_asset_rename: false
+  download_url_assets: false
+  show_missing_season_assets: false
+  show_missing_episode_assets: false
+  show_asset_not_needed: true
+  sync_mode: sync
+  default_collection_order:
+  minimum_items: 1
+  item_refresh_delay: 0
+  delete_below_minimum: false
+  delete_not_scheduled: false
+  run_again_delay: 2
+  missing_only_released: false
+  only_filter_missing: false
+  show_unmanaged: false
+  show_filtered: false
+  show_options: false
+  show_missing: false
+  show_missing_assets: false
+  save_report: false
+  tvdb_language: default
+  ignore_ids:
+  ignore_imdb_ids:
+  playlist_sync_to_users: all
+  playlist_report: false
+  verify_ssl: true
+  custom_repo:
+  check_nightly: false
+  save_missing: false
+  show_unconfigured: true
+plex:
+  url: http://IP:32400                                                  # แก้ไข IP เป็น IP Plex Server ของตนเอง เช่น 192.168.1.11
+  token: xxx                                                            # แก้ไข xxx เป็น Token Plex Server หาได้จาก https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+  timeout: 360
+  clean_bundles: false
+  empty_trash: false
+  optimize: false
+tmdb:
+  apikey: 056039fc934b6c7a34d43fa6e346d2f7
+  language: en
+  cache_expiration: 60
+  region:
