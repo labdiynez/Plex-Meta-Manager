@@ -8,14 +8,25 @@
 external_templates:
   pmm: templates
   template_variables:
+    default:
+      style: yellow
     conditionals:
+      final_style:
+        default: yellow
+        conditions:
+          - style: gray
+            value: gray
+          - style: black
+            value: black
+          - style: red
+            value: red
       pmm:
         conditions:
           - file.exists: false
             url.exists: false
             git.exists: false
             repo.exists: false
-            value: ribbon/<<key>>
+            value: ribbon/<<final_style>>/<<key>>
     group: ribbon
     horizontal_offset: 0
     horizontal_align: right
