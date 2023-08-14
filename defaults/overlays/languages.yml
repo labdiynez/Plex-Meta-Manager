@@ -44,11 +44,12 @@ external_templates:
       country: <<key>>
       country_<<key>>: <<country>>
       offset: 10
+      width: 190
     queue: flags
     addon_position: <<final_align>>
     addon_offset: <<offset>>
     back_color: "#00000099"
-    back_width: 190
+    back_width: <<width>>
     back_align: <<final_align>>
     font: fonts/Inter-Bold.ttf
     font_size: 50
@@ -436,9 +437,13 @@ overlays:
     variables: {key: fi, text: FI, weight: 280}
     template: [name: flags, name: standard]
 
-  filipino:
+  tagalog:
     variables: {key: tl, text: FL, weight: 270, country: ph}
     template: [name: flags, name: standard]
+    
+  filipino:
+    variables: {key: fil, text: FIL, weight: 265, country: ph, width: 230}
+    template: [name: flags, name: standard]  
 
   galician:
     variables: {key: gl, text: GL, weight: 260, country: es}
@@ -557,5 +562,23 @@ overlays:
     template: [name: flags, name: standard]
 
   inuktitut:
-    variables: {key: iu, text: IK, weight: 5, country: ca}
+    variables: {key: iu, text: IK, weight: 7, country: ca}
     template: [name: flags, name: standard]
+    
+  romani:
+    variables: {key: rom, text: ROM, weight: 6, country: ro, width: 230}
+    template: [name: flags, name: standard]    
+    
+  amharic:
+    variables: {key: am, text: AM, weight: 5, country: et}
+    template: [name: flags, name: standard]    
+  
+  sundanese:
+    variables: {key: su, text: SU, weight: 4, country: id}
+    template: [name: flags, name: standard]    
+
+  zulu:
+    variables: {key: zu, text: ZU, weight: 3, country: za}
+    template: [name: flags, name: standard]    
+
+    
