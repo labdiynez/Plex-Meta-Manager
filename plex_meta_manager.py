@@ -238,6 +238,7 @@ def start(attrs):
     new_version = latest_version[0] if latest_version and (version[1] != latest_version[1] or (version[2] and version[2] < latest_version[2])) else None
     if new_version:
         logger.info(f"    Newest Version: {new_version}")
+    logger.info(f"    PlexAPI library version: {plexapi.VERSION}")
     logger.info(f"    Platform: {platform.platform()}")
     logger.info(f"    Memory: {round(psutil.virtual_memory().total / (1024.0 ** 3))} GB")
     if "time" in attrs and attrs["time"]:                   start_type = f"{attrs['time']} "
