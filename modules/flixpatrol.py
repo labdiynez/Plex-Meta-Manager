@@ -37,15 +37,23 @@ class FlixPatrol:
             self._locations = ["world"] + self._locations
         return self._locations
 
+    def validate_builder(self, method, data, is_movie):
+        builder_type = "movies" if is_movie else "shows"
+        if method == "flixpatrol_top" and data["location"] in self.data[data["platform"]] and builder_type in self.data[data["platform"]][data["location"]]:
+            return data
+        raise Failed(f"FlixPatrol Error: No {builder_type[:-1].capitalize()} Data Found for {data['platform']} in {data['location']}")
+
     def get_tmdb_ids(self, method, data, is_movie):
+        flix_items = []
         if method == "flixpatrol_top":
             logger.info("Processing FlixPatrol Top:")
             logger.info(f"\tPlatform: {data['platform'].replace('_', ' ').title()}")
             logger.info(f"\tLocation: {data['location'].replace('_', ' ').title()}")
             logger.info(f"\tLimit: {data['limit']}")
-        total_items = self.data[data["platform"]][data["location"]]["movies" if is_movie else "shows"][:data["limit"]]
-        if total_items > 0:
-            logger.info(f"Processed {total_items} TMDb IDs")
-            return total_items
+            flix_items = self.data[data["platform"]][data["location"]]["movies" if is_movie else "shows"][:data["limit"]]
+        items = [(i, "tmdb" if is_movie else "tmdb_show") for i in flix_items]
+        if len(items) > 0:
+            logger.info(f"Processed {len(items)} TMDb IDs")
+            return items
         else:
             raise Failed(f"FlixPatrol Error: No List Items found in {data}")
