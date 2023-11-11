@@ -1,6 +1,6 @@
-# Status Overlay
+# Aspect Overlay
 
-The `aspect` Default Overlay File is used to create an overlay on a show detailing its Current Airing Status for all shows in your library.
+The `aspect` Default Overlay File is used to create an overlay on a show/movie detailing its aspect ratio.
 
 ![](images/aspect.png)
 
@@ -10,7 +10,7 @@ Supported Overlay Level: Movie, Show
 
 ## Supported Status
 
-| Status | Key    | Weight |
+| Aspect | Key    | Weight |
 |:-------|:-------|:-------|
 | 1.33   | `1.33` | `80`   |
 | 1.65   | `1.65` | `70`   |
@@ -35,10 +35,10 @@ libraries:
       - pmm: aspect
       - pmm: aspect
         template_variables:
-          overlay_level: episode
+          builder_level: episode
       - pmm: aspect
         template_variables:
-          overlay_level: season
+          builder_level: season
 ```
 
 ## Template Variables
@@ -47,7 +47,7 @@ Template Variables can be used to manipulate the file in various ways to slightl
 
 Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
 
-All [Shared Overlay Variables](../overlay_variables) are available with the default values below as well as the additional Variables below which can be used to customize the file.
+All [Shared Overlay Variables](../overlay_variables.md) are available with the default values below as well as the additional Variables below which can be used to customize the file.
 
 | Variable            | Default     |
 |:--------------------|:------------|

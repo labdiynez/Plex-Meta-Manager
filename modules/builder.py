@@ -1393,11 +1393,22 @@ class CollectionBuilder:
         elif method_name == "anilist_userlist":
             for dict_data in util.parse(self.Type, method_name, method_data, datatype="listdict"):
                 dict_methods = {dm.lower(): dm for dm in dict_data}
-                self.builders.append((method_name, self.config.AniList.validate_userlist({
+                new_dictionary = {
                     "username": util.parse(self.Type, "username", dict_data, methods=dict_methods, parent=method_name),
                     "list_name": util.parse(self.Type, "list_name", dict_data, methods=dict_methods, parent=method_name),
                     "sort_by": util.parse(self.Type, "sort_by", dict_data, methods=dict_methods, parent=method_name, default="score", options=anilist.userlist_sort_options),
-                })))
+                }
+                score_dict = {}
+                for search_method, search_data in dict_data.items():
+                    search_attr, modifier = os.path.splitext(str(search_method).lower())
+                    if search_attr == "score" and modifier in ["gt", "gte", "lt", "lte"]:
+                        score = util.parse(self.Type, search_method, dict_data, datatype="int", default=-1, minimum=0, maximum=10, parent=method_name)
+                        if score > -1:
+                            score_dict[modifier] = score
+                    elif search_attr not in ["username", "list_name", "sort_by"]:
+                        raise Failed(f"{self.Type} Error: {method_name} {search_method} attribute not supported")
+                new_dictionary["score"] = score_dict
+                self.builders.append((method_name, self.config.AniList.validate_userlist(new_dictionary)))
         elif method_name == "anilist_search":
             if self.current_time.month in [12, 1, 2]:           current_season = "winter"
             elif self.current_time.month in [3, 4, 5]:          current_season = "spring"
@@ -1449,11 +1460,12 @@ class CollectionBuilder:
     def _flixpatrol(self, method_name, method_data):
         for dict_data in util.parse(self.Type, method_name, method_data, datatype="listdict"):
             dict_methods = {dm.lower(): dm for dm in dict_data}
-            self.builders.append((method_name, self.config.FlixPatrol.validate_builder(method_name, {
+            self.builders.append((method_name, {
                 "platform": util.parse(self.Type, "platform", dict_data, methods=dict_methods, parent=method_name, options=self.config.FlixPatrol.platforms),
                 "location": util.parse(self.Type, "location", dict_data, methods=dict_methods, parent=method_name, default="world", options=self.config.FlixPatrol.locations),
+                "in_the_last": util.parse(self.Type, "in_the_last", dict_data, datatype="int", methods=dict_methods, parent=method_name, default=1, maximum=30),
                 "limit": util.parse(self.Type, "limit", dict_data, datatype="int", methods=dict_methods, parent=method_name, default=10, maximum=10)
-            }, self.library.is_movie)))
+            }))
 
     def _icheckmovies(self, method_name, method_data):
         if method_name.startswith("icheckmovies_list"):
@@ -2514,8 +2526,8 @@ class CollectionBuilder:
                 amount_unchanged += 1
             else:
                 items_added.append(item)
-                if not self.playlist:
-                    self.library.alter_collection(item, name, smart_label_collection=self.smart_label_collection)
+                if not self.playlist: # Delete TODO: BATCH COLLECTIONS
+                    self.library.alter_collection(item, name, smart_label_collection=self.smart_label_collection) # Delete TODO: BATCH COLLECTIONS
                 amount_added += 1
                 if self.details["changes_webhooks"]:
                     self.notification_additions.append(util.item_set(item, self.library.get_id_from_maps(item.ratingKey)))
@@ -2525,6 +2537,8 @@ class CollectionBuilder:
             logger.info(f"Playlist: {self.name} created")
         elif self.playlist and items_added:
             self.obj.addItems(items_added)
+        #elif items_added: # Uncomment TODO: BATCH COLLECTIONS
+        #    self.library.alter_collection(items_added, name, smart_label_collection=self.smart_label_collection) # Uncomment TODO: BATCH COLLECTIONS
         if self.do_report and items_added:
             self.library.add_additions(self.name, [(i.title, self.library.get_id_from_maps(i.ratingKey)) for i in items_added], self.library.is_movie)
         logger.exorcise()
@@ -2547,14 +2561,16 @@ class CollectionBuilder:
                 number_text = f"{i}/{total}"
                 logger.info(f"{number_text:>{spacing}} | {self.name} {self.Type} | - | {util.item_title(item)}")
                 items_removed.append(item)
-                if not self.playlist:
-                    self.library.alter_collection(item, self.name, smart_label_collection=self.smart_label_collection, add=False)
+                if not self.playlist: # Delete TODO: BATCH COLLECTIONS
+                    self.library.alter_collection(item, self.name, smart_label_collection=self.smart_label_collection, add=False) # Delete TODO: BATCH COLLECTIONS
                 amount_removed += 1
                 if self.details["changes_webhooks"]:
                     self.notification_removals.append(util.item_set(item, self.library.get_id_from_maps(item.ratingKey)))
             if self.playlist and items_removed:
                 self.library._reload(self.obj)
                 self.obj.removeItems(items_removed)
+            #elif items_removed: # Uncomment TODO: BATCH COLLECTIONS
+            #    self.library.alter_collection(items_removed, self.name, smart_label_collection=self.smart_label_collection, add=False) # Uncomment TODO: BATCH COLLECTIONS
             if self.do_report and items_removed:
                 self.library.add_removed(self.name, [(i.title, self.library.get_id_from_maps(i.ratingKey)) for i in items_removed], self.library.is_movie)
             logger.info("")

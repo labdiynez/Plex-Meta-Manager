@@ -899,6 +899,12 @@ class Plex(Library):
                     logger.info(col.tag)
                 raise
 
+        # Change item to items and delete all the above #TODO: BATCH COLLECTIONS
+
+        #self.Plex.batchMultiEdits(items)
+        #self.query_data(getattr(self.Plex, f"{'add' if add else 'remove'}{'Label' if smart_label_collection else 'Collection'}"), collection)
+        #self.Plex.saveMultiEdits()
+
     def move_item(self, collection, item, after=None):
         key = f"{collection.key}/items/{item}/move"
         if after:
