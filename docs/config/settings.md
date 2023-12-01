@@ -64,6 +64,22 @@ The available setting attributes which can be set at each level are outlined bel
 | [`verify_ssl`](#verify-ssl)                                   |   :fontawesome-solid-circle-check:{ .green }    |   :fontawesome-solid-circle-xmark:{ .red }    |         :fontawesome-solid-circle-xmark:{ .red }          |
 | [`check_nightly`](#check-nightly)                             |   :fontawesome-solid-circle-check:{ .green }    |   :fontawesome-solid-circle-xmark:{ .red }    |         :fontawesome-solid-circle-xmark:{ .red }          |
 
+## Default Values
+
+The below in an extract of the `config.yml.template` and is the initial values that are set if you follow any of the installation guides.
+
+???+ tip
+
+    We suggest users review each of these settings and amend as necessary, these are just default values to get you started.
+
+~~~yaml
+{%    
+  include-markdown "./config.yml.template" 
+  comments=false
+  start="settings:"
+  end="webhooks:"
+%}
+~~~
 ## Cache
 Cache the Plex GUID and associated IDs for each library item for faster subsequent processing. The cache file is created in the same directory as the configuration file.
 
@@ -85,28 +101,33 @@ Set the number of days before each cache mapping expires and has to be re-cached
 ## Image Asset Directory
 Specify the directory where assets (posters, backgrounds, etc) are located.
 
-|   |   |
-|---|---|
-| Default Value | [Directory containing YAML config]/assets |
-| Allowed Values | any directory |
+???+ important 
+
+    Assets can be stored anywhere on the host system that PMM has visibility of (i.e. if using docker, the directory must be mounted/visible to the docker container).
+
+|                |                                           |
+|----------------|-------------------------------------------|
+| Default Value  | [Directory containing YAML config]/assets |
+| Allowed Values | any directory                             |
 
 
 ## Image Asset Folders
 Search the `asset_directory` for a dedicated folder. Set to true if each poster is within its own directory.<br>
-i.e. `assets/Star Wars/poster.png` instead of `assets/Star Wars.png`
+i.e. `<path_to_assets>/Star Wars/poster.png` instead of `<path_to_assets>/Star Wars.png`
 
-|   |   |
-|---|---|
-| Default Value | true |
+|                |                   |
+|----------------|-------------------|
+| Default Value  | true              |
 | Allowed Values | `true` or `false` |
 
 
 ## Asset Depth
 
-Specify how many folder levels to scan for an item within the asset directory<br>
-At each asset level, PMM will look for either `medianame.ext` [such as Star Wars.png] or a dedicated folder containing `poster.ext`<br>
-i.e. `assets/Star Wars/poster.png` and `assets/Star Wars.png` are both asset depth 0
-and `assets/Movies/Star Wars/poster.png` and `assets/Movies/Star Wars.png` are both asset level 1
+Specify how many folder levels to scan for an item within the asset directory
+
+At each asset level, PMM will look for either `medianame.ext` [such as Star Wars.png] or a dedicated folder containing `poster.ext`
+
+i.e. `<path_to_assets>/Star Wars/poster.png` and `<path_to_assets>/Star Wars.png` are both asset depth 0, whilst `<path_to_assets>/Movies/Star Wars/poster.png` and `<path_to_assets>/Movies/Star Wars.png` are both asset level 1
 
 ???+ note
 
@@ -114,9 +135,9 @@ and `assets/Movies/Star Wars/poster.png` and `assets/Movies/Star Wars.png` are b
 
     increasing the amount of levels to scan will reduce performance
 
-|   |   |
-|---|---|
-| Default Value | 0 |
+|                |             |
+|----------------|-------------|
+| Default Value  | 0           |
 | Allowed Values | any integer |
 
 

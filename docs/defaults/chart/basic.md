@@ -29,13 +29,9 @@ libraries:
       - pmm: basic
 ```
 
-## Template Variables
+## Template Variable Default Values
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
-
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
-
-All [Shared Collection Variables](../collection_variables.md) are available as well as the additional Variables below which can be used to customize the file.
 
 | Variable                          | Description & Values                                                                                                                                                                                                                            |
 |:----------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -47,7 +43,20 @@ All [Shared Collection Variables](../collection_variables.md) are available as w
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
+{%
+   include-markdown "../collection_variables.md"
+%}
+### Example Template Variable Amendments
+
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
+
+???+ tip
+
+    Anywhere you see this icon:
+   
+    > :fontawesome-solid-circle-plus:
+   
+    That's a tooltip, you can press them to get more information.
 
 ```yaml
 libraries:
@@ -55,9 +64,13 @@ libraries:
     metadata_path:
       - pmm: basic
         template_variables:
-          use_released: false
-          in_the_last_episodes: 14
-          visible_library_released: true
-          visible_home_released: true
-          visible_shared_released: true
+          in_the_last_episodes: 14 #(1)!
+          visible_library_released: true #(2)!
+          visible_home_released: true #(3)!
+          visible_shared_released: true #(4)!
 ```
+
+1.  Change the Smart Filter to look at episodes in the last 14 days.
+2.  Pin the "Newly Released" collection to the Recommended tab of the library
+3.  Pin the "Newly Released" collection to the home screen of the server owner
+4.  Pin the "Newly Released" collection to the home screen of other users of the server

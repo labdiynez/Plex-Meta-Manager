@@ -54,6 +54,7 @@ class Library(ABC):
         self.overlay_backup = os.path.join(self.overlay_folder, f"{self.mapping_name} Original Posters")
         self.report_path = params["report_path"] if params["report_path"] else os.path.join(self.default_dir, f"{self.mapping_name}_report.yml")
         self.report_data = {}
+        self.run_order = params["run_order"]
         self.asset_folders = params["asset_folders"]
         self.create_asset_folders = params["create_asset_folders"]
         self.dimensional_asset_rename = params["dimensional_asset_rename"]
@@ -275,7 +276,7 @@ class Library(ABC):
             exif_tags = image.getexif()
         if 0x04bc in exif_tags and exif_tags[0x04bc] == "overlay":
             os.remove(image_path)
-            raise Failed("Poster already has an Overlay")
+            raise Failed("This item's poster already has an Overlay. There is no PMM setting to change; manual attention required.")
         if remove:
             os.remove(image_path)
         else:

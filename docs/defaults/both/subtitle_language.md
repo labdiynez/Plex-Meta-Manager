@@ -30,13 +30,9 @@ libraries:
       - pmm: subtitle_language
 ```
 
-## Template Variables
+## Template Variable Default Values
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
-
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
-
-All [Shared Collection Variables](../collection_variables.md) are available as well as the additional Variables below which can be used to customize the file.
 
 This file contains a [Separator](../separators.md) so all [Shared Separator Variables](../separators.md#shared-separator-variables) are available as well.
 
@@ -55,7 +51,21 @@ This file contains a [Separator](../separators.md) so all [Shared Separator Vari
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
+{%
+   include-markdown "../collection_variables.md"
+%}
+
+### Example Template Variable Amendments
+
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
+
+???+ tip
+
+    Anywhere you see this icon:
+   
+    > :fontawesome-solid-circle-plus:
+   
+    That's a tooltip, you can press them to get more information.
 
 ```yaml
 libraries:
@@ -63,13 +73,16 @@ libraries:
     metadata_path:
       - pmm: subtitle_language
         template_variables:
-          use_other: false
-          use_separator: false
-          sep_style: purple
+          use_other: false #(1)!
+          use_separator: false #(2)!
           exclude:
-            - fr  # Exclude French
+            - fr  #(3)!
           sort_by: title.asc
 ```
+
+1.  Do not create an "Other Audio" collection
+2.  Do not create an "Audio Language Collections" separator
+3.  Exclude "French" from having an Audio Collection
 
 ## Default `include`
 

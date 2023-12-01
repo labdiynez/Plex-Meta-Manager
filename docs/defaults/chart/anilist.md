@@ -31,13 +31,9 @@ libraries:
       - pmm: anilist
 ```
 
-## Template Variables
+## Template Variable Default Values
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
-
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
-
-All [Shared Collection Variables](../collection_variables.md) are available as well as the additional Variables below which can be used to customize the file.
 
 | Variable                               | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 |:---------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -50,7 +46,20 @@ All [Shared Collection Variables](../collection_variables.md) are available as w
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
+{%
+   include-markdown "../collection_variables.md"
+%}
+### Example Template Variable Amendments
+
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
+
+???+ tip
+
+    Anywhere you see this icon:
+   
+    > :fontawesome-solid-circle-plus:
+   
+    That's a tooltip, you can press them to get more information.
 
 ```yaml
 libraries:
@@ -58,14 +67,18 @@ libraries:
     metadata_path:
       - pmm: anilist
         template_variables:
-          use_popular: false
-          order_top: 01
-          summary_top: "Top 10 Rated movies on AniList"
-          limit_top: 10
-          visible_library_popular: true
-          visible_home_popular: true
-          visible_shared_popular: true
-          sonarr_add_missing: true
-          collection_section: 09
-          collection_mode: show_items
+          use_season: false #(1)!
+          order_top: 01 #(2)!
+          summary_top: "Top 10 Rated movies on AniList" #(3)!
+          limit_top: 10 #(4)!
+          visible_library_popular: true #(5)!
+          visible_home_popular: true #(6)!
+          visible_shared_popular: true #(7)!
 ```
+1.  Do not create the "AniList Season" collection
+2.  Change the order of "AniList Top Rated" to appear before other collections created by this file
+3.  Amend the summary of the "AniList Top Rated" collection
+4.  Only allow a maximum of 10 items to appear in the "AniList Top Rated" collection
+5.  Pin the "AniList Popular" collection to the Recommended tab of the library
+6.  Pin the "AniList Popular" collection to the home screen of the server owner
+7.  Pin the "AniList Popular" collection to the home screen of other users of the server

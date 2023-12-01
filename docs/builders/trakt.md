@@ -23,6 +23,10 @@ The `sync_mode: sync` and `collection_order: custom` Details are recommended sin
 
 **Trakt Lists cannot be sorted through the API, but the list is always returned to the default list order if you own the list.**
 
+???+ tip
+
+    If you have [authorized Trakt](../config/trakt.md) then you can use private Trakt Lists, this is not possible if you have not authorized Trakt.
+
 ```yaml
 collections:
   Christmas:
@@ -182,7 +186,7 @@ NOTE: You must either create an empty Trakt list or specify an existing Trakt li
 
 ```yaml
 collections:
-  My Favouite Movies:
+  My Favourite Movies:
     sync_to_trakt_list: myfilms
     # trakt_list: https://trakt.tv/users/plexmetamanager/lists/myfilms  OPTIONAL TWO-WAY SYNC
     plex_search:

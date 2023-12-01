@@ -30,13 +30,9 @@ libraries:
       - pmm: other_award
 ```
 
-## Template Variables
+## Template Variable Default Values
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
-
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
-
-All [Shared Collection Variables](../collection_variables.md) are available as well as the additional Variables below which can be used to customize the file.
 
 | Variable                               | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 |:---------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -47,7 +43,21 @@ All [Shared Collection Variables](../collection_variables.md) are available as w
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
-The below shows an example config.yml with template_variables set away from their defaults:
+{%
+   include-markdown "../collection_variables.md"
+%}
+
+### Example Template Variable Amendments
+
+The below is an example config.yml extract with some Template Variables added in to change how the file works.
+
+???+ tip
+
+    Anywhere you see this icon:
+   
+    > :fontawesome-solid-circle-plus:
+   
+    That's a tooltip, you can press them to get more information.
 
 ```yaml
 libraries:
@@ -55,7 +65,11 @@ libraries:
     metadata_path:
       - pmm: other_award
         template_variables:
-          collection_mode: show_items
-          collection_order: alpha
-          radarr_add_missing: true
+          use_berlinale: false #(1)!
+          collection_order: alpha #(2)!
+          radarr_add_missing: true #(3)!
 ```
+
+1.  Do not create the "Berlinale Golden Bears" collection
+2.  Sorts the collection items alphabetically
+3.  Adds items from the source list which are not in Plex to Radarr

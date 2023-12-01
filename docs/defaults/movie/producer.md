@@ -28,13 +28,9 @@ libraries:
       - pmm: producer
 ```
 
-## Template Variables
+## Template Variable Default Values
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
-
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
-
-All [Shared Collection Variables](../collection_variables.md) are available as well as the additional Variables below which can be used to customize the file.
 
 This file contains a [Separator](../separators.md) so all [Shared Separator Variables](../separators.md#shared-separator-variables) are available as well.
 
@@ -55,7 +51,20 @@ This file contains a [Separator](../separators.md) so all [Shared Separator Vari
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
+{%
+   include-markdown "../collection_variables.md"
+%}
+### Example Template Variable Amendments
+
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
+
+???+ tip
+
+    Anywhere you see this icon:
+   
+    > :fontawesome-solid-circle-plus:
+   
+    That's a tooltip, you can press them to get more information.
 
 ```yaml
 libraries:
@@ -63,12 +72,17 @@ libraries:
     metadata_path:
       - pmm: producer
         template_variables:
-          style: diiivoycolor
-          use_separator: false
-          sep_style: purple
           data:
-            depth: 10
-            limit: 20
+            depth: 15 #(1)!
+            limit: 5 #(2)!
+          style: signature #(3)!
           sort_by: title.asc
-          tmdb_person_offset_Richard Brooks: 1
+          use_separator: false #(4)!
+          tmdb_person_offset_Richard Brooks: 1 #(5)!
 ```
+
+1.  Check the first 15 casting credits in each movie
+2.  Create 5 collections maximum
+3.  use the [rainier Style](#signature-style)
+4.  Do not create a "Producers Collections" separator
+5.  There are two Richard Brooks, so use the 2nd [Richard Brooks](https://www.themoviedb.org/search?query=Richard%20Brooks) found on TMDb

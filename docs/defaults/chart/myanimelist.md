@@ -32,13 +32,9 @@ libraries:
       - pmm: myanimelist
 ```
 
-## Template Variables
+## Template Variable Default Values
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
-
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified is its default value if it has one if not it's just ignored.
-
-All [Shared Collection Variables](../collection_variables.md) are available as well as the additional Variables below which can be used to customize the file.
 
 | Variable                               | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 |:---------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -51,7 +47,20 @@ All [Shared Collection Variables](../collection_variables.md) are available as w
 
 1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
 
+{%
+   include-markdown "../collection_variables.md"
+%}
+### Example Template Variable Amendments
+
 The below is an example config.yml extract with some Template Variables added in to change how the file works.
+
+???+ tip
+
+    Anywhere you see this icon:
+   
+    > :fontawesome-solid-circle-plus:
+   
+    That's a tooltip, you can press them to get more information.
 
 ```yaml
 libraries:
@@ -59,10 +68,17 @@ libraries:
     metadata_path:
       - pmm: myanimelist
         template_variables:
-          use_season: false
-          order_popular: 01
-          limit_popular: 20
-          visible_library_popular: true
-          visible_home_popular: true
-          visible_shared_popular: true
+          use_season: false #(1)!
+          order_popular: 01 #(2)!
+          limit_popular: 20 #(3)!
+          visible_library_popular: true #(4)!
+          visible_home_popular: true #(5)!
+          visible_shared_popular: true #(6)!
 ```
+
+1.  Do not create the "MyAnimeList Season" collection
+2.  Change the order of "MyAnimeList Popular" to appear before all other collections created by this file
+3.  Limit the "MyAnimeList Popular" collection to 20 items.
+4.  Pin the "MyAnimeList Popular" collection to the Recommended tab of the library
+5.  Pin the "MyAnimeList Popular" collection to the home screen of the server owner
+6.  Pin the "MyAnimeList Popular" collection to the home screen of other users of the server
