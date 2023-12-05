@@ -14,160 +14,297 @@ This sections aims to answer the most commonly asked questions that users have.
 
 #### PMM Versions & Updating
 
+The commands here should work in any terminal on the respective platforms, but that can't be guaranteed.  If you know shortcuts for some of these things, go ahead and use them.  For example, in many terminals, `cd ~/Plex-Meta-Manager` is the same as `cd /Users/YOUR_USERNAME/Plex-Meta-Manager`.  
+
+Your PMM installation may not be located at the paths referenced below.  These are the paths used in the walkthroughs in this documentation, so if you installed it somewhere else you will have to change the path[s] to reflect your system and the choices you made during installation.
+
 ??? question "How do I update to the latest version of Plex Meta Manager?"
 
     === ":fontawesome-brands-linux: Linux"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     
     === ":fontawesome-brands-apple: macOS"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
-    
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-windows: Windows"
     
-            [type this into your terminal]
-            ```
-            cd C:\Users\mroche\Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username and the drive letter if needed]
+
+            C:
+            cd C:\Users\YOUR_USERNAME\Plex-Meta-Manager
+            git stash
+            git stash clear
             git pull
             .\pmm-venv\Scripts\activate
             python -m pip install -r requirements.txt
-            ```
-    
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-docker: Docker"
     
-            [type this into your terminal]
-            ```
-            docker pull meisnate12/plex-meta-manager
-            ```
+        [type this into your terminal]
 
+            docker pull meisnate12/plex-meta-manager:TAG_HERE
+
+        replacing TAG_HERE with latest, develop, or nightly [whichever you are currently using]
+
+        Then recreate your container via whatever means you used to create it [docker run, docker-compose, etc.].
+
+        If you are using Docker on a NAS like Synology or UNRaid, they will provide some means of doing those two things.
 
 ??? question "How do I switch to the develop branch?"
 
     === ":fontawesome-brands-linux: Linux"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout develop
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
 
-    
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-apple: macOS"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout develop
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
-    
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-windows: Windows"
     
-            [type this into your terminal]
-            ```
-            cd C:\Users\mroche\Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username and the drive letter if needed]
+
+            C:
+            cd C:\Users\YOUR_USERNAME\Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout develop
             git pull
             .\pmm-venv\Scripts\activate
             python -m pip install -r requirements.txt
-            ```
-            
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
+    === ":fontawesome-brands-docker: Docker"
+    
+        [type this into your terminal]
+
+            docker pull meisnate12/plex-meta-manager:develop
+
+        Then recreate your container via whatever means you used to create it [docker run, docker-compose, etc.], changing the image in the docker command or the `docker-compose.yml` to `meisnate12/plex-meta-manager:develop`.
+
+        If you are using Docker on a NAS like Synology or UNRaid, they will provide some means of doing those two things.
+
 
 ??? question "How do I switch to the nightly branch"
 
     === ":fontawesome-brands-linux: Linux"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout nightly
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
 
-    
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-apple: macOS"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout nightly
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
-    
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-windows: Windows"
     
-            [type this into your terminal]
-            ```
-            cd C:\Users\mroche\Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username and the drive letter if needed]
+
+            C:
+            cd C:\Users\YOUR_USERNAME\Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout nightly
             git pull
             .\pmm-venv\Scripts\activate
             python -m pip install -r requirements.txt
-            ```
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
+    === ":fontawesome-brands-docker: Docker"
+    
+        [type this into your terminal]
+
+            docker pull meisnate12/plex-meta-manager:nightly
+
+        Then recreate your container via whatever means you used to create it [docker run, docker-compose, etc.], changing the image in the docker command or the `docker-compose.yml` to `meisnate12/plex-meta-manager:nightly`.
+
+        If you are using Docker on a NAS like Synology or UNRaid, they will provide some means of doing those two things.
 
 ??? question "How do I switch back to the master branch?"
 
     === ":fontawesome-brands-linux: Linux"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout master
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
 
-    
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-apple: macOS"
     
-            [type this into your terminal]
-            ```
-            cd /Users/mroche/Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username]
+
+            cd /Users/YOUR_USERNAME/Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout master
             git pull
             source pmm-venv/bin/activate
             python -m pip install -r requirements.txt
-            ```
-    
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
     === ":fontawesome-brands-windows: Windows"
     
-            [type this into your terminal]
-            ```
-            cd C:\Users\mroche\Plex-Meta-Manager
+        [type this into your terminal, changing `YOUR_USERNAME` to your username and the drive letter if needed]
+
+            C:
+            cd C:\Users\YOUR_USERNAME\Plex-Meta-Manager
+            git stash
+            git stash clear
             git checkout master
             git pull
             .\pmm-venv\Scripts\activate
             python -m pip install -r requirements.txt
-            ```
+
+        These two commands:
+
+            git stash
+            git stash clear
+
+        Will reset any changes you have made to PMM-owned files [YOUR CONFIG FILES ARE NOT AFFECTED].  You shouldn't be doing this, so typically this will not lose any of your work.  If you have done this, the assumption is that you know enough about `git` to know how to prevent that from happening.
+
+    === ":fontawesome-brands-docker: Docker"
+    
+        [type this into your terminal]
+
+            docker pull meisnate12/plex-meta-manager:latest
+
+        Then recreate your container via whatever means you used to create it [docker run, docker-compose, etc.], changing the image in the docker command or the `docker-compose.yml` to `meisnate12/plex-meta-manager:latest`.
+
+        If you are using Docker on a NAS like Synology or UNRaid, they will provide some means of doing those two things.
 
 #### Performance & Scheduling
 
 ??? question "Any tips on increasing PMM performance?"
 
-    Use PMM Caching where possible, this allows PMM to temporarily store commonly-used information so that it can be retreived more efficiently. There are [multipe things](https://metamanager.wiki/en/latest/search.html?q=cache&check_keywords=yes&area=default) that can be cached within PMM.
+    Use PMM Caching where possible, this allows PMM to temporarily store commonly-used information so that it can be retrieved more efficiently. There are [multipe things](https://metamanager.wiki/en/latest/search.html?q=cache&check_keywords=yes&area=default) that can be cached within PMM.
     
     Run PMM after PLEX Scheduled Tasks, as Plex's API tends to be slower at responding whilst it is performing the tasks. By default, PMM runs at 5AM to avoid the 3-5am window that Plex suggests for Scheduled Tasks.
     

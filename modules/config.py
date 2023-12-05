@@ -40,6 +40,7 @@ run_order_options = {
 }
 sync_modes = {"append": "Only Add Items to the Collection or Playlist", "sync": "Add & Remove Items from the Collection or Playlist"}
 imdb_label_options = {
+    "remove": "Remove All IMDb Parental Labels",
     "none": "Add IMDb Parental Labels for None, Mild, Moderate, or Severe",
     "mild": "Add IMDb Parental Labels for Mild, Moderate, or Severe",
     "moderate": "Add IMDb Parental Labels for Moderate or Severe",
@@ -110,7 +111,7 @@ library_operations = {
     "mass_critic_rating_update": mass_rating_options, "mass_episode_critic_rating_update": mass_episode_rating_options,
     "mass_user_rating_update": mass_rating_options, "mass_episode_user_rating_update": mass_episode_rating_options,
     "mass_original_title_update": mass_original_title_options, "mass_originally_available_update": mass_available_options,
-    "mass_imdb_parental_labels": imdb_label_options, "mass_episode_imdb_parental_labels": imdb_label_options,
+    "mass_imdb_parental_labels": imdb_label_options,
     "mass_collection_mode": "mass_collection_mode", "mass_poster_update": "dict", "mass_background_update": "dict",
     "metadata_backup": "dict", "delete_collections": "dict", "genre_mapper": "dict", "content_rating_mapper": "dict",
 }
@@ -158,7 +159,6 @@ class ConfigFile:
         self.collection_only = attrs["collection_only"] if "collection_only" in attrs else False
         self.operations_only = attrs["operations_only"] if "operations_only" in attrs else False
         self.overlays_only = attrs["overlays_only"] if "overlays_only" in attrs else False
-        self.libraries_first = attrs["libraries_first"] if "libraries_first" in attrs else False
         self.env_plex_url = attrs["plex_url"] if "plex_url" in attrs else ""
         self.env_plex_token = attrs["plex_token"] if "plex_token" in attrs else ""
         current_time = datetime.now()
@@ -348,7 +348,10 @@ class ConfigFile:
                 if os.path.exists(os.path.abspath(data[attribute])):                return data[attribute]
                 else:                                                               message = f"Path {os.path.abspath(data[attribute])} does not exist"
             elif var_type in ["list", "comma_list", "int_list"]:
-                output_list = list(set(util.get_list(data[attribute], lower=var_type != "int_list", split=var_type != "list", int_list=var_type == "int_list")))
+                output_list = []
+                for output_item in util.get_list(data[attribute], lower=var_type != "int_list", split=var_type != "list", int_list=var_type == "int_list"):
+                    if output_item not in output_list:
+                        output_list.append(output_item)
                 failed_items = [o for o in output_list if o not in test_list] if test_list else []
                 if failed_items:
                     message = f"{text}: {', '.join(failed_items)} is an invalid input"
@@ -400,10 +403,8 @@ class ConfigFile:
                     logger.warning(options)
             return default
 
-        default_run = ["overlays", "operations", "metadata"] if self.libraries_first else ["metadata", "overlays", "operations"]
-
         self.general = {
-            "run_order": check_for_attribute(self.data, "run_order", parent="settings", var_type="comma_list", test_list=run_order_options, default=default_run),
+            "run_order": check_for_attribute(self.data, "run_order", parent="settings", var_type="comma_list", test_list=run_order_options, default=["operations", "metadata", "overlays"]),
             "cache": check_for_attribute(self.data, "cache", parent="settings", var_type="bool", default=True),
             "cache_expiration": check_for_attribute(self.data, "cache_expiration", parent="settings", var_type="int", default=60, int_min=1),
             "asset_directory": check_for_attribute(self.data, "asset_directory", parent="settings", var_type="list_path", default_is_none=True),
@@ -815,7 +816,9 @@ class ConfigFile:
                                 if "mapper" in op:
                                     params[op] = input_dict
                                     for old_value, new_value in input_dict.items():
-                                        if old_value == new_value:
+                                        if not old_value:
+                                            logger.warning("Config Warning: The key cannot be empty")
+                                        elif old_value == new_value:
                                             logger.warning(f"Config Warning: {op} value '{new_value}' ignored as it cannot be mapped to itself")
                                         else:
                                             params[op][old_value] = new_value if new_value else None

@@ -732,6 +732,19 @@ class Plex(Library):
         item._autoReload = False
         return item
 
+    def load_from_cache(self, rating_key):
+        if rating_key in self.cached_items:
+            item, _ = self.cached_items[rating_key]
+            return item
+
+    def load_list_from_cache(self, rating_keys):
+        item_list = []
+        for rating_key in rating_keys:
+            item = self.load_from_cache(rating_key)
+            if item:
+                item_list.append(item)
+        return item_list
+
     @retry(stop_max_attempt_number=6, wait_fixed=10000, retry_on_exception=util.retry_if_not_plex)
     def reload(self, item, force=False):
         is_full = False
@@ -1135,6 +1148,9 @@ class Plex(Library):
     def get_tvdb_from_map(self, item):
         return self.show_rating_key_map[item.ratingKey] if item.ratingKey in self.show_rating_key_map else None
 
+    def get_imdb_from_map(self, item):
+        return self.imdb_rating_key_map[item.ratingKey] if item.ratingKey in self.imdb_rating_key_map else None
+
     def search_item(self, data, year=None, edition=None):
         kwargs = {}
         if year is not None:
@@ -1451,6 +1467,8 @@ class Plex(Library):
             tmdb_id = self.get_tmdb_from_map(item)
         if not tmdb_id and not tvdb_id and self.is_show:
             tvdb_id = self.get_tvdb_from_map(item)
+        if not imdb_id:
+            imdb_id = self.get_imdb_from_map(item)
         return tmdb_id, tvdb_id, imdb_id
 
     def get_locked_attributes(self, item, titles=None):
