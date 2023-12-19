@@ -20,15 +20,19 @@ dynamic_collections:
     title_format: Emmys <<key_name>>
     template:
       - use_year_collections
-      - imdb
+      - imdb_award
       - shared
       - arr
       - custom
     template_variables:
-      imdb_list:
-        default: https://www.imdb.com/search/title/?release_date=<<key-1>>-05-31,<<key>>-06-01&groups=emmy_winner&sort=<<imdb_sort>>
-      imdb_sort:
-        default: moviemeter,asc
+      event_id:
+        default: ev0000223
+      event_year:
+        default: <<key>>
+      winning:
+        default: true
+      collection_order:
+        default: release
       image:
         default: award/emmys/winner/<<key>>
       translation_key:

@@ -1,4 +1,4 @@
-# Separators Default Metadata Files
+# Separators Default Collection Files
 
 Separators are a special form of collections which are used similar to index cards in a library, they help to "split up" collections by identifying categories (such as "Studio Collections" and "Holiday Collections").
 
@@ -50,7 +50,7 @@ Note that the `template_variables:` section only needs to be used if you do want
 | Variable                 | Description & Values                                                                                                                                                                                                                                                                                                                                                                  |
 |:-------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `use_separator`          | **Description:** Turn the [Separator Collection](#use-separators) off.<br>**Values:** `false` to turn of the collection                                                                                                                                                                                                                                                               |
-| `sep_style`              | **Description:** Choose the [Separator Style](#separator-styles).<br>**Default:** `orig`<br>**Values:** `amethyst`, `aqua`, `blue`, `forest`, `fuchsia`, `gold`, `gray`, `green`, `navy`, `ocean`, `olive`, `orchid`, `orig`, `pink`, `plum`, `purple`, `red`, `rust`, `salmon`, `sand`, `stb`, or `tan`                                                                           |         
+| `sep_style`              | **Description:** Choose the [Separator Style](#separator-styles).<br>**Default:** `orig`<br>**Values:** `amethyst`, `aqua`, `blue`, `forest`, `fuchsia`, `gold`, `gray`, `green`, `navy`, `ocean`, `olive`, `orchid`, `orig`, `pink`, `plum`, `purple`, `red`, `rust`, `salmon`, `sand`, `stb`, or `tan`                                                                              |         
 | `sort_prefix`            | **Description:** Changes the prefix of the sort title.<br>**Default:** `!`<br>**Values:** Any String                                                                                                                                                                                                                                                                                  |
 | `sort_title`             | **Description:** Changes the sort title of all collections.<br>**Default:** `<<sort_prefix>><<collection_section>>_!<<title>>`<br>**Values:** Any String                                                                                                                                                                                                                              |
 | `placeholder_tmdb_movie` | **Description:** Add a placeholder Movie to the Separator.  Only valid for Movie libraries.<br>**Values:** TMDb Movie ID                                                                                                                                                                                                                                                              |
@@ -80,7 +80,7 @@ And at the file-level
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - pmm: studio
         template_variables:
           use_separator: false
@@ -135,7 +135,7 @@ And at the file-level
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - pmm: studio
         template_variables:
           sep_style: stb

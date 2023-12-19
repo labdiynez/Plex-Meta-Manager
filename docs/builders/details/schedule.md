@@ -17,7 +17,7 @@ The scheduling options are:
 | Weekly       | Update once a week on the specified days (For multiple days, use a bar-separated (<code>&#124;</code>) list)        | weekly(Days of Week)                               | `weekly(sunday)`<br><code>weekly(sunday&#124;tuesday)</code>         |
 | Monthly      | Update once a month on the specified day                                                                            | monthly(Day of Month)                              | `monthly(1)`                                                         |
 | Yearly       | Update once a year on the specified day                                                                             | yearly(MM/DD)                                      | `yearly(01/30)`                                                      |
-| Range        | Updates whenever the date is within the range (For mulitple ranges, use a bar-separated (<code>&#124;</code>) list) | range(MM/DD-MM/DD)                                 | `range(12/01-12/31)`<br><code>range(8/01-8/15&#124;9/01-9/15)</code> |
+| Range        | Updates whenever the date is within the range (For multiple ranges, use a bar-separated (<code>&#124;</code>) list) | range(MM/DD-MM/DD)                                 | `range(12/01-12/31)`<br><code>range(8/01-8/15&#124;9/01-9/15)</code> |
 | Never        | Never updates                                                                                                       | never                                              | `never`                                                              |
 | Non Existing | Updates if it doesn't exist                                                                                         | non_existing                                       | `non_existing`                                                       |
 | All          | Requires that all comma separated scheduling options inside its brackets be meet in order to run                    | all[Options]                                       | `all[weekly(sunday), hourly(17)]`                                    |
@@ -29,14 +29,14 @@ The scheduling options are:
 
 ## Examples 
 
-Below is an example of a library which has been scheduled to run every Sunday. This will schedule everything within the library (in this case Metadata files and Operations) for the same day.
+Below is an example of a library which has been scheduled to run every Sunday. This will schedule everything within the library (in this case Collection Files and Operations) for the same day.
 
 
 ```yaml
 libraries:
   Movies:
     schedule: weekly(sunday)
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
       - pmm: imdb
       - pmm: studio
@@ -46,14 +46,14 @@ libraries:
       mass_critic_rating_update: tmdb
 ```
 
-Metadata Files, Playlist Files, and Overlay Files can all be individually scheduled, as seen below where different files are scheduled to run on each day of the week: 
+Collection Files, Playlist Files, and Overlay Files can all be individually scheduled, as seen below where different files are scheduled to run on each day of the week: 
 
 **Note: Overlay Files cannot be individually Scheduled, all Overlay Files must be scheduled for the same period.**
 
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
         schedule: weekly(monday)
       - pmm: imdb
@@ -64,7 +64,7 @@ libraries:
         schedule: weekly(thursday)
       - pmm: actor
         schedule: weekly(friday)
-    overlay_path:
+    overlay_files:
       - schedule: weekly(saturday)
       - pmm: audio_codec
       - pmm: resolution
@@ -90,7 +90,7 @@ collections:
      - monthly(15)
 ```
 
-You can also schedule items to be "pinned" to your homescreen on a schedule. For example, this collection will be pinned to your homescreen for the month of December and on January 1st will no longer be pinned (you must run PMM on 1st January for the removal of the pin to happen)
+You can also schedule items to be "pinned" to your home screen on a schedule. For example, this collection will be pinned to your home screen for the month of December and on January 1st will no longer be pinned (you must run PMM on 1st January for the removal of the pin to happen)
 
 ```yaml
 collections:
@@ -104,7 +104,7 @@ Whilst it isn't possible to schedule individual Operations, you can create addit
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
   Movies Operations (Monday):       # Name doesn't matter
     library_name: Movies            # Must match your library name in Plex

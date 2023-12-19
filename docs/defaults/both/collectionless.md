@@ -1,6 +1,6 @@
 # Collectionless Collection
 
-The `collectionless` Default Metadata File is used to create a [Collectionless collection](../../builders/plex.md#plex-collectionless) to help Show/Hide Movies/Shows properly in your library.
+The `collectionless` Default Collection File is used to create a [Collectionless collection](../../builders/plex.md#plex-collectionless) to help Show/Hide Movies/Shows properly in your library.
 
 ![](../images/collectionless.png)
 
@@ -8,13 +8,13 @@ The `collectionless` Default Metadata File is used to create a [Collectionless c
 
 Supported Library Types: Movie, Show
 
-Requirements: For this file to work it needs to run last under `metadata_path` and all other normal collections must use `collection_mode: hide_items`
+Requirements: For this file to work it needs to run last under `collection_files` and all other normal collections must use `collection_mode: hide_items`
 
 ## Collection
 
-| Collection       | Description                                                                                                                                |
-|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------|
-| `Collectionless` | [Collectionless collection](../../builders/plex.md#plex-collectionless) to help Show/Hide Movies/Shows properly in your library.. |
+| Collection       | Description                                                                                                                               |
+|:-----------------|:------------------------------------------------------------------------------------------------------------------------------------------|
+| `Collectionless` | [Collectionless collection](../../builders/plex.md#plex-collectionless) to help Show/Hide Movies/Shows properly in your library..         |
 
 ## Config
 
@@ -25,12 +25,12 @@ libraries:
   Movies:
     template_variables:
       collection_mode: hide_items
-    metadata_path:
+    collection_files:
       - pmm: collectionless
   TV Shows:
     template_variables:
       collection_mode: hide_items
-    metadata_path:
+    collection_files:
       - pmm: collectionless
 ```
 
@@ -42,15 +42,15 @@ Note that the `template_variables:` section only needs to be used if you do want
 
 **[Shared Collection Variables](../collection_variables.md) are NOT available to this default file.**
 
-| Variable                 | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-|:-------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name_collectionless`    | **Description:** Changes the name of the collection.<br>**Values:** New Collection Name                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `summary_collectionless` | **Description:** Changes the summary of the collection.<br>**Values:** New Collection Summary                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `sort_title`             | **Description:** Sets the sort title for the collection.<br>**Default:** `~_Collectionless`<br>**Values:** Any String                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `collection_order`       | **Description:** Changes the Collection Order for all collections in this file.<br>**Default:** `alpha`<br>**Values:**<table class="clearTable"><tr><td>`release`</td><td>Order Collection by Release Dates</td></tr><tr><td>`alpha`</td><td>Order Collection Alphabetically</td></tr><tr><td>`custom`</td><td>Order Collection Via the Builder Order</td></tr><tr><td>[Any `plex_search` Sort Option](../../builders/plex.md#sort-options)</td><td>Order Collection by any `plex_search` Sort Option</td></tr></table> |
-| `url_poster`             | **Description:** Changes the poster url of thecollection.<br>**Values:** URL directly to the Image                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `exclude`                | **Description:** Exclude these Collections from being considered for collectionless.<br>**Values:** List of Collections                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `exclude_prefix`         | **Description:** Overrides the [default exclude_prefix list](#default-exclude_prefix). Exclude Collections with one of these prefixes from being considered for collectionless.<br>**Default:** [default exclude_prefix list](#default-exclude_prefix)<br>**Values:** List of Prefixes                                                                                                                                                                                                                                           |                                                                                                                                                                                                                                                                                                                                                 |
+| Variable                 | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|:-------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name_collectionless`    | **Description:** Changes the name of the collection.<br>**Values:** New Collection Name                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `summary_collectionless` | **Description:** Changes the summary of the collection.<br>**Values:** New Collection Summary                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `sort_title`             | **Description:** Sets the sort title for the collection.<br>**Default:** `~_Collectionless`<br>**Values:** Any String                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `collection_order`       | **Description:** Changes the Collection Order for all collections in this file.<br>**Default:** `alpha`<br>**Values:**<table class="clearTable"><tr><td>`release`</td><td>Order Collection by Release Dates</td></tr><tr><td>`alpha`</td><td>Order Collection Alphabetically</td></tr><tr><td>`custom`</td><td>Order Collection Via the Builder Order</td></tr><tr><td>[Any `plex_search` Sort Option](../../builders/plex.md#sort-options)</td><td>Order Collection by any `plex_search` Sort Option</td></tr></table>         |
+| `url_poster`             | **Description:** Changes the poster url of thecollection.<br>**Values:** URL directly to the Image                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `exclude`                | **Description:** Exclude these Collections from being considered for collectionless.<br>**Values:** List of Collections                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `exclude_prefix`         | **Description:** Overrides the [default exclude_prefix list](#default-exclude_prefix). Exclude Collections with one of these prefixes from being considered for collectionless.<br>**Default:** [default exclude_prefix list](#default-exclude_prefix)<br>**Values:** List of Prefixes                                                                                                                                                                                                                                          |                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Example Template Variable Amendments
 
@@ -61,7 +61,7 @@ libraries:
   Movies:
     template_variables:
       collection_mode: hide_items
-    metadata_path:
+    collection_files:
       - pmm: collectionless
         template_variables:
           exclude:

@@ -30,10 +30,10 @@ The below YAML in your config.yml will create the overlays:
 ```yaml
 libraries:
   Movies:
-    overlay_path:
+    overlay_files:
       - pmm: content_rating_uk
   TV Shows:
-    overlay_path:
+    overlay_files:
       - pmm: content_rating_uk
       - pmm: content_rating_uk
         template_variables:
@@ -47,13 +47,13 @@ libraries:
 
 Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
 
-| Variable            | Default / Values  |
-|:--------------------|:---------|
-| `color`             | ``       |
-| `horizontal_offset` | `15`     |
-| `horizontal_align`  | `left`   |
-| `vertical_offset`   | `270`    |
-| `vertical_align`    | `bottom` |
+| Variable            | Default / Values |
+|:--------------------|:-----------------|
+| `color`             | ``               |
+| `horizontal_offset` | `15`             |
+| `horizontal_align`  | `left`           |
+| `vertical_offset`   | `270`            |
+| `vertical_align`    | `bottom`         |
 
 | Variable          | Description & Values                                                                                                                                                |
 |:------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -77,7 +77,7 @@ The below is an example config.yml extract with some Template Variables added in
 ```yaml
 libraries:
   Movies:
-    overlay_path:
+    overlay_files:
       - pmm: content_rating_uk
         template_variables:
           color: false

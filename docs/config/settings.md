@@ -96,20 +96,21 @@ If no library-level attribute is set, then the global attribute is used.
 libraries:
   Movies:
     run_order: #(1)!
+    - collections
     - metadata
     - operations
     - overlays
     minimum_items: 3 #(2)!
-    metadata_path:
+    collection_files:
       # stuff here
-    overlay_path:
+    overlay_files:
       # stuff here
     operations:
       # stuff here
   TV Shows:
-    metadata_path:
+    collection_files:
       # stuff here
-    overlay_path:
+    overlay_files:
       # stuff here
     operations:
       # stuff here
@@ -117,7 +118,8 @@ settings:
   run_order: #(3)!
   - operations
   - metadata
-  - overlays
+  - collections
+  - operations
   minimum_items: 1 #(4)!
 ```
 
@@ -129,11 +131,7 @@ settings:
 ## Cache
 Cache the Plex GUID and associated IDs for each library item for faster subsequent processing. The cache file is created in the same directory as the configuration file.
 
-|   |   |
-|---|---|
-| Default Value | true |
-| Allowed Values | `true` or `false` |
-
+<table><tr><td>Default Value</td><td>`true`</td></tr><tr><td>Allowed Values</td><td>`true` or `false`</td></tr></table>
 
 ## Cache Expiration
 Set the number of days before each cache mapping expires and has to be re-cached.
@@ -193,8 +191,8 @@ Whilst searching for assets, if an asset folder cannot be found within the `asse
 
 Asset Searches can happen in a number of ways.
 
-* Any Collection specified under the `collections` header in a Metadata File.
-* Any Item specified under the `metadata` header in a Metadata File.
+* Any Collection specified under the `collections` header in a Collection File.
+* Any Item specified under the `metadata` header in a Collection File.
 * Any Playlist specified under the `playlists` header in a Playlist File.
 * Any Item in a library that is running the `assets_for_all` Library Operation.
 * Any Item that has an Overlay applied to it.
@@ -361,6 +359,15 @@ List all collections not managed by Plex Meta Manager at the end of each run.
 | Default Value | true |
 | Allowed Values | `true` or `false` |
 
+## Show Unconfigured Collections
+
+List all collections not configured in the currentPlex Meta Manager run at the end of each run.
+
+|   |   |
+|---|---|
+| Default Value | true |
+| Allowed Values | `true` or `false` |
+
 
 ## Show Filtered
 List all items which have been filtered out of a collection (i.e. if it doesn't meet the filter criteria)
@@ -393,8 +400,7 @@ While `show_missing` is true items missing from collections will be displayed.
 
 ## Only Filter Missing
 
-Only items missing from a collection will be filtered. **Only specific filters can filter missing. See [Filters](../metadata/filters.md) for more information.** 
-
+Only items missing from a collection will be filtered. **Only specific filters can filter missing. See [Filters](../builders/filters.md) for more information.**
 ???+ note
 
     this can be used to filter which missing media items get sent to Sonarr/Radarr
@@ -514,17 +520,18 @@ Set `playlist_report` to true to print out a playlist report at the end of the l
 
 ## Run Order
 
-Specify the run order of the library components [Library Operations, Metadata Files and Overlay Files]
+Specify the run order of the library components [Library Operations, Collection Files and Overlay Files]
 
 ???+ tip
 
-    If not specified, the default run order is Library Operations, then Metadata Files, then Overlay Files
+    If not specified, the default run order is Library Operations, then Metadata Files, then Collection Files, then Overlay Files
 
     ```yml
     settings:
       run_order:
       - operations
       - metadata
+      - collections
       - overlays
     ```
 
@@ -536,7 +543,7 @@ Specify the run order of the library components [Library Operations, Metadata Fi
 
 ## Custom Repo
 
-Specify where the `repo` attribute's base is when defining `metadata_path`, `playlist_file` and `overlay_path`.
+Specify where the `repo` attribute's base is when defining `collection_files`, `playlist_file` and `overlay_files`.
 
 ???+ note
 

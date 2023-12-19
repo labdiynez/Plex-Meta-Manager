@@ -1,6 +1,6 @@
 # MAL Content Rating Collections
 
-The `content_rating_mal` Default Metadata File is used to dynamically create collections based on the content ratings available in your library.
+The `content_rating_mal` Default Collection File is used to dynamically create collections based on the content ratings available in your library.
 
 If you do not use the MAL-based rating system within Plex, this file will attempt to match the ratings in your library to the respective rating system.
 
@@ -14,11 +14,11 @@ Recommendations: Use the [Mass Content Rating Update Library Operation](../../co
 
 ## Collections Section 110
 
-| Collection                                                      | Key                                          | Description                                                                    |
-|:----------------------------------------------------------------|:---------------------------------------------|:-------------------------------------------------------------------------------|
-| `Ratings Collections`                                           | `separator`                                  | [Separator Collection](../separators.md) to denote the Section of Collections.    |
-| `<<Content Rating>> Movies/Shows`<br>**Example:** `PG-13 Shows` | `<<Content Rating>>`<br>**Example:** `PG-13` | Collection of Shows that have this Content Rating.                             |
-| `Not Rated Movies/Shows`                                        | `other`                                      | Collection of Shows that are Unrated, Not Rated or any other uncommon Ratings. |
+| Collection                                                      | Key                                          | Description                                                                      |
+|:----------------------------------------------------------------|:---------------------------------------------|:---------------------------------------------------------------------------------|
+| `Ratings Collections`                                           | `separator`                                  | [Separator Collection](../separators.md) to denote the Section of Collections.   |
+| `<<Content Rating>> Movies/Shows`<br>**Example:** `PG-13 Shows` | `<<Content Rating>>`<br>**Example:** `PG-13` | Collection of Shows that have this Content Rating.                               |
+| `Not Rated Movies/Shows`                                        | `other`                                      | Collection of Shows that are Unrated, Not Rated or any other uncommon Ratings.   |
 
 ## Config
 
@@ -27,10 +27,10 @@ The below YAML in your config.yml will create the collections:
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - pmm: content_rating_mal
   TV Shows:
-    metadata_path:
+    collection_files:
       - pmm: content_rating_mal
 ```
 
@@ -44,8 +44,8 @@ This file contains a [Separator](../separators.md) so all [Shared Separator Vari
 |:------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `limit`                       | **Description:** Changes the Builder Limit for all collections in a Defaults file.<br>**Values:** Number Greater than 0                                                                                                                                                 |
 | `limit_<<key>>`<sup>1</sup>   | **Description:** Changes the Builder Limit of the specified key's collection.<br>**Default:** `limit`<br>**Values:** Number Greater than 0                                                                                                                              |
-| `sort_by`                     | **Description:** Changes the Smart Filter Sort for all collections in a Defaults file.<br>**Default:** `release.desc`<br>**Values:** [Any `smart_filter` Sort Option](../../builders/smart.md#sort-options)                                                    |
-| `sort_by_<<key>>`<sup>1</sup> | **Description:** Changes the Smart Filter Sort of the specified key's collection.<br>**Default:** `sort_by`<br>**Values:** [Any `smart_filter` Sort Option](../../builders/smart.md#sort-options)                                                              |
+| `sort_by`                     | **Description:** Changes the Smart Filter Sort for all collections in a Defaults file.<br>**Default:** `release.desc`<br>**Values:** [Any `smart_filter` Sort Option](../../builders/smart.md#sort-options)                                                             |
+| `sort_by_<<key>>`<sup>1</sup> | **Description:** Changes the Smart Filter Sort of the specified key's collection.<br>**Default:** `sort_by`<br>**Values:** [Any `smart_filter` Sort Option](../../builders/smart.md#sort-options)                                                                       |
 | `include`                     | **Description:** Overrides the [default include list](#default-include).<br>**Values:** List of Content Ratings found in your library                                                                                                                                   |
 | `exclude`                     | **Description:** Exclude these Content Ratings from creating a Dynamic Collection.<br>**Values:** List of Content Ratings found in your library                                                                                                                         |
 | `addons`                      | **Description:** Overrides the [default addons dictionary](#default-addons). Defines how multiple keys can be combined under a parent key. The parent key doesn't have to already exist in Plex<br>**Values:** Dictionary List of Content Ratings found in your library |
@@ -73,7 +73,7 @@ The below is an example config.yml extract with some Template Variables added in
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - pmm: content_rating_mal
         template_variables:
           sep_style: tan #(1)!

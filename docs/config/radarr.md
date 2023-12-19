@@ -34,22 +34,22 @@ radarr:
   plex_path: /share/CACHEDEV1_DATA/Multimedia
 ```
 
-| Attribute          | Allowed Values                                                                                                                                                                                                                                                                                                     | Default     | Required |
-|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------|:--------:|
-| `url`              | Radarr URL (Including URL Base if set).<br>**Example:** http://192.168.1.12:32788                                                                                                                                                                                                                                  | N/A         | &#9989;  |
-| `token`            | Radarr API Token.                                                                                                                                                                                                                                                                                                  | N/A         | &#9989;  |
-| `add_missing`      | Adds all missing movies found from all collections to Radarr.<br>Use the `radarr_add_missing` [Radarr Details](../builders/details/arr.md#) in the collection definition to add missing per collection.<br>**boolean:** true or false                                                    | false       | &#10060; |
-| `add_existing`     | Adds all existing movies in collections to Radarr.<br>Use the `radarr_add_existing` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to add existing per collection.<br>**boolean:** true or false                                                             | false       | &#10060; |
-| `upgrade_existing` | Upgrades all existing movies in collections to match the Quality Profile of the collection.<br>Use the `radarr_upgrade_existing` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to upgrade the Quality Profile per collection.<br>**boolean:** true or false | false       | &#10060; |
-| `ignore_cache`     | Ignores PMM's cache when adding items to Radarr.<br>Use the `radarr_ignore_cache` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to ignore per collection.<br>**boolean:** true or false                                                                     | false       | &#10060; |
-| `root_folder_path` | Default Root Folder Path to use when adding new movies.<br>Use the `radarr_folder` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Root Folder per collection.                                                                                     | N/A         | &#9989;  |
-| `monitor`          | Monitor the movie when adding new movies.<br>Use the `radarr_monitor` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Monitor value per collection.<br>**Options:** `true`, `false`                                                  | true        | &#10060; |
-| `availability`     | Default Minimum Availability to use when adding new movies.<br>Use the `radarr_availability` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Availability per collection.<br>**Options:** `announced`, `cinemas`, `released`, `db`                 | `announced` | &#9989;  |
-| `quality_profile`  | Default Quality Profile to use when adding new movies.<br>Use the `radarr_quality` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Quality Profile per collection.                                                                                 | N/A         | &#9989;  |
-| `tag`              | Default list or comma-separated string of tags to use when adding new movies.<br>Use the `radarr_tag` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Tags per collection.                                                                         | ` `         | &#10060; |
-| `search`           | Start search for missing movie when adding new movies.<br>Use the `radarr_search` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the search value per collection.<br>**boolean:** true or false                                                       | false       | &#10060; |
-| `plex_path`        | When using `add_existing` or `radarr_add_all` Convert this part of the path to `radarr_path`.                                                                                                                                                                                                                      | ` `         | &#10060; |
-| `radarr_path`      | When using `add_existing` or `radarr_add_all` Convert the `plex_path` part of the path to this.                                                                                                                                                                                                                    | ` `         | &#10060; |
+| Attribute          | Allowed Values                                                                                                                                                                                                                                                                                                     | Default     |                  Required                  |
+|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------|:------------------------------------------:|
+| `url`              | Radarr URL (Including URL Base if set).<br>**Example:** http://192.168.1.12:32788                                                                                                                                                                                                                                  | N/A         | :fontawesome-solid-circle-check:{ .green } |
+| `token`            | Radarr API Token.                                                                                                                                                                                                                                                                                                  | N/A         | :fontawesome-solid-circle-check:{ .green } |
+| `add_missing`      | Adds all missing movies found from all collections to Radarr.<br>Use the `radarr_add_missing` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to add missing per collection.<br>**boolean:** true or false                                                    | false       |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `add_existing`     | Adds all existing movies in collections to Radarr.<br>Use the `radarr_add_existing` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to add existing per collection.<br>**boolean:** true or false                                                             | false       |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `upgrade_existing` | Upgrades all existing movies in collections to match the Quality Profile of the collection.<br>Use the `radarr_upgrade_existing` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to upgrade the Quality Profile per collection.<br>**boolean:** true or false | false       |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `ignore_cache`     | Ignores PMM's cache when adding items to Radarr.<br>Use the `radarr_ignore_cache` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to ignore per collection.<br>**boolean:** true or false                                                                     | false       |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `root_folder_path` | Default Root Folder Path to use when adding new movies.<br>Use the `radarr_folder` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Root Folder per collection.                                                                                     | N/A         | :fontawesome-solid-circle-check:{ .green } |
+| `monitor`          | Monitor the movie when adding new movies.<br>Use the `radarr_monitor` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Monitor value per collection.<br>**Options:** `true`, `false`                                                                | true        |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `availability`     | Default Minimum Availability to use when adding new movies.<br>Use the `radarr_availability` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Availability per collection.<br>**Options:** `announced`, `cinemas`, `released`, `db`                 | `announced` | :fontawesome-solid-circle-check:{ .green } |
+| `quality_profile`  | Default Quality Profile to use when adding new movies.<br>Use the `radarr_quality` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Quality Profile per collection.                                                                                 | N/A         | :fontawesome-solid-circle-check:{ .green } |
+| `tag`              | Default list or comma-separated string of tags to use when adding new movies.<br>Use the `radarr_tag` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the Tags per collection.                                                                         | ` `         |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `search`           | Start search for missing movie when adding new movies.<br>Use the `radarr_search` [Radarr Details](../builders/details/arr.md#radarr-definition-settings) in the collection definition to set the search value per collection.<br>**boolean:** true or false                                                       | false       |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `plex_path`        | When using `add_existing` or `radarr_add_all` Convert this part of the path to `radarr_path`.                                                                                                                                                                                                                      | ` `         |  :fontawesome-solid-circle-xmark:{ .red }  |
+| `radarr_path`      | When using `add_existing` or `radarr_add_all` Convert the `plex_path` part of the path to this.                                                                                                                                                                                                                    | ` `         |  :fontawesome-solid-circle-xmark:{ .red }  |
 
 ???+ tip
     
@@ -89,24 +89,24 @@ In this example we have two Radarr instances, standard and 4K, and four librarie
 ```
 libraries:
   Library01:     # this library uses the default radarr config
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
 
   Library02:     # this library overrides radarr root path and profile
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
     radarr:
       root_folder_path: /data/media/movies/tony
       quality_profile: Better
 
   Library03:      # this library overrides radarr quality profile
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
     radarr:
       quality_profile: Best
 
   Library04:      # this library uses the 4K radarr instance
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
     radarr:
       url: https://radarr-4k.bing.bang
@@ -115,7 +115,7 @@ libraries:
       quality_profile: Bestest
 
   Library05:      # movies get added by a custom script so they should get added to radarr-4k
-    metadata_path:
+    collection_files:
       - file: config/Movies.yml
     radarr:
       url: https://radarr-4k.bing.bang

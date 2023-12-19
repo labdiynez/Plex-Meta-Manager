@@ -24,7 +24,7 @@ This example is an advanced version of the library mappings which highlights som
     ```yaml
     libraries:
       Movies:
-        metadata_path:
+        collection_files:
           - file: config/Movies.yml
           - pmm: imdb
           - pmm: studio
@@ -34,11 +34,11 @@ This example is an advanced version of the library mappings which highlights som
           mass_critic_rating_update: tmdb
           split_duplicates: true
       TV Shows:
-        metadata_path:
+        collection_files:
           - file: config/TV Shows.yml
           - pmm: tmdb
           - pmm: network
-        overlay_path:
+        overlay_files:
           - remove_overlays: false
           - file: config/Overlays.yml
       TV Shows On Second Plex:
@@ -46,12 +46,12 @@ This example is an advanced version of the library mappings which highlights som
         plex:
           url: http://192.168.1.98:32400
           token: ####################
-        metadata_path:
+        collection_files:
           - file: config/TV Shows.yml
           - pmm: tmdb
           - pmm: network
       Anime:
-        metadata_path:
+        collection_files:
           - file: config/Anime.yml
           - pmm: myanimelist
         radarr:
@@ -79,20 +79,21 @@ This example is an advanced version of the library mappings which highlights som
 
 The available attributes for each library are as follows:
 
-| Attribute                                              | Values                                                                                                | Default                               |                              Required                              |
-|:-------------------------------------------------------|:------------------------------------------------------------------------------------------------------|:--------------------------------------|:------------------------------------------------------------------:|
-| [`library_name`](#library-name)                        | Library name (required only when trying to use multiple libraries with the same name)                 | Base Attribute Name                   |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`metadata_path`](#metadata-path)                      | Location of Metadata YAML files                                                                       | `/config/<<MAPPING_NAME>>.yml`        |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`overlay_path`](#overlay-path)                        | Location of Overlay YAML files                                                                        | None                                  |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`report_path`](#report-path)                          | Location to create the YAML file listing added, removed, filtered, and missing items for this library | `/config/<<MAPPING_NAME>>_report.yml` |        :fontawesome-solid-circle-xmark:{ .red }                   |
-| [`template_variables`](#library-template-variables)    | Library template variables to be applied to every Metadata and Overlay file run.                      | N/A                                   |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`schedule`](../builders/details/schedule.md)          | Use any [schedule option](../builders/details/schedule.md) to control when this library is run.       | daily                                 |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`operations`](operations.md)                          | Library Operations to run                                                                             | N/A                                   |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`settings`](settings.md)                              | Any `setting` attribute that overrides a global value                                                 | global                                |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`plex`](plex.md)                                      | Any `plex` attribute that overrides a global value                                                    | global                                | :fontawesome-solid-circle-check:{ .green } Either here or globally |
-| [`radarr`](radarr.md)                                  | Any `radarr` attribute that overrides a global value                                                  | global                                |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`sonarr`](sonarr.md)                                  | Any `sonarr` attribute that overrides a global value                                                  | global                                |             :fontawesome-solid-circle-xmark:{ .red }              |
-| [`tautulli`](tautulli.md)                              | Any `tautulli` attribute that overrides a global value                                                | global                                |             :fontawesome-solid-circle-xmark:{ .red }              |
+| Attribute                                           | Description                                                                                                                                                                                                           |
+|:----------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`library_name`](#library-name)                     | Used to specify the Library's name.<br>*required only when trying to use multiple libraries with the same name.*<br>**Values:** Library Name<br>**Default:** Base Attribute Name                                      |
+| [`collection_files`](#collection-file)              | Used to define [Collection Files](data/collections.md).<br>**Values:** Location of Collection YAML files.<br>**Default:** `/config/<<MAPPING_NAME>>.yml`                                                              |
+| [`metadata_files`](#metadata-file)                  | Used to define [Metadata Files](data/collections.md).<br>**Values:** Location of Metadata YAML files.                                                                                                                 |
+| [`overlay_files`](#overlay-file)                    | Used to define [Overlay Files](data/overlays.md) .<br>**Values:** Location of Overlay YAML files.                                                                                                                     |
+| [`report_path`](#report-path)                       | Location to create the YAML file listing added, removed, filtered, and missing items for this library.<br>**Values:** Location of the report file.<br>**Default:** `/config/<<MAPPING_NAME>>_report.yml`              |
+| [`template_variables`](#library-template-variables) | Library template variables to be applied to every Collection, Metadata, and Overlay file run.<br>**Values:** Values are specified by each particular file.                                                            |
+| [`schedule`](../builders/details/schedule.md)       | Used to schedule when this library is run.<br>**Values:** Any [schedule option](../builders/details/schedule.md)<br>**Default:** `daily`                                                                              |
+| [`operations`](operations.md)                       | Used to specify Library Operations to run.<br>**Values:** Any [Library Operation](operations.md)                                                                                                                      |
+| [`settings`](settings.md)                           | Used to override global `setting` values for this library only.<br>**Values:** Any `setting` attribute that overrides a global value.<br>**Default:** global value                                                    |
+| [`plex`](plex.md)                                   | Used to override global `plex` values for this library only. **`plex` Attribute is required either here or globally**<br>**Values:** Any `plex` attribute that overrides a global value.<br>**Default:** global value |
+| [`radarr`](radarr.md)                               | Used to override global `radarr` values for this library only.<br>**Values:** Any `radarr` attribute that overrides a global value.<br>**Default:** global value                                                      |
+| [`sonarr`](sonarr.md)                               | Used to override global `sonarr` values for this library only.<br>**Values:** Any `sonarr` attribute that overrides a global value.<br>**Default:** global value                                                      |
+| [`tautulli`](tautulli.md)                           | Used to override global `tautulli` values for this library only.<br>**Values:** Any `tautulli` attribute that overrides a global value.<br>**Default:** global value                                                  |
 
 ### Library Name
 
@@ -116,47 +117,65 @@ Each library that the user wants Plex Meta Manager to interact with must be docu
       token: ####################
     ```
     
-    * In this example, `"Movies01"`, `"TV Shows"`, and `"Anime"` will all use the global plex server (http://192.168.1.12:32400) which is defined using the global `plex` mapping. `"Movies02"` will use the plex server http://192.168.1.35:32400 which is defined under its `plex` mapping over the global mapping.
+    * In this example, `"Movies01"`, `"TV Shows"`, and `"Anime"` will all use the global plex server (**http://192.168.1.12:32400**) which is defined using the global `plex` mapping. `"Movies02"` will use the plex server **http://192.168.1.35:32400** which is defined under its `plex` mapping over the global mapping.
 
-### Metadata Path
+### Collection File
 
-The `metadata_path` attribute is used to define [Metadata Files](../metadata/metadata.md) by specifying the path type and path of the files that will be executed against the parent library. See [Path Types](paths.md) for how to define them.
+The `collection_files` attribute is used to define [Collection Files](data/collections.md) by specifying the path type and path of the files that will be executed against the parent library. See [Path Types](../builders/files.md#paths) for how to define them.
 
 ```yaml
 libraries:
   TV Shows:
-    metadata_path:
+    collection_files:
       - file: config/TV Shows.yml
       - pmm: tmdb
       - pmm: network
 ```
 
-By default, when `metadata_path` is missing Plex Meta Manager will look within the root PMM directory for a metadata file called `<MAPPING_NAME>.yml`. In this example, Plex Meta Manager will look for a file named `TV Shows.yml`.
+By default, when `collection_files` is missing Plex Meta Manager will look within the root PMM directory for a collection file called `<MAPPING_NAME>.yml`. In this example, Plex Meta Manager will look for a file named `TV Shows.yml`.
 
 ```yaml
 libraries:
   TV Shows:
 ```
 
-### Overlay Path
+### Metadata File
 
-The `overlay_path` attribute is used to define [Overlay Files](../metadata/overlay.md) by specifying the path type and path of the files that will be executed against the parent library. See [Path Types](paths.md) for how to define them.
+The `metadata_files` attribute is used to define Metadata Files by specifying the path of the files that will be executed against the parent library. See [Path Types](../builders/files.md#paths) for how to define them.
+
+???+ tip
+
+    As of Plex Meta Manager 1.20.0 "Metadata Files" refers to YAML files which refers to managing the metadata of items [movies, shows, music] within your library, and "Collection Files" refers to YAML files which define Collections.
+
+    In previous version of Plex Meta Manager, "Metadata Files" could mean either of the above.
+
 
 ```yaml
 libraries:
   TV Shows:
-    metadata_path:
+    metadata_files:
+      - file: config/metadata.yml
+```
+
+### Overlay File
+
+The `overlay_files` attribute is used to define [Overlay Files](data/overlays.md) by specifying the path type and path of the files that will be executed against the parent library. See [Path Types](../builders/files.md#paths) for how to define them.
+
+```yaml
+libraries:
+  TV Shows:
+    collection_files:
       - file: config/TV Shows.yml
-    overlay_path:
+    overlay_files:
       - file: config/Overlays.yml
 ```
 
-### Special Overlay Path Calls
+### Special Overlay File Calls
 
 #### Remove Overlays
 
     
-You can remove overlays from a library by adding `remove_overlays: true` to `overlay_path`.
+You can remove overlays from a library by adding `remove_overlays: true` to `overlay_files`.
 
 ???+ warning "Proceed with Caution"
 
@@ -165,16 +184,16 @@ You can remove overlays from a library by adding `remove_overlays: true` to `ove
     ```yaml
     libraries:
       TV Shows:
-        metadata_path:
+        collection_files:
           - file: config/TV Shows.yml
-        overlay_path:
+        overlay_files:
           - remove_overlays: true
           - file: config/Overlays.yml
     ```
 
 #### Reapply Overlays
 
-You can reapply overlays from a library by adding `reapply_overlays: true` to `overlay_path`. This will reapply overlays to every item in your library.
+You can reapply overlays from a library by adding `reapply_overlays: true` to `overlay_files`. This will reapply overlays to every item in your library.
 
 ???+ danger "Important Notice"
 
@@ -183,16 +202,16 @@ You can reapply overlays from a library by adding `reapply_overlays: true` to `o
     ```yaml
     libraries:
       TV Shows:
-        metadata_path:
+        collection_files:
           - file: config/TV Shows.yml
-        overlay_path:
+        overlay_files:
           - reapply_overlays: true
           - file: config/Overlays.yml
     ```
 
 #### Reset Overlays
 
-You can reset overlays from a library by adding `reset_overlays` to `overlay_path` and setting it to either `tmdb` or `plex` depending on where you want to source the images from. This will use the reset image when overlaying items in your library.
+You can reset overlays from a library by adding `reset_overlays` to `overlay_files` and setting it to either `tmdb` or `plex` depending on where you want to source the images from. This will use the reset image when overlaying items in your library.
 
 ???+ danger "Important Notice"
 
@@ -202,16 +221,16 @@ You can reset overlays from a library by adding `reset_overlays` to `overlay_pat
     ```yaml
     libraries:
       TV Shows:
-        metadata_path:
+        collection_files:
           - file: config/TV Shows.yml
-        overlay_path:
+        overlay_files:
           - reset_overlays: plex
           - file: config/Overlays.yml
     ```
 
 ### Schedule Overlays
 
-You can schedule all overlays from a library by adding `schedule` to `overlay_path` and setting it to [Any Schedule Option](../builders/details/schedule.md).
+You can schedule all overlays from a library by adding `schedule` to `overlay_files` and setting it to [Any Schedule Option](../builders/details/schedule.md).
     
 You cannot schedule individual Overlay Files, as any unscheduled overlay file will be removed each time PMM is run.
 
@@ -220,9 +239,9 @@ You cannot schedule individual Overlay Files, as any unscheduled overlay file wi
     ```yaml
     libraries:
       TV Shows:
-        metadata_path:
+        collection_files:
           - file: config/TV Shows.yml
-        overlay_path:
+        overlay_files:
           - schedule: weekly(sunday)
           - file: config/Overlays.yml
     ```

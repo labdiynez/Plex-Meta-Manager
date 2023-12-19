@@ -1,6 +1,6 @@
 # Award Separator Collections
 
-The `separator_award` Default Metadata File is used to create a seperator collection for Awards.
+The `separator_award` Default Collection File is used to create a seperator collection for Awards.
 
 ![](../images/awardseparator.png)
 
@@ -10,8 +10,8 @@ Supported Library Types: Movie, Show
 
 ## Collections Section 130
 
-| Collection          | Key         | Description                                                                 |
-|:--------------------|:------------|:----------------------------------------------------------------------------|
+| Collection          | Key         | Description                                                                    |
+|:--------------------|:------------|:-------------------------------------------------------------------------------|
 | `Award Collections` | `separator` | [Separator Collection](../separators.md) to denote the Section of Collections. |
 
 ## Config
@@ -21,10 +21,10 @@ The below YAML in your config.yml will create the collections:
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - pmm: separator_award
   TV Shows:
-    metadata_path:
+    collection_files:
       - pmm: separator_award
 ```
 
@@ -53,7 +53,7 @@ The below is an example config.yml extract with some Template Variables added in
 ```yaml
 libraries:
   Movies:
-    metadata_path:
+    collection_files:
       - pmm: separator_award
         template_variables:
           sep_style: purple #(1)!

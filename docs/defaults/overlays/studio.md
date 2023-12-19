@@ -15,16 +15,16 @@ The below YAML in your config.yml will create the overlays:
 ```yaml
 libraries:
   Movies:
-    overlay_path:
+    overlay_files:
       - pmm: studio
   TV Shows:
-    overlay_path:
+    overlay_files:
       - pmm: studio
 ```
 
 ## Template Variable Default Values
 
-Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy..
+Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
 
 | Variable            | Default / Values                                                                                 |
 |:--------------------|:-------------------------------------------------------------------------------------------------|
@@ -54,12 +54,12 @@ The below is an example config.yml extract with some Template Variables added in
 ```yaml
 libraries:
   Movies:
-    overlay_path:
+    overlay_files:
       - pmm: studio
         template_variables:
           vertical_offset: 390
   TV Shows:
-    overlay_path:
+    overlay_files:
       - pmm: studio
       - pmm: studio
         template_variables:

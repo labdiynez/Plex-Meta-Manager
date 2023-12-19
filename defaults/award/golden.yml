@@ -54,15 +54,19 @@ dynamic_collections:
     title_format: Golden Globe <<key_name>>
     template:
       - use_year_collections
-      - imdb
+      - imdb_award
       - shared
       - arr
       - custom
     template_variables:
-      imdb_list:
-        default: https://www.imdb.com/search/title/?release_date=<<key-1>>-01-01,<<key-1>>-12-31&groups=golden_globe_winner&sort=<<imdb_sort>>
-      imdb_sort:
-        default: moviemeter,asc
+      event_id:
+        default: ev0000292
+      event_year:
+        default: <<key>>
+      winning:
+        default: true
+      collection_order:
+        default: release
       image:
         default: award/golden/winner/<<key>>
       translation_key:

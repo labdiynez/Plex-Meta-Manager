@@ -21,13 +21,19 @@ dynamic_collections:
     title_format: Critics Choice Awards <<key_name>>
     template:
       - use_year_collections
-      - trakt
+      - imdb_award
       - shared
       - arr
       - custom
     template_variables:
-      trakt_list:
-        default: https://trakt.tv/users/pjcob/lists/<<key>>-<<url>>-choice
+      event_id:
+        default: ev0000133
+      event_year:
+        default: <<key>>
+      winning:
+        default: true
+      collection_order:
+        default: release
       image:
         default: award/choice/<<key>>
       translation_key:
