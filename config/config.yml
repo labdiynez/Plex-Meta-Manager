@@ -1,6 +1,6 @@
 libraries:
     Movies:                                                               # ชื่อไลบรารี่เพล็กซ์ เช่น Movies
-      overlay_path:
+      overlay_files:
       - pmm: resolution
         template_variables:
           use_edition: false
@@ -45,7 +45,7 @@ libraries:
         mass_critic_rating_update: imdb
         mass_audience_rating_update: tmdb
     # 4K:                                                               # กรณีใช้งานกับไลบรารี่อื่น ๆ เช่น 4K หากต้องการใช้งานลบโค้ดคอมเม้นออกครับ
-    #   overlay_path:
+    #   overlay_files:
     #   - pmm: resolution
     #     template_variables:
     #       use_edition: false
