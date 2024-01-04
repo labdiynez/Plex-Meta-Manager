@@ -143,7 +143,7 @@ smart_url_invalid = ["filters", "run_again", "sync_mode", "show_filtered", "show
 custom_sort_builders = [
     "plex_search", "plex_watchlist", "plex_pilots", "tmdb_list", "tmdb_popular", "tmdb_now_playing", "tmdb_top_rated",
     "tmdb_trending_daily", "tmdb_trending_weekly", "tmdb_discover", "reciperr_list", "trakt_chart", "trakt_userlist",
-    "tvdb_list", "imdb_chart", "imdb_list", "imdb_search", "imdb_watchlist", "stevenlu_popular", "anidb_popular",
+    "tvdb_list", "imdb_chart", "imdb_list", "imdb_award", "imdb_search", "imdb_watchlist", "stevenlu_popular", "anidb_popular",
     "tmdb_upcoming", "tmdb_airing_today", "tmdb_on_the_air", "trakt_list", "trakt_watchlist", "trakt_collection",
     "trakt_trending", "trakt_popular", "trakt_boxoffice", "trakt_collected_daily", "trakt_collected_weekly",
     "trakt_collected_monthly", "trakt_collected_yearly", "trakt_collected_all", "trakt_recommendations",
@@ -164,7 +164,7 @@ parts_collection_valid = [
      "filters", "plex_all", "plex_search", "trakt_list", "trakt_list_details", "collection_filtering", "collection_mode", "label", "visible_library", "limit",
      "visible_home", "visible_shared", "show_missing", "save_report", "missing_only_released", "server_preroll", "changes_webhooks",
      "item_lock_background", "item_lock_poster", "item_lock_title", "item_refresh", "item_refresh_delay", "imdb_list", "imdb_search",
-     "cache_builders", "url_theme", "file_theme", "item_label", "default_percent"
+     "cache_builders", "url_theme", "file_theme", "item_label", "default_percent", "non_item_remove_label"
 ] + episode_parts_only + summary_details + poster_details + background_details + string_details
 playlist_attributes = [
     "filters", "name_mapping", "show_filtered", "show_missing", "save_report", "allowed_library_types", "run_definition",
@@ -1124,7 +1124,7 @@ class CollectionBuilder:
                 if self.obj:
                     if check_url != self.library.smart_filter(self.obj):
                         self.library.update_smart_collection(self.obj, check_url)
-                        logger.info(f"Detail: Smart Collection updated to {check_url}")
+                        logger.info(f"Metadata: Smart Collection updated to {check_url}")
                 self.beginning_count = len(self.library.fetchItems(check_url)) if check_url else 0
             if self.obj:
                 self.exists = True
@@ -1485,8 +1485,11 @@ class CollectionBuilder:
                 else:
                     raise Failed(f"{self.Type} Error: imdb_id {value} must begin with tt")
         elif method_name == "imdb_list":
-            for imdb_dict in self.config.IMDb.validate_imdb_lists(self.Type, method_data, self.language):
-                self.builders.append((method_name, imdb_dict))
+            try:
+                for imdb_dict in self.config.IMDb.validate_imdb_lists(self.Type, method_data, self.language):
+                    self.builders.append((method_name, imdb_dict))
+            except Failed as e:
+                logger.error(e)
         elif method_name == "imdb_chart":
             for value in util.get_list(method_data):
                 if value in imdb.movie_charts and not self.library.is_movie:
@@ -1504,18 +1507,42 @@ class CollectionBuilder:
             for dict_data in util.parse(self.Type, method_name, method_data, datatype="listdict"):
                 dict_methods = {dm.lower(): dm for dm in dict_data}
                 event_id = util.parse(self.Type, "event_id", dict_data, parent=method_name, methods=dict_methods, regex=(r"(ev\d+)", "ev0000003"))
-                year_options = self.config.IMDb.get_event_years(event_id)
+                git_event, year_options = self.config.IMDb.get_event_years(event_id)
                 if not year_options:
                     raise Failed(f"{self.Type} Error: imdb_award event_id attribute: No event found at {imdb.base_url}/event/{event_id}")
-                event_year = util.parse(self.Type, "event_year", dict_data, parent=method_name, methods=dict_methods, options=year_options)
-                try:
-                    award_filters = util.parse(self.Type, "award_filter", dict_data, parent=method_name, methods=dict_methods, datatype="lowerlist")
-                except Failed:
-                    award_filters = []
-                try:
-                    category_filters = util.parse(self.Type, "category_filter", dict_data, parent=method_name, methods=dict_methods, datatype="lowerlist")
-                except Failed:
-                    category_filters = []
+                if "event_year" not in dict_methods:
+                    raise Failed(f"{self.Type} Error: imdb_award event_year attribute not found")
+                og_year = dict_data[dict_methods["event_year"]]
+                if not og_year:
+                    raise Failed(f"{self.Type} Error: imdb_award event_year attribute is blank")
+                if og_year == "all":
+                    event_year = "all"
+                elif not isinstance(og_year, list) and "-" in str(og_year) and len(str(og_year)) > 7:
+                    try:
+                        min_year, max_year = og_year.split("-")
+                        min_year = int(min_year)
+                        max_year = int(max_year) if max_year != "current" else None
+                        event_year = []
+                        for option in year_options:
+                            check = int(option.split("-")[0] if "-" in option else option)
+                            if check >= min_year and (max_year is None or check <= max_year):
+                                event_year.append(option)
+                    except ValueError:
+                        raise Failed(f"{self.Type} Error: imdb_award event_year attribute invalid: {og_year}")
+                else:
+                    event_year = util.parse(self.Type, "event_year", og_year, parent=method_name, datatype="strlist", options=year_options)
+                if (event_year == "all" or len(event_year) > 1) and not git_event:
+                    raise Failed(f"{self.Type} Error: Only specific events work when using multiple years. Event Options: [{', '.join([k for k in self.config.IMDb.events_validation])}]")
+                award_filters = []
+                if "award_filter" in dict_methods:
+                    if not dict_data[dict_methods["award_filter"]]:
+                        raise Failed(f"{self.Type} Error: imdb_award award_filter attribute is blank")
+                    award_filters = util.parse(self.Type, "award_filter", dict_data[dict_methods["award_filter"]], datatype="lowerlist")
+                category_filters = []
+                if "category_filter" in dict_methods:
+                    if not dict_data[dict_methods["category_filter"]]:
+                        raise Failed(f"{self.Type} Error: imdb_award category_filter attribute is blank")
+                    category_filters = util.parse(self.Type, "category_filter", dict_data[dict_methods["category_filter"]], datatype="lowerlist")
                 final_category = []
                 final_awards = []
                 if award_filters or category_filters:
@@ -1571,7 +1598,7 @@ class CollectionBuilder:
                                 if res:
                                     events.append(res.group(1))
                                 else:
-                                    raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern ev\d+ e.g. ev0000292 or be one of {', '.join([e for e in imdb.event_options])}")
+                                    raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern ev\\d+ e.g. ev0000292 or be one of {', '.join([e for e in imdb.event_options])}")
                         if events:
                             new_dictionary[lower_method] = events
                     elif search_attr == "company":
@@ -1584,7 +1611,7 @@ class CollectionBuilder:
                                 if res:
                                     companies.append(res.group(1))
                                 else:
-                                    raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern co\d+ e.g. co0098836 or be one of {', '.join([e for e in imdb.company_options])}")
+                                    raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern co\\d+ e.g. co0098836 or be one of {', '.join([e for e in imdb.company_options])}")
                         if companies:
                             new_dictionary[lower_method] = companies
                     elif search_attr == "content_rating":
@@ -1616,9 +1643,7 @@ class CollectionBuilder:
                                 countries.append(str(country))
                         if countries:
                             new_dictionary[lower_method] = countries
-                    elif search_attr == "keyword":
-                        new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="strlist", parent=method_name)
-                    elif search_attr == "language":
+                    elif search_attr in ["keyword", "language"]:
                         new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name)
                     elif search_attr == "cast":
                         casts = []
@@ -1627,7 +1652,7 @@ class CollectionBuilder:
                             if res:
                                 casts.append(res.group(1))
                             else:
-                                raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern nm\d+ e.g. nm00988366")
+                                raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern nm\\d+ e.g. nm00988366")
                         if casts:
                             new_dictionary[lower_method] = casts
                     elif search_attr == "series":
@@ -1637,7 +1662,7 @@ class CollectionBuilder:
                             if res:
                                 series.append(res.group(1))
                             else:
-                                raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern tt\d+ e.g. tt00988366")
+                                raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern tt\\d+ e.g. tt00988366")
                         if series:
                             new_dictionary[lower_method] = series
                     elif search_attr == "list":
@@ -1647,7 +1672,7 @@ class CollectionBuilder:
                             if res:
                                 lists.append(res.group(1))
                             else:
-                                raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern ls\d+ e.g. ls000024621")
+                                raise Failed(f"{method_name} {search_method} attribute: {search_data} must match pattern ls\\d+ e.g. ls000024621")
                         if lists:
                             new_dictionary[lower_method] = lists
                     elif search_attr == "adult":
@@ -2981,7 +3006,7 @@ class CollectionBuilder:
 
     def update_item_details(self):
         logger.info("")
-        logger.separator(f"Updating Details of the Items in {self.name} {self.Type}", space=False, border=False)
+        logger.separator(f"Updating Metadata of the Items in {self.name} {self.Type}", space=False, border=False)
         logger.info("")
 
         add_tags = self.item_details["item_label"] if "item_label" in self.item_details else None
@@ -3036,11 +3061,11 @@ class CollectionBuilder:
                         if key in prefs and getattr(item, key) != options[method_data]:
                             advance_edits[key] = options[method_data]
                 if advance_edits:
-                    logger.debug(f"Details Update: {advance_edits}")
+                    logger.debug(f"Metadata Update: {advance_edits}")
                     if self.library.edit_advance(item, advance_edits):
-                        logger.info(f"{item.title} Advanced Details Update Successful")
+                        logger.info(f"{item.title} Advanced Metadata Update Successful")
                     else:
-                        logger.error(f"{item.title} Advanced Details Update Failed")
+                        logger.error(f"{item.title} Advanced Metadata Update Failed")
 
             if "item_tmdb_season_titles" in self.item_details and item.ratingKey in self.library.show_rating_key_map:
                 try:
@@ -3114,7 +3139,7 @@ class CollectionBuilder:
     def update_details(self):
         updated_details = []
         logger.info("")
-        logger.separator(f"Updating Details of {self.name} {self.Type}", space=False, border=False)
+        logger.separator(f"Updating Metadata of {self.name} {self.Type}", space=False, border=False)
         logger.info("")
         if "summary" in self.summaries:                     summary = ("summary", self.summaries["summary"])
         elif "translation" in self.summaries:               summary = ("translation", self.summaries["translation"])
@@ -3140,24 +3165,24 @@ class CollectionBuilder:
         elif "tvdb_movie_details" in self.summaries:        summary = ("tvdb_movie_details", self.summaries["tvdb_movie_details"])
         elif "tvdb_show_details" in self.summaries:         summary = ("tvdb_show_details", self.summaries["tvdb_show_details"])
         elif "tmdb_show_details" in self.summaries:         summary = ("tmdb_show_details", self.summaries["tmdb_show_details"])
-        else:                                               summary = None
+        else:                                               summary = (None, None)
 
         if self.playlist:
-            if summary:
+            if summary[1]:
                 if str(summary[1]) != str(self.obj.summary):
                     try:
                         self.obj.edit(summary=str(summary[1]))
                         logger.info(f"Summary ({summary[0]}) | {summary[1]:<25}")
-                        logger.info("Details: have been updated")
+                        logger.info("Metadata: Update Completed")
                         updated_details.append("Metadata")
                     except NotFound:
-                        logger.error("Details: Failed to Update Please delete the collection and run again")
+                        logger.error("Metadata: Failed to Update Please delete the collection and run again")
                     logger.info("")
         else:
             self.library._reload(self.obj)
             #self.obj.batchEdits()
             batch_display = "Collection Metadata Edits"
-            if summary and str(summary[1]) != str(self.obj.summary):
+            if summary[1] and str(summary[1]) != str(self.obj.summary):
                 self.obj.editSummary(summary[1])
                 batch_display += f"\nSummary ({summary[0]}) | {summary[1]:<25}"
 
@@ -3194,10 +3219,10 @@ class CollectionBuilder:
             if len(batch_display) > 25:
                 try:
                     #self.obj.saveEdits()
-                    logger.info("Details: have been updated")
+                    logger.info("Metadata: Update Completed")
                     updated_details.append("Metadata")
                 except NotFound:
-                    logger.error("Details: Failed to Update Please delete the collection and run again")
+                    logger.error("Metadata: Failed to Update Please delete the collection and run again")
                 logger.info("")
 
             advance_update = False

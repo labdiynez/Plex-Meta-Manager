@@ -9,7 +9,7 @@ logger = util.logger
 all_auto = ["genre", "number", "custom"]
 ms_auto = [
     "actor", "year", "content_rating", "original_language", "tmdb_popular_people", "trakt_user_lists", "studio",
-    "trakt_liked_lists", "trakt_people_list", "subtitle_language", "audio_language", "resolution", "decade", "imdb_award"
+    "trakt_liked_lists", "trakt_people_list", "subtitle_language", "audio_language", "resolution", "decade", "imdb_awards"
 ]
 auto = {
     "Movie": ["tmdb_collection", "edition", "country", "director", "producer", "writer"] + all_auto + ms_auto,
@@ -833,6 +833,7 @@ class MetadataFile(DataFile):
                         default_template = None
                         auto_list = {}
                         all_keys = {}
+                        extra_template_vars = {}
                         dynamic_data = None
                         def _check_dict(check_dict):
                             for ck, cv in check_dict.items():
@@ -856,7 +857,7 @@ class MetadataFile(DataFile):
                                         all_keys[str(item.year)] = str(item.year)
                             auto_list = {str(k): f"{k}s" for k in addons if str(k) not in exclude and f"{k}s" not in exclude}
                             default_template = {"smart_filter": {"limit": 50, "sort_by": "critic_rating.desc", "any": {"year": "<<value>>"}}}
-                            default_title_format = "Best <<library_type>>s of <<key_name>>"
+                            default_title_format = "Best <<library_type>>s of the <<key_name>>"
                         elif auto_type in ["genre", "mood", "style", "album_genre", "album_mood", "album_style", "track_mood", "country", "studio", "edition", "network", "year", "episode_year", "decade", "content_rating", "subtitle_language", "audio_language", "resolution"]:
                             search_tag = auto_type_translation[auto_type] if auto_type in auto_type_translation else auto_type
                             if library.is_show and auto_type in ["resolution", "subtitle_language", "audio_language"]:
@@ -890,7 +891,15 @@ class MetadataFile(DataFile):
                                 default_title_format = "<<key_name>> <<library_type>>s"
                             else:
                                 default_template = {"smart_filter": {"limit": 50, "sort_by": "critic_rating.desc", "any": {f"{auto_type}.is" if auto_type == "studio" else auto_type: "<<value>>"}}}
-                                default_title_format = "Best <<library_type>>s of <<key_name>>" if auto_type in ["year", "decade", "episode_year"] else "Top <<key_name>> <<library_type>>s"
+                                if auto_type.startswith("episode"):
+                                    default_template["builder_level"] = "episode"
+                                    default_title_format = "Best Episodes of <<key_name>>"
+                                elif auto_type == "year":
+                                    default_title_format = "Best <<library_type>>s of <<key_name>>"
+                                elif auto_type == "decade":
+                                    default_title_format = "Best <<library_type>>s of the <<key_name>>"
+                                else:
+                                    default_title_format = "Top <<key_name>> <<library_type>>s"
                         elif auto_type == "tmdb_collection":
                             all_items = library.get_all()
                             for i, item in enumerate(all_items, 1):
@@ -929,12 +938,11 @@ class MetadataFile(DataFile):
                             default_title_format = "<<key_name>> <<library_type>>s"
                         elif auto_type in ["actor", "director", "writer", "producer"]:
                             people = {}
-                            if "data" not in methods:
-                                raise Failed(f"Config Error: {map_name} data attribute not found")
-                            elif "data" in self.temp_vars:
-                                dynamic_data = util.parse("Config", "data", self.temp_vars["data"], datatype="dict")
-                            else:
-                                dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="dict")
+                            dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="dict")
+                            if "data" in self.temp_vars:
+                                temp_data = util.parse("Config", "data", self.temp_vars["data"], datatype="dict")
+                                for k, v in temp_data.items():
+                                    dynamic_data[k] = v
                             person_methods = {am.lower(): am for am in dynamic_data}
                             if "actor_depth" in person_methods:
                                 person_methods["depth"] = person_methods.pop("actor_depth")
@@ -978,37 +986,62 @@ class MetadataFile(DataFile):
                                     all_keys[role["name"]] = role["name"]
                                     person_count += 1
                             default_template = {"plex_search": {"any": {auto_type: "<<value>>"}}}
-                        elif auto_type == "imdb_award":
-                            if "data" not in methods:
-                                raise Failed(f"Config Error: {map_name} data attribute not found")
-                            elif "data" in self.temp_vars:
-                                dynamic_data = util.parse("Config", "data", self.temp_vars["data"], datatype="dict")
-                            else:
-                                dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="dict")
-                            lower_methods = {am.lower(): am for am in dynamic_data}
-                            person_depth = util.parse("Config", "event_id", dynamic_data, parent=f"{map_name} data",
-                                                      methods=lower_methods, datatype="int", default=3, minimum=1)
-                            person_minimum = util.parse("Config", "minimum", dynamic_data, parent=f"{map_name} data",
-                                                        methods=lower_methods, datatype="int", default=3,
-                                                        minimum=1) if "minimum" in lower_methods else None
-                            person_limit = util.parse("Config", "limit", dynamic_data, parent=f"{map_name} data",
-                                                      methods=lower_methods, datatype="int", default=25,
-                                                      minimum=1) if "limit" in lower_methods else None
+                        elif auto_type == "imdb_awards":
+                            dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="dict")
+                            if "data" in self.temp_vars:
+                                temp_data = util.parse("Config", "data", self.temp_vars["data"], datatype="dict")
+                                for k, v in temp_data.items():
+                                    dynamic_data[k] = v
+                            award_methods = {am.lower(): am for am in dynamic_data}
+                            event_id = util.parse("Config", "event_id", dynamic_data, parent=f"{map_name} data", methods=award_methods, regex=(r"(ev\d+)", "ev0000003"))
+                            extra_template_vars["event_id"] = event_id
+                            if event_id not in self.config.IMDb.events_validation:
+                                raise Failed(f"Config Error: {map_name} data only specific Event IDs work with imdb_awards. Event Options: [{', '.join([k for k in self.config.IMDb.events_validation])}]")
+                            _, event_years = self.config.IMDb.get_event_years(event_id)
+                            year_options = [event_years[len(event_years) - i] for i in range(1, len(event_years) + 1)]
 
+                            def get_position(attr, pos_add=0):
+                                if attr not in award_methods:
+                                    return 0 if attr == "starting" else len(year_options)
+                                position_value = str(dynamic_data[award_methods[attr]])
+                                if not position_value:
+                                    raise Failed(f"Config Error: {map_name} data {attr} attribute is blank")
+                                if position_value.startswith(("first", "latest", "current_year")):
+                                    int_values = position_value.split("+" if position_value.startswith("first") else "-")
+                                    try:
+                                        if len(int_values) == 1:
+                                            return 0 if position_value.startswith("first") else len(year_options)
+                                        else:
+                                            return int(int_values[1].strip()) * (1 if position_value.startswith("first") else -1)
+                                    except ValueError:
+                                        raise Failed(f"Config Error: {map_name} data {attr} attribute modifier invalid '{int_values[1]}'")
+                                elif position_value in year_options:
+                                    return year_options.index(position_value) + pos_add
+                                else:
+                                    raise Failed(f"Config Error: {map_name} data {attr} attribute invalid: {position_value}")
+
+                            found_options = year_options[get_position("starting"):get_position("ending")]
+
+                            if not found_options:
+                                raise Failed(f"Config Error: {map_name} data starting/ending range found no valid events")
+                            for option in event_years:
+                                all_keys[option] = option
+                                if option not in exclude and option in found_options:
+                                    auto_list[option] = option
+                            default_template = {"imdb_award": {"event_id": "<<event_id>>", "event_year": "<<value>>", "winning": True}}
                         elif auto_type == "number":
-                            if "data" not in methods:
-                                raise Failed(f"Config Error: {map_name} data attribute not found")
-                            elif "data" in self.temp_vars:
-                                dynamic_data = util.parse("Config", "data", self.temp_vars["data"], datatype="dict")
-                            else:
-                                dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="dict")
+                            dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="dict")
+                            if "data" in self.temp_vars:
+                                temp_data = util.parse("Config", "data", self.temp_vars["data"], datatype="dict")
+                                for k, v in temp_data.items():
+                                    dynamic_data[k] = v
                             number_methods = {nm.lower(): nm for nm in dynamic_data}
                             if "starting" in number_methods and str(dynamic_data[number_methods["starting"]]).startswith("current_year"):
                                 year_values = str(dynamic_data[number_methods["starting"]]).split("-")
                                 try:
                                     starting = datetime.now().year - (0 if len(year_values) == 1 else int(year_values[1].strip()))
                                 except ValueError:
-                                    raise Failed(f"Config Error: starting attribute modifier invalid '{year_values[1]}'")
+                                    raise Failed(f"Config Error: {map_name} data starting attribute modifier invalid '{year_values[1]}'")
                             else:
                                 starting = util.parse("Config", "starting", dynamic_data, parent=f"{map_name} data", methods=number_methods, datatype="int", default=0, minimum=0)
                             if "ending" in number_methods and str(dynamic_data[number_methods["ending"]]).startswith("current_year"):
@@ -1016,7 +1049,7 @@ class MetadataFile(DataFile):
                                 try:
                                     ending = datetime.now().year - (0 if len(year_values) == 1 else int(year_values[1].strip()))
                                 except ValueError:
-                                    raise Failed(f"Config Error: ending attribute modifier invalid '{year_values[1]}'")
+                                    raise Failed(f"Config Error: {map_name} data ending attribute modifier invalid '{year_values[1]}'")
                             else:
                                 ending = util.parse("Config", "ending", dynamic_data, parent=f"{map_name} data", methods=number_methods, datatype="int", default=0, minimum=1)
                             increment = util.parse("Config", "increment", dynamic_data, parent=f"{map_name} data", methods=number_methods, datatype="int", default=1, minimum=1) if "increment" in number_methods else 1
@@ -1029,25 +1062,47 @@ class MetadataFile(DataFile):
                                     auto_list[str(current)] = str(current)
                                 current += increment
                         elif auto_type == "custom":
-                            if "data" not in methods:
-                                raise Failed(f"Config Error: {map_name} data attribute not found")
-                            for k, v in util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="strdict").items():
+                            if "data" in self.temp_vars:
+                                dynamic_data = util.parse("Config", "data", self.temp_vars["data"], datatype="strdict")
+                            else:
+                                dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="strdict")
+                            if "remove_data" in self.temp_vars:
+                                for k in util.parse("Config", "remove_data", self.temp_vars["remove_data"], datatype="strlist"):
+                                    if k in dynamic_data:
+                                        dynamic_data.pop(k)
+                            if "append_data" in self.temp_vars:
+                                for k, v in util.parse("Config", "append_data", self.temp_vars["append_data"], datatype="strdict").items():
+                                    dynamic_data[k] = v
+                            for k, v in dynamic_data.items():
                                 all_keys[k] = v
                                 if k not in exclude and v not in exclude:
                                     auto_list[k] = v
-                        elif auto_type == "trakt_user_lists":
-                            dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="list")
-                            for option in dynamic_data:
-                                _check_dict({self.config.Trakt.build_user_url(u[0], u[1]): u[2] for u in self.config.Trakt.all_user_lists(option)})
                         elif auto_type == "trakt_liked_lists":
                             _check_dict(self.config.Trakt.all_liked_lists())
                         elif auto_type == "tmdb_popular_people":
-                            dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="int", minimum=1)
+                            if "data" in self.temp_vars:
+                                dynamic_data = util.parse("Config", "data", self.temp_vars["data"], datatype="int", minimum=1)
+                            else:
+                                dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="int", minimum=1)
                             _check_dict(self.config.TMDb.get_popular_people(dynamic_data))
-                        elif auto_type == "trakt_people_list":
-                            dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="list")
+                        elif auto_type in ["trakt_people_list", "trakt_user_lists"]:
+                            if "data" in self.temp_vars:
+                                dynamic_data = util.parse("Config", "data", self.temp_vars["data"], datatype="strlist")
+                            else:
+                                dynamic_data = util.parse("Config", "data", dynamic, parent=map_name, methods=methods, datatype="strlist")
+                            if "remove_data" in self.temp_vars:
+                                for k in util.parse("Config", "remove_data", self.temp_vars["remove_data"], datatype="strlist"):
+                                    if k in dynamic_data:
+                                        dynamic_data.remove(k)
+                            if "append_data" in self.temp_vars:
+                                for k in util.parse("Config", "append_data", self.temp_vars["append_data"], datatype="strlist"):
+                                    if k not in dynamic_data:
+                                        dynamic_data.append(k)
                             for option in dynamic_data:
-                                _check_dict(self.config.Trakt.get_people(option))
+                                if auto_type == "trakt_user_lists":
+                                    _check_dict({self.config.Trakt.build_user_url(u[0], u[1]): u[2] for u in self.config.Trakt.all_user_lists(option)})
+                                else:
+                                    _check_dict(self.config.Trakt.get_people(option))
                         else:
                             raise Failed(f"Config Error: {map_name} type attribute {dynamic[methods['type']]} invalid")
 
@@ -1101,7 +1156,11 @@ class MetadataFile(DataFile):
                                 key_name_override.pop(k)
                             else:
                                 test_override.append(v)
-                        test = util.parse("Config", "test", dynamic, parent=map_name, methods=methods, default=False, datatype="bool") if "test" in methods else False
+                        test = False
+                        if "test" in self.temp_vars:
+                            test = util.parse("Config", "test", self.temp_vars["test"], parent="template_variables", datatype="bool")
+                        elif "test" in methods:
+                            test = util.parse("Config", "test", dynamic, parent=map_name, methods=methods, default=False, datatype="bool")
                         sync = False
                         if "sync" in self.temp_vars:
                             sync = util.parse("Config", "sync", self.temp_vars["sync"], parent="template_variables", datatype="bool")
@@ -1208,6 +1267,9 @@ class MetadataFile(DataFile):
                                     og_call[k] = v[key]
                                 elif "default" in v:
                                     og_call[k] = v["default"]
+                            for k, v in extra_template_vars.items():
+                                if k not in og_call:
+                                    og_call[k] = v
                             template_call = []
                             for template_name in template_names:
                                 new_call = og_call.copy()
@@ -1680,7 +1742,7 @@ class MetadataFile(DataFile):
                                 current_item.editTitle(final_value)
                             else:
                                 current_item.editField(key, final_value)
-                            logger.info(f"Detail: {name} updated to {final_value}")
+                            logger.info(f"Metadata: {name} updated to {final_value}")
                             updated = True
                     except Failed as ee:
                         logger.error(ee)
@@ -1692,9 +1754,9 @@ class MetadataFile(DataFile):
             if updated:
                 try:
                     #current_item.saveEdits()
-                    logger.info(f"{description} Details Update Successful")
+                    logger.info(f"{description} Metadata Update Successful")
                 except BadRequest:
-                    logger.error(f"{description} Details Update Failed")
+                    logger.error(f"{description} Metadata Update Failed")
 
         tmdb_item = None
         tmdb_is_movie = None
@@ -1776,15 +1838,15 @@ class MetadataFile(DataFile):
                             logger.error(f"{self.type_str} Error: {meta[methods[advance_edit]]} {advance_edit} attribute invalid")
                         elif ad_key in prefs and getattr(item, ad_key) != options[method_data]:
                             advance_edits[ad_key] = options[method_data]
-                            logger.info(f"Detail: {advance_edit} updated to {method_data}")
+                            logger.info(f"Metadata: {advance_edit} updated to {method_data}")
                     else:
                         logger.error(f"{self.type_str} Error: {advance_edit} attribute is blank")
             if advance_edits:
                 if self.library.edit_advance(item, advance_edits):
                     updated = True
-                    logger.info(f"{mapping_name} Advanced Details Update Successful")
+                    logger.info(f"{mapping_name} Advanced Metadata Update Successful")
                 else:
-                    logger.error(f"{mapping_name} Advanced Details Update Failed")
+                    logger.error(f"{mapping_name} Advanced Metadata Update Failed")
 
         style_data = None
         if "style_data" in methods:
@@ -1794,7 +1856,7 @@ class MetadataFile(DataFile):
         asset_location, folder_name, ups = self.library.item_images(item, meta, methods, initial=True, asset_directory=self.asset_directory + self.library.asset_directory if self.asset_directory else None, style_data=style_data)
         if ups:
             updated = True
-        logger.info(f"{self.library.type}: {mapping_name} Details Update {'Complete' if updated else 'Not Needed'}")
+        logger.info(f"{self.library.type}: {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")
 
         update_seasons = self.update_seasons
         if "update_seasons" in methods and self.library.is_show:
@@ -1861,7 +1923,7 @@ class MetadataFile(DataFile):
                                                              folder_name=folder_name, style_data=season_style_data)
                         if ups:
                             updated = True
-                        logger.info(f"Season {season_id} of {mapping_name} Details Update {'Complete' if updated else 'Not Needed'}")
+                        logger.info(f"Season {season_id} of {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")
 
                     if "episodes" in season_methods and update_episodes and self.library.is_show:
                         if not season_dict[season_methods["episodes"]]:
@@ -1912,7 +1974,7 @@ class MetadataFile(DataFile):
                                                                      style_data=episode_style_data)
                                 if ups:
                                     updated = True
-                                logger.info(f"Episode {episode_id} in Season {season_id} of {mapping_name} Details Update {'Complete' if updated else 'Not Needed'}")
+                                logger.info(f"Episode {episode_id} in Season {season_id} of {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")
 
         if "episodes" in methods and update_episodes and self.library.is_show:
             if not meta[methods["episodes"]]:
@@ -1955,7 +2017,7 @@ class MetadataFile(DataFile):
                                                          image_name=episode.seasonEpisode.upper(), folder_name=folder_name)
                     if ups:
                         updated = True
-                    logger.info(f"Episode S{season_id}E{episode_id} of {mapping_name} Details Update {'Complete' if updated else 'Not Needed'}")
+                    logger.info(f"Episode S{season_id}E{episode_id} of {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")
 
         if "albums" in methods and self.library.is_music:
             if not meta[methods["albums"]]:
@@ -1996,7 +2058,7 @@ class MetadataFile(DataFile):
                                                          title=f"{item.title} Album {album.title}", image_name=album.title, folder_name=folder_name)
                     if ups:
                         updated = True
-                    logger.info(f"Album: {title} of {mapping_name} Details Update {'Complete' if updated else 'Not Needed'}")
+                    logger.info(f"Album: {title} of {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")
 
                     if "tracks" in album_methods:
                         if not album_dict[album_methods["tracks"]]:
@@ -2035,7 +2097,7 @@ class MetadataFile(DataFile):
                                 if not title:
                                     title = track.title
                                 finish_edit(track, f"Track: {title}")
-                                logger.info(f"Track: {track_num} on Album: {title} of {mapping_name} Details Update {'Complete' if updated else 'Not Needed'}")
+                                logger.info(f"Track: {track_num} on Album: {title} of {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")
 
         if "f1_season" in methods and self.library.is_show:
             f1_season = None
@@ -2090,7 +2152,7 @@ class MetadataFile(DataFile):
                                                          image_name=f"Season{'0' if season.seasonNumber < 10 else ''}{season.seasonNumber}", folder_name=folder_name)
                     if ups:
                         updated = True
-                    logger.info(f"Race {season.seasonNumber} of F1 Season {f1_season}: Details Update {'Complete' if updated else 'Not Needed'}")
+                    logger.info(f"Race {season.seasonNumber} of F1 Season {f1_season}: Metadata Update {'Complete' if updated else 'Not Needed'}")
                     for episode in season.episodes():
                         if len(episode.locations) > 0:
                             ep_title, session_date = race.session_info(episode.locations[0], sprint_weekend)
@@ -2102,7 +2164,7 @@ class MetadataFile(DataFile):
                                                                  image_name=episode.seasonEpisode.upper(), folder_name=folder_name)
                             if ups:
                                 updated = True
-                            logger.info(f"Session {episode.title}: Details Update {'Complete' if updated else 'Not Needed'}")
+                            logger.info(f"Session {episode.title}: Metadata Update {'Complete' if updated else 'Not Needed'}")
                 else:
                     logger.warning(f"Ergast Error: No Round: {season.seasonNumber} for Season {f1_season}")
 

@@ -83,6 +83,7 @@ class Library(ABC):
         self.ignore_ids = params["ignore_ids"]
         self.ignore_imdb_ids = params["ignore_imdb_ids"]
         self.assets_for_all = params["assets_for_all"]
+        self.assets_for_all_collections = False
         self.delete_collections = params["delete_collections"]
         self.mass_studio_update = params["mass_studio_update"]
         self.mass_genre_update = params["mass_genre_update"]
@@ -207,12 +208,12 @@ class Library(ABC):
                             item.removeLabel("Overlay")
                     self._upload_image(item, poster)
                     poster_uploaded = True
-                    logger.info(f"Detail: {poster.attribute} updated {poster.message}")
+                    logger.info(f"Metadata: {poster.attribute} updated {poster.message}")
                 elif self.show_asset_not_needed:
-                    logger.info(f"Detail: {poster.prefix}poster update not needed")
+                    logger.info(f"Metadata: {poster.prefix}poster update not needed")
             except Failed:
                 logger.stacktrace()
-                logger.error(f"Detail: {poster.attribute} failed to update {poster.message}")
+                logger.error(f"Metadata: {poster.attribute} failed to update {poster.message}")
 
         background_uploaded = False
         if background is not None:
@@ -223,12 +224,12 @@ class Library(ABC):
                 if not image_compare or str(background.compare) != str(image_compare):
                     self._upload_image(item, background)
                     background_uploaded = True
-                    logger.info(f"Detail: {background.attribute} updated {background.message}")
+                    logger.info(f"Metadata: {background.attribute} updated {background.message}")
                 elif self.show_asset_not_needed:
-                    logger.info(f"Detail: {background.prefix}background update not needed")
+                    logger.info(f"Metadata: {background.prefix}background update not needed")
             except Failed:
                 logger.stacktrace()
-                logger.error(f"Detail: {background.attribute} failed to update {background.message}")
+                logger.error(f"Metadata: {background.attribute} failed to update {background.message}")
         if self.config.Cache:
             if poster_uploaded:
                 self.config.Cache.update_image_map(item.ratingKey, self.image_table_name, "", poster.compare if poster else "")
