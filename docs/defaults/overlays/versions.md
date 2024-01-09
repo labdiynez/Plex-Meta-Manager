@@ -1,6 +1,7 @@
 # Versions Overlay
 
-The `versions` Default Overlay File is used to create an overlay based on if there's multiple versions on each item within your library.
+The `versions` Default Overlay File is used to create an overlay based on if there's multiple versions on each item 
+within your library.
 
 ![](images/version.png)
 
@@ -30,42 +31,47 @@ libraries:
 
 ## Template Variables
 
-Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
+Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to 
+make your own local copy.
 
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified will use its default value if it has one if not it's just ignored.
+Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults 
+work. Any value not specified will use its default value if it has one if not it's just ignored.
 
-??? info "Click to expand"
+??? abstract "Variable Lists (click to expand)"
 
+    * **File-Specific Template Variables** are variables available specifically for this PMM Defaults file.
+
+    * **Overlay Template Variables** are additional variables shared across the PMM Overlay Defaults.
+
+    ??? example "Default Template Variable Values (click to expand)"
+
+        | Variable            | Default          |
+        |:--------------------|:-----------------|
+        | `horizontal_offset` | `15`/`235`       |
+        | `horizontal_align`  | `right`/`center` |
+        | `vertical_offset`   | `1050`/`15`      |
+        | `vertical_align`    | `top`            |
+        | `back_color`        | `#00000099`      |
+        | `back_radius`       | `30`             |
+        | `back_width`        | `105`            |
+        | `back_height`       | `105`            |
+        
     === "File-Specific Template Variables"
 
-        The below template variables are available specifically for this PMM Defaults file.
-
-        Be sure to also check out the "Overlay Template Variables" tab for additional variables.
-
-        | Variable            | Default / Values                                                                |
-        |:--------------------|:--------------------------------------------------------------------------------|
-        | `horizontal_offset` | `15`/`235`                                                                      |
-        | `horizontal_align`  | `right`/`center`                                                                |
-        | `vertical_offset`   | `1050`/`15`                                                                     |
-        | `vertical_align`    | `top`                                                                           |
-        | `back_color`        | `#00000099`                                                                     |
-        | `back_radius`       | `30`                                                                            |
-        | `back_width`        | `105`                                                                           |
-        | `back_height`       | `105`                                                                           |
-        | `builder_level`     | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode` |
+        | Variable        | Description & Values                                                            |
+        |:----------------|:--------------------------------------------------------------------------------|
+        | `builder_level` | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode` |
 
     === "Overlay Template Variables"
 
         {%
            include-markdown "../overlay_variables.md"
         %}
-
-
-    ### Example Template Variable Amendments
+    
+???+ example "Example Template Variable Amendments"
 
     The below is an example config.yml extract with some Template Variables added in to change how the file works.
-
-
+    
     ```yaml
     libraries:
       Movies:

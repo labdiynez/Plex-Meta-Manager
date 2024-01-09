@@ -2,7 +2,7 @@
 #                            Seasonal Collections                            #
 #                 Created by Yozora, Bullmoose20, & Sohjiro                  #
 #          EDITING THIS FILE MAY CAUSE PULLING NEW UPDATES TO FAIL           #
-#      https://metamanager.wiki/en/latest/defaults/movie/seasonal.html       #
+#         https://metamanager.wiki/en/latest/defaults/movie/seasonal         #
 ##############################################################################
 
 external_templates:
@@ -101,6 +101,7 @@ dynamic_collections:
       - shared
       - arr
     template_variables:
+      # check1
       emoji:
         years: "🎊 "
         valentine: "💘 "
@@ -121,6 +122,7 @@ dynamic_collections:
         latinx: "🪅 "
         women: "🚺 "
         black_history: "✊ 🏿 "
+      # check2
       schedule:
         years: range(12/26-01/04)
         valentine: range(02/01-02/29)
@@ -141,6 +143,7 @@ dynamic_collections:
         lgbtq: range(05/31-06/30)
         latinx: range(09/15-10/15)
         women: range(02/28-03/31)
+      # check3
       imdb_list:
         years: https://www.imdb.com/list/ls066838460/
         valentine:
@@ -167,10 +170,13 @@ dynamic_collections:
           - https://www.imdb.com/list/ls000835734/
           - https://www.imdb.com/list/ls091597850/
         christmas: https://www.imdb.com/list/ls000096828/
+      # check4
       imdb_search:
         women:
-          - keyword.any: women in film, womens rights, womens suffrage
-            limit: 500
+          keyword.any: women in film, womens rights, womens suffrage
+          sort_by: rating.desc
+          limit: 500
+      # check5
       tmdb_collection:
         halloween:
           - 185103    # Hotel Transylvania
@@ -183,9 +189,11 @@ dynamic_collections:
           - 8091      # Alien Collection
           - 2980      # Ghostbusters
           - 751156    # Hocus Pocus
+      # check6
       tmdb_movie:
         halloween:
           - 23437    # A Nightmare on Elm Street (2010)
+      # check7
       mdblist_list:
         aapi:
           - https://mdblist.com/lists/plexmetamanager/asian-american-pacific-islander-heritage-month
@@ -195,10 +203,12 @@ dynamic_collections:
           - https://mdblist.com/lists/plexmetamanager/lgbtq-pride-month
         latinx:
           - https://mdblist.com/lists/plexmetamanager/latinx-heritage-month
+      # check8
       trakt_list:
         black_history:
           - https://trakt.tv/users/hoochzilla/lists/black-cinema?display=movie&sort=title,asc
           - https://trakt.tv/users/bluephi8/lists/black-history?display=movie&sort=title,asc
+      # check9
       visible_home:
         default: true
       visible_shared:

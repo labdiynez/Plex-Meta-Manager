@@ -1,6 +1,8 @@
 # Audio/Subtitle Language Flags Overlay
 
-The `languages` Default Overlay File is used to create an overlay of a flag and [ISO 639-1 Code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) based on the audio/subtitle languages available on each item within your library.
+The `languages` Default Overlay File is used to create an overlay of a flag and [ISO 639-1 
+Code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) based on the audio/subtitle languages available on each 
+item within your library.
 
 ![](images/language.png)
 
@@ -86,17 +88,17 @@ Supported library types: Movie & Show
 | Luxembourgish            | `lb`  | `2`    | `lu`         |  :fontawesome-solid-circle-xmark:{ .red }  |
 | Mossi                    | `mos` | `1`    | `bf`         |  :fontawesome-solid-circle-xmark:{ .red }  |
 
-### Square Style
+??? tip "Square Style (click to expand)"
 
-Below is a screenshot of the alternative Square (`square`) style which can be set via the `style` template variable.
+    Below is a screenshot of the alternative Square (`square`) style which can be set via the `style` template variable.
+    
+    ![](images/language2.png)
 
-![](images/language2.png)
+??? tip "Half Style (click to expand)"
 
-### Half Style
-
-Below is a screenshot of the alternative Half (`half`) style which can be set via the `style` template variable.
-
-![](images/language3.png)
+    Below is a screenshot of the alternative Half (`half`) style which can be set via the `style` template variable.
+    
+    ![](images/language3.png)
 
 ## Config
 
@@ -120,31 +122,40 @@ libraries:
 
 ## Template Variables
 
-Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
+Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to 
+make your own local copy.
 
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified will use its default value if it has one if not it's just ignored.
+Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults 
+work. Any value not specified will use its default value if it has one if not it's just ignored.
 
-??? info "Click to expand"
+??? abstract "Variable Lists (click to expand)"
 
+    * **File-Specific Template Variables** are variables available specifically for this PMM Defaults file.
+
+    * **Overlay Template Variables** are additional variables shared across the PMM Overlay Defaults.
+
+    * **Overlay Text Template Variables** are additional variables shared across the PMM Text Overlay Defaults.
+
+    ??? example "Default Template Variable Values (click to expand)"
+
+        | Variable            | Default                      |
+        |:--------------------|:-----------------------------|
+        | `horizontal_offset` | `15`/`206`/`397`/`588`/`779` |
+        | `horizontal_align`  | `left`/`right`/`center`      |
+        | `vertical_offset`   | `15`/`76`/`137`/`198`/`259`  |
+        | `vertical_align`    | `top`/`bottom`/`center`      |
+        | `back_color`        | `#00000099`                  |
+        | `back_radius`       | `26`/` `                     |
+        | `back_width`        | `190`                        |
+        | `back_height`       | `105`                        |
+        | `back_align`        | `left`/`right`               |
+        | `font`              | `fonts/Inter-Bold.ttf`       |
+        | `font_size`         | `50`                         |
+        
     === "File-Specific Template Variables"
 
-        The below template variables are available specifically for this PMM Defaults file.
-
-        Be sure to also check out the "Overlay Template Variables" tab for additional variables.
-
-        | Variable                      | Default / Values                                                                                                                                                                                                                                                                                                              |
+        | Variable                      | Description & Values                                                                                                                                                                                                                                                                                                          |
         |:------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-        | `horizontal_offset`           | `15`/`206`/`397`/`588`/`779`                                                                                                                                                                                                                                                                                                  |
-        | `horizontal_align`            | `left`/`right`/`center`                                                                                                                                                                                                                                                                                                       |
-        | `vertical_offset`             | `15`/`76`/`137`/`198`/`259`                                                                                                                                                                                                                                                                                                   |
-        | `vertical_align`              | `top`/`bottom`/`center`                                                                                                                                                                                                                                                                                                       |
-        | `back_color`                  | `#00000099`                                                                                                                                                                                                                                                                                                                   |
-        | `back_radius`                 | `26`/` `                                                                                                                                                                                                                                                                                                                      |
-        | `back_width`                  | `190`                                                                                                                                                                                                                                                                                                                         |
-        | `back_height`                 | `105`                                                                                                                                                                                                                                                                                                                         |
-        | `back_align`                  | `left`/`right`                                                                                                                                                                                                                                                                                                                |
-        | `font`                        | `fonts/Inter-Bold.ttf`                                                                                                                                                                                                                                                                                                        |
-        | `font_size`                   | `50`                                                                                                                                                                                                                                                                                                                          |
         | `languages`                   | **Description:** Controls which Languages will be active.<br>**Default:** `["en", "de", "fr", "es", "pt", "ja"]` <br>**Values:** List of [ISO 639-1 Codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for the Languages desired                                                                                   |
         | `use_subtitles`               | **Description:** Controls if the overlay is based on subtitle language instead of audio language.<br>**Values:** `true` to look at subtitle language instead of audio language                                                                                                                                                |
         | `builder_level`               | **Description:** Choose the Overlay Level.<br>**Values:** `season` or `episode`                                                                                                                                                                                                                                               |
@@ -160,23 +171,25 @@ Note that the `template_variables:` section only needs to be used if you do want
         | `country_<<key>>`<sup>1</sup> | **Description:** Controls the country image for the Overlay.<br>**Default:** Listed in the [Table](#supported-audiosubtitle-language-flags) above<br>**Values:** [ISO 3166-1 Country Code](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) for the flag desired                                                 |
         | `weight_<<key>>`<sup>1</sup>  | **Description:** Controls the weight of the Overlay. Higher numbers have priority.<br>**Values:** Any Number                                                                                                                                                                                                                  |
 
-        1. Each default overlay has a `key` that when calling to effect a specific overlay you must replace `<<key>>` with when calling.
+        1. Each default overlay has a `key` that when calling to effect a specific overlay you must replace `<<key>>` 
+        with when calling.
 
     === "Overlay Template Variables"
-
-        {%
-           include-markdown "../overlay_text_variables.md"
-        %}
 
         {%
            include-markdown "../overlay_variables.md"
         %}
 
-    ### Example Template Variable Amendments
+    === "Overlay Text Template Variables"
+
+        {%
+           include-markdown "../overlay_text_variables.md"
+        %}
+    
+???+ example "Example Template Variable Amendments"
 
     The below is an example config.yml extract with some Template Variables added in to change how the file works.
-
-
+    
     ```yaml
     libraries:
       Movies:

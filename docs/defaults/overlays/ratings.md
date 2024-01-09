@@ -1,10 +1,13 @@
 # Ratings Overlays
 
-The `ratings` Default Overlay File is used to create an overlay based on the Critic Rating, Audience Rating, and User Rating in Plex for each item within your library.
+The `ratings` Default Overlay File is used to create an overlay based on the Critic Rating, Audience Rating, and User 
+Rating in Plex for each item within your library.
 
-This file only updates the overlays based on the data in Plex, it will not pull the ratings directly from any third-party website, see recommendations below for more info.
+This file only updates the overlays based on the data in Plex, it will not pull the ratings directly from any 
+third-party website, see recommendations below for more info.
 
-**Please read [PMM Ratings Explained](../../pmm/guides/ratings.md) for more understanding on how PMM interacts with ratings.**
+**Please read [PMM Ratings Explained](../../pmm/guides/ratings.md) for more understanding on how PMM interacts with 
+ratings.**
 
 ![](images/ratings_overlay.png)
 
@@ -14,7 +17,8 @@ Supported Overlay Level: Movie, Show, Episode
 
 Requirements: Template Variables must be configured, otherwise this file will not apply any overlays.
 
-Recommendations: Use the [Mass * Rating Update Library Operation](../../config/operations.md) and the [Mass Episode * Rating Update Library Operation](../../config/operations.md) to update Plex to the Ratings you want on the Overlay.
+Recommendations: Use the [Mass * Rating Update Library Operation](../../config/operations.md) and the [Mass Episode * 
+Rating Update Library Operation](../../config/operations.md) to update Plex to the Ratings you want on the Overlay.
 
 ## Config
 
@@ -62,36 +66,47 @@ The below YAML in your config.yml will create the overlays:
 
 ## Template Variables
 
-Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
+Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to 
+make your own local copy.
 
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified will use its default value if it has one if not it's just ignored.
+Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults 
+work. Any value not specified will use its default value if it has one if not it's just ignored.
 
-??? info "Click to expand"
+??? abstract "Variable Lists (click to expand)"
 
+    * **File-Specific Template Variables** are variables available specifically for this PMM Defaults file.
+
+    * **Overlay Template Variables** are additional variables shared across the PMM Overlay Defaults.
+
+    * **Overlay Text Template Variables** are additional variables shared across the PMM Text Overlay Defaults.
+
+    ??? example "Default Template Variable Values (click to expand)"
+
+        | Variable            | Default     |
+        |:--------------------|:------------|
+        | `horizontal_offset` | `30`        |
+        | `horizontal_align`  | `left`      |
+        | `vertical_offset`   | `0`         |
+        | `vertical_align`    | `center`    |
+        | `back_color`        | `#00000099` |
+        | `back_radius`       | `30`        |
+        | `back_width`        | `160`       |
+        | `back_height`       | `160`       |
+        | `back_padding`      | `15`        |
+        | `back_radius`       | `30`        |
+        
     === "File-Specific Template Variables"
 
-        The below template variables are available specifically for this PMM Defaults file.
-
-        Be sure to also check out the "Overlay Template Variables" tab for additional variables.
-
-        These can be prepended with `rating1_`, `rating2_`, or `rating3_` to change that attribute on each rating individually.
+        These can be prepended with `rating1_`, `rating2_`, or `rating3_` to change that attribute on each rating 
+        individually.
 
         ???+ warning
 
-            To amend `horizontal_offset` and `vertical_offset` you **must** prepend the variable with `rating1_`, `rating2_`, or `rating3_`
+            To amend `horizontal_offset` and `vertical_offset` you **must** prepend the variable with `rating1_`, 
+            `rating2_`, or `rating3_`
 
-        | Variable                     | Default / Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+        | Variable                     | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
         |:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-        | `horizontal_offset`          | `30`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-        | `horizontal_align`           | `left`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-        | `vertical_offset`            | `0`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-        | `vertical_align`             | `center`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-        | `back_color`                 | `#00000099`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-        | `back_radius`                | `30`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-        | `back_width`                 | `160`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-        | `back_height`                | `160`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-        | `back_padding`               | `15`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-        | `back_radius`                | `30`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
         | `rating1`                    | **Description:** Choose the rating to display in rating1.<br>**Values:** `critic`, `audience`, or `user`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
         | `rating1_image`              | **Description:** Choose the rating image to display in rating1.<br>**Values:** `anidb`, `imdb`, `letterboxd`, `tmdb`, `metacritic`, `rt_popcorn`, `rt_tomato`, `trakt`, `mal`, `mdb`, or `star`                                                                                                                                                                                                                                                                                                                                                                                 |
         | `rating1_style`              | **Description:** Choose the rating number style for rating1.<br>**Values:** <table class="clearTable"><tr><td>Ten Scale</td><td><code>""</code></td><td><code>8.7</code>, <code>9.0</code></td></tr><tr><td>Ten Scale removing <code>.0</code>  </td><td><code>"#"</code></td><td><code>8.7</code>, <code>9</code></td></tr><tr><td>Hundred Scale</td><td><code>"%"</code></td><td><code>87</code>, <code>90</code></td></tr><tr><td>Five Scale</td><td><code>"/"</code></td><td><code>8.6</code> rating in plex will show as <code>4.3</code> on the overlay</td></tr></table> |
@@ -114,23 +129,29 @@ Note that the `template_variables:` section only needs to be used if you do want
         | `addon_position`<sup>1</sup> | **Description:** Text Addon Image Alignment in relation to the text.<br>**Default:** `top`<br>**Values:** `left`, `right`, `top`, `bottom`                                                                                                                                                                                                                                                                                                                                                                                                                                      |
         | `builder_level`              | **Description:** Choose the Overlay Level.<br>**Values:** `episode`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
-        1. These Variables can be prepended with `rating1_`, `rating2_`, or `rating3_` to change that attribute on each rating individually.
+        1. These variables can be prepended with `rating1_`, `rating2_`, or `rating3_` to change that attribute on each 
+        rating individually.
 
     === "Overlay Template Variables"
-
-        {%
-           include-markdown "../overlay_text_variables.md"
-        %}
 
         {%
            include-markdown "../overlay_variables.md"
         %}
 
-    ### Example Template Variable Amendments
+    === "Overlay Text Template Variables"
+
+        {%
+           include-markdown "../overlay_text_variables.md"
+        %}
+    
+???+ example "Example Template Variable Amendments"
 
     The below is an example config.yml extract with some Template Variables added in to change how the file works.
-
-    **Note: This example uses fonts not packaged with PMM. See [bullmoose20's Configs](https://github.com/meisnate12/Plex-Meta-Manager-Configs/tree/master/bullmoose20)**
+    
+    ???+ warning
+    
+        This example uses fonts not packaged with PMM. See [bullmoose20's 
+        Configs](https://github.com/meisnate12/Plex-Meta-Manager-Configs/tree/master/bullmoose20)
 
     ```yaml
       Movies:

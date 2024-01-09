@@ -2,7 +2,7 @@
 #                             Studio Collections                             #
 #                 Created by Yozora, Bullmoose20, & Sohjiro                  #
 #          EDITING THIS FILE MAY CAUSE PULLING NEW UPDATES TO FAIL           #
-#        https://metamanager.wiki/en/latest/defaults/both/studio.html        #
+#          https://metamanager.wiki/en/latest/defaults/both/studio           #
 ##############################################################################
 
 external_templates:
@@ -39,7 +39,7 @@ dynamic_collections:
       dynamic:
         default: true
     include:
-#### ANIMES ########################################################################################################
+      #### ANIMES ########################################################################################################
       - 8bit
       - A-1 Pictures
       - A.C.G.T.
@@ -220,7 +220,7 @@ dynamic_collections:
       - Zexcs
 
 
-#### MOVIES & TV SHOWS ###############################################################################################
+      #### MOVIES & TV SHOWS ###############################################################################################
       - 3 Arts Entertainment
       - 6th & Idaho
       - 20th Century Animation

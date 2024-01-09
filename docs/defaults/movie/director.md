@@ -1,6 +1,7 @@
 # Director Collections
 
-The `director` Default Collection File is used to dynamically create collections based on the most popular directors in your library.
+The `director` Default Collection File is used to dynamically create collections based on the most popular directors in 
+your library.
 
 ## Requirements & Recommendations
 
@@ -14,7 +15,7 @@ Supported Library Types: Movie
 | `<<director_name>>`<br>**Example:** `Frank Welker` | `<<director_name>>`<br>**Example:** `Frank Welker` | Collection of Movies by the Director.                                          |
 
 {%
-   include-markdown "../people.md"
+  include-markdown "../people.md"
 %}
 
 ## Config
@@ -30,27 +31,30 @@ libraries:
 
 ## Template Variables
 
-Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to make your own local copy.
+Template Variables can be used to manipulate the file in various ways to slightly change how it works without having to 
+make your own local copy.
 
-Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults work. Any value not specified will use its default value if it has one if not it's just ignored.
+Note that the `template_variables:` section only needs to be used if you do want to actually change how the defaults 
+work. Any value not specified will use its default value if it has one if not it's just ignored.
 
-??? info "Click to expand"
+??? abstract "Variable Lists (click to expand)"
+
+    * **File-Specific Template Variables** are variables available specifically for this PMM Defaults file.
+
+    * **Shared Template Variables** are additional variables shared across the PMM Defaults.
+
+    * **Shared Separator Variables** are additional variables available since this Default contains a 
+    [Separator](../separators.md).
 
     === "File-Specific Template Variables"
-
-        The below template variables are available specifically for this PMM Defaults file.
-
-        Be sure to also check out the "Shared Template Variables" tab for additional variables.
-
-        This file contains a [Separator](../separators.md) so all [Shared Separator Variables](../separators.md#shared-separator-variables) are available as well.
 
         | Variable                                 | Description & Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
         |:-----------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
         | `style`                                  | **Description:** Controls the visual theme of the collections created.<br>**Default:** `bw`<br>**Values:** `bw`, `rainier`, `signature`, `diiivoy`, or `diiivoycolor`                                                                                                                                                                                                                                                                                                                                                                              |
         | `limit`                                  | **Description:** Changes the Builder Limit for all collections in a Defaults file.<br>**Values:** Number Greater than 0                                                                                                                                                                                                                                                                                                                                                                                                                            |
         | `limit_<<key>>`<sup>1</sup>              | **Description:** Changes the Builder Limit of the specified key's collection.<br>**Default:** `limit`<br>**Values:** Number Greater than 0                                                                                                                                                                                                                                                                                                                                                                                                         |
-        | `sort_by`                                | **Description:** Changes the Smart Filter Sort for all collections in a Defaults file.<br>**Default:** `release.desc`<br>**Values:** [Any `smart_filter` Sort Option](../../files/builders/smart.md#sort-options)                                                                                                                                                                                                                                                                                                                                        |
-        | `sort_by_<<key>>`<sup>1</sup>            | **Description:** Changes the Smart Filter Sort of the specified key's collection.<br>**Default:** `sort_by`<br>**Values:** [Any `smart_filter` Sort Option](../../files/builders/smart.md#sort-options)                                                                                                                                                                                                                                                                                                                                                  |
+        | `sort_by`                                | **Description:** Changes the Smart Filter Sort for all collections in a Defaults file.<br>**Default:** `release.desc`<br>**Values:** [Any `smart_filter` Sort Option](../../files/builders/smart.md#sort-options)                                                                                                                                                                                                                                                                                                                                  |
+        | `sort_by_<<key>>`<sup>1</sup>            | **Description:** Changes the Smart Filter Sort of the specified key's collection.<br>**Default:** `sort_by`<br>**Values:** [Any `smart_filter` Sort Option](../../files/builders/smart.md#sort-options)                                                                                                                                                                                                                                                                                                                                            |
         | `data`                                   | **Description:** Replaces the `data` dynamic collection value.<table class="clearTable"><tr><th>Attribute</th><th>Description & Values</th></tr><tr><td><code>depth</code></td><td>Controls the depth within the casting credits to search for common actors<br><strong>Default:</strong> 5<br><strong>Values:</strong> Number greater than 0</td></tr><tr><td><code>limit</code></td><td>Controls the maximum number of collections to create<br><strong>Default:</strong> 25<br><strong>Values:</strong> Number greater than 0</td></tr></table> |
         | `include`                                | **Description:** Force these Actors to be included to create a Dynamic Collection.<br>**Values:** List of Actor Names                                                                                                                                                                                                                                                                                                                                                                                                                              |
         | `exclude`                                | **Description:** Exclude these Directors from creating a Dynamic Collection.<br>**Values:** List of Director Names                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -59,7 +63,8 @@ Note that the `template_variables:` section only needs to be used if you do want
         | `tmdb_birthday`                          | **Description:** Controls if the Definition is run based on `tmdb_person`'s Birthday. Has 3 possible attributes `this_month`, `before` and `after`.<br>**Values:**<table class="clearTable"><tr><td>`this_month`</td><td>Run's if Birthday is in current Month</td><td>`true`/`false`</td></tr><tr><td>`before`</td><td>Run if X Number of Days before the Birthday</td><td>Number 0 or greater</td></tr><tr><td>`after`</td><td>Run if X Number of Days after the Birthday</td><td>Number 0 or greater</td></tr></table>                          |
         | `tmdb_person_offset_<<key>>`<sup>1</sup> | **Description:** Changes the summary tmdb_person_offset for the specific key.<br>**Default:** `0`<br>**Values:** Dictionary of Actor Name as the keys and the tmdb_person_offset as the value.                                                                                                                                                                                                                                                                                                                                                     |
 
-        1. Each default collection has a `key` that when calling to effect a specific collection you must replace `<<key>>` with when calling.
+        1. Each default collection has a `key` that when calling to effect a specific collection you must replace 
+         `<<key>>` with when calling.
 
     === "Shared Template Variables"
 
@@ -67,18 +72,18 @@ Note that the `template_variables:` section only needs to be used if you do want
           include-markdown "../collection_variables.md"
         %}
 
-    ### Example Template Variable Amendments
+    === "Shared Separator Variables"
+
+        {%
+          include-markdown "../separator_variables.md"
+        %}
+    
+???+ example "Example Template Variable Amendments"
 
     The below is an example config.yml extract with some Template Variables added in to change how the file works.
-
-    ???+ tip
-
-        Anywhere you see this icon:
-      
-        > :fontawesome-solid-circle-plus:
-      
-        That's a tooltip, you can press them to get more information.
-
+ 
+    Click the :fontawesome-solid-circle-plus: icon to learn more
+    
     ```yaml
     libraries:
       Movies:
@@ -98,4 +103,5 @@ Note that the `template_variables:` section only needs to be used if you do want
     2.  Create 20 collections maximum
     3.  use the [rainier Style](#rainier-style)
     4.  Do not create a "Directors Collections" separator
-    5.  There are two Richard Brooks, so use the 2nd [Richard Brooks](https://www.themoviedb.org/search?query=Richard%20Brooks) found on TMDb
+    5.  There are two Richard Brooks, so use the 2nd 
+    [Richard Brooks](https://www.themoviedb.org/search?query=Richard%20Brooks) found on TMDb

@@ -59,6 +59,7 @@ plugins:
         'link.md': 'https://discord.gg/FNqqw5jRSz'
         'malauth.md': 'https://replit.com/@chazlarson/MALAuth'
         'traktauth.md': 'https://replit.com/@chazlarson/TraktAuth'
+  - material-plausible
 extra:
   alternate:
     - name: Latest Docs
@@ -71,19 +72,23 @@ extra:
       link: /en/nightly/
       lang: en
   social:
-  - icon: fontawesome/solid/heart
-    class: md-social__link heart
-    link: 'https://github.com/sponsors/meisnate12'
-    name: Donate
-  - icon: fontawesome/brands/discord
-    class: md-social__link
-    link: 'https://metamanager.wiki/en/latest/discord/'
-    name: Discord
-  - icon: fontawesome/brands/github
-    class: md-social__link
-    link: 'https://github.com/meisnate12/Plex-Meta-Manager'
-    name: GitHub
-copyright: Copyright &copy; 2023 meisnate12
+    - icon: fontawesome/solid/heart
+      class: md-social__link heart
+      link: 'https://github.com/sponsors/meisnate12'
+      name: Donate
+    - icon: fontawesome/brands/discord
+      class: md-social__link
+      link: 'https://metamanager.wiki/en/latest/discord/'
+      name: Discord
+    - icon: fontawesome/brands/github
+      class: md-social__link
+      link: 'https://github.com/meisnate12/Plex-Meta-Manager'
+      name: GitHub
+  analytics:
+    provider: plausible
+    domain: metamanager.wiki/en/latest
+    src: "https://analytics.metamanager.wiki/js/script.js"
+copyright: Copyright &copy; 2024 meisnate12
 markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
@@ -188,14 +193,20 @@ nav:
         - Award:
           - Separator: defaults/award/separator.md
           - Academy Awards (Oscars): defaults/award/oscars.md
+          - Berlin Film Festival Awards: defaults/award/berlinale.md
           - British Academy of Film Awards: defaults/award/bafta.md
           - Cannes Film Festival Awards: defaults/award/cannes.md
+          - César Awards: defaults/award/cesar.md
           - Critics Choice Awards: defaults/award/choice.md
           - Emmy Awards: defaults/award/emmy.md
           - Golden Globe Awards: defaults/award/golden.md
           - Independent Spirit Awards: defaults/award/spirit.md
+          - National Film Registry: defaults/award/nfr.md
+          - People's Choice Awards: defaults/award/pca.md
+          - Razzie Awards: defaults/award/razzie.md
           - Sundance Film Festival Awards: defaults/award/sundance.md
-          - Other Awards: defaults/award/other.md
+          - Toronto International Film Festival: defaults/award/tiff.md
+          - Venice Film Festival Awards: defaults/award/venice.md
         - Chart:
           - Separator: defaults/chart/separator.md
           - Basic Charts: defaults/chart/basic.md
@@ -213,6 +224,7 @@ nav:
           - Franchises (Show): defaults/show/franchise.md
           - Universes: defaults/both/universe.md
           - Based On...: defaults/both/based.md
+          - Collectionless: defaults/both/collectionless.md
         - Content Rating:
           - US Content Ratings (Movie): defaults/movie/content_rating_us.md
           - US Content Ratings (Show): defaults/show/content_rating_us.md
@@ -228,7 +240,7 @@ nav:
           - Continents (Movie): defaults/movie/continent.md
           - Continents (Show): defaults/show/continent.md
         - Media:
-          - Aspect Ration (Show): defaults/both/aspect.md
+          - Aspect Ratio: defaults/both/aspect.md
           - Resolutions: defaults/both/resolution.md
           - Audio Languages: defaults/both/audio_language.md
           - Subtitle Languages: defaults/both/subtitle_language.md
@@ -246,8 +258,6 @@ nav:
           - Years: defaults/both/year.md
           - Decades (Movie): defaults/movie/decade.md
           - Decades (Show): defaults/show/decade.md
-        - Utility:
-          - Collectionless: defaults/both/collectionless.md
       - PLAYLIST DEFAULTS:
         - Playlists: defaults/playlist.md
       - OVERLAY DEFAULTS:
