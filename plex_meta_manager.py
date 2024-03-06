@@ -277,7 +277,7 @@ def start(attrs):
     for akey, adata in arguments.items():
         if isinstance(adata["help"], str):
             ext = '"' if adata["type"] == "str" and run_args[akey] not in [None, "None"] else ""
-            logger.debug(f"--{akey} (PMM_{akey.upper()}): {ext}{run_args[akey]}{ext}")
+            logger.debug(f"--{akey} (PMM_{akey.replace('-', '_').upper()}): {ext}{run_args[akey]}{ext}")
     logger.debug("")
     if secret_args:
         logger.debug("PMM Secrets Read:")
@@ -1043,6 +1043,7 @@ def run_playlists(config):
 
                 if valid:
                     builder.sync_playlist()
+                    builder.exclude_admin_from_playlist()
 
                 builder.send_notifications(playlist=True)
 
