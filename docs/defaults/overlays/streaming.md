@@ -12,26 +12,32 @@ Supported Overlay Level: Movie, Show
 ## Supported Streaming Services
 
 
-| Streaming Service | Key           | Weight |
-|:------------------|:--------------|:-------|
-| Netflix           | `netflix`     | `160`  |
-| Prime Video       | `amazon`      | `150`  |
-| Disney+           | `disney`      | `140`  |
-| Max               | `max`         | `130`  |
-| Crunchyroll       | `Crunchyroll` | `120`  |
-| YouTube           | `youtube`     | `110`  |
-| Hulu              | `hulu`        | `100`  |
-| Paramount+        | `paramount`   | `90`   |
-| AppleTV           | `appletv`     | `80`   |
-| Peacock           | `peacock`     | `70`   |
-| Showtime          | `showtime`    | `60`   |
-| discovery+        | `discovery`   | `58`   |
-| Crave             | `crave`       | `55`   |
-| NOW               | `now`         | `50`   |
-| All 4             | `all4`        | `40`   |
-| britbox           | `britbox`     | `30`   |
-| BET+              | `bet`         | `20`   |
-| hayu              | `hayu`        | `10`   |
+!!! important
+
+    As of Plex Meta Manager release 1.21, the keys associated with this Defaults file has changed.
+
+    If you are setting custom images, you will need to use `<<originals_key>>`
+
+| Streaming Service | Key    | `originals_key` | Weight |
+|:------------------|--------|:----------------|:-------|
+| Netflix           | `8`    | `netflix`       | `160`  |
+| Prime Video       | `9`    | `amazon`        | `150`  |
+| Disney+           | `337`  | `disney`        | `140`  |
+| Max               | `1189` | `max`           | `130`  |
+| Crunchyroll       | `283`  | `Crunchyroll`   | `120`  |
+| YouTube           | `188`  | `youtube`       | `110`  |
+| Hulu              | `15`   | `hulu`          | `100`  |
+| Paramount+        | `531`  | `paramount`     | `90`   |
+| AppleTV           | `350`  | `appletv`       | `80`   |
+| Peacock           | `387`  | `peacock`       | `70`   |
+| Showtime          | `37`   | `showtime`      | `60`   |
+| discovery+        | `510`  | `discovery`     | `58`   |
+| Crave             | `230`  | `crave`         | `55`   |
+| NOW               | `39`   | `now`           | `50`   |
+| All 4             | `103`  | `all4`          | `40`   |
+| britbox           | `151`  | `britbox`       | `30`   |
+| BET+              | `1759` | `bet`           | `20`   |
+| hayu              | `223`  | `hayu`          | `10`   |
 
 
 ## Regional Variants
@@ -41,10 +47,9 @@ are, as detailed below:
 
 | Region           | Key                              | Description                                                                                                                         |
 |:-----------------|:---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| any besides `us` | `amazon`, `disney`, `netflix`    | These overlays will use regional variant lists to ensure the overlays are applied to what is available in the region specified      |
-| any besides `uk` | `all4`, `britbox`, `hayu`, `now` | These overlays will not be used if the region is not `uk` as these streaming services are UK-focused                                |
-| any besides `ca` | `crave`                          | These overlays will not be used if the region is not `ca` as these streaming services are Canada-focused                            |
-| `ca`             | `max`, `showtime`                | These overlays will not be used if the region is `ca` as these streaming services are part of the Crave streaming service in Canada |
+| any besides `GB` | `all4`, `britbox`, `hayu`, `now` | These overlays will not be used if the region is not `uk` as these streaming services are UK-focused                                |
+| any besides `CA` | `crave`                          | These overlays will not be used if the region is not `ca` as these streaming services are Canada-focused                            |
+| `CA`             | `max`, `showtime`                | These overlays will not be used if the region is `ca` as these streaming services are part of the Crave streaming service in Canada |
 
 
 ## Config
@@ -92,7 +97,7 @@ work. Any value not specified will use its default value if it has one if not it
 
         | Variable                     | Description & Values                                                                                                                                                                                                                                                                                                            |
         |:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-        | `region`                     | **Description:** Changes some Streaming Service lists to regional variants (see below table for more information.<br>**Default:** `us`<br>**Values:** `us`,`uk`,`ca`, `da`, `de`, `es`, `fr`, `it`, `pt-br`                                                                                                                     |
+        | `region`                     | **Description:** Changes some Streaming Service lists to regional variants (see below table for more information.<br>**Default:** `US`<br>**Values:** Any [ISO 3166-1 Code](https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes) of the region where the streaming information should be based on.                                                                                                                   |
         | `originals_only`             | **Description:** Changes Streaming Service overlays to only apply to original content produced by the service.<br>**Note**: Cannot be used with `region`, and only produces overlays for `amazon`, `appletv`, `disney`, `max`, `hulu`, `netflix`, `paramount`, `peacock`<br>**Default:** `false`<br>**Values:** `true`, `false` |
         | `weight_<<key>>`<sup>1</sup> | **Description:** Controls the weight of the Overlay. Higher numbers have priority.<br>**Values:** Any Number                                                                                                                                                                                                                    |
 

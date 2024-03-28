@@ -214,7 +214,6 @@ nav:
           - Separator: defaults/chart/separator.md
           - Basic Charts: defaults/chart/basic.md
           - AniList Charts: defaults/chart/anilist.md
-          - Flixpatrol Charts: defaults/chart/flixpatrol.md
           - IMDb Charts: defaults/chart/imdb.md
           - MyAnimeList Charts: defaults/chart/myanimelist.md
           - Tautulli Charts: defaults/chart/tautulli.md
@@ -233,6 +232,8 @@ nav:
           - US Content Ratings (Show): defaults/show/content_rating_us.md
           - UK Content Ratings: defaults/both/content_rating_uk.md
           - DE Content Ratings: defaults/both/content_rating_de.md
+          - AU Content Ratings: defaults/both/content_rating_au.md
+          - NZ Content Ratings: defaults/both/content_rating_nz.md
           - MyAnimeList Content Ratings: defaults/both/content_rating_mal.md
           - Common Sense Media Content Ratings: defaults/both/content_rating_cs.md
         - Location:
@@ -267,7 +268,6 @@ nav:
         - Overlays: defaults/overlays.md
         - Shared Variables: defaults/overlay_variables.md
         - Chart:
-          - FlixPatrol Top: defaults/overlays/flixpatrol.md
           - Ribbon: defaults/overlays/ribbon.md
         - Content:
           - Episode Info: defaults/overlays/episode_info.md
@@ -279,6 +279,8 @@ nav:
           - US Content Ratings (Show): defaults/overlays/content_rating_us_show.md
           - UK Content Ratings: defaults/overlays/content_rating_uk.md
           - DE Content Ratings: defaults/overlays/content_rating_de.md
+          - AU Content Ratings: defaults/overlays/content_rating_au.md
+          - NZ Content Ratings: defaults/overlays/content_rating_nz.md
           - Common Sense Age Ratings: defaults/overlays/commonsense.md
         - Media:
           - Aspect Ratio: defaults/overlays/aspect.md
@@ -320,7 +322,6 @@ nav:
           - MdbList Builders: files/builders/mdblist.md
           - Letterboxd Builders: files/builders/letterboxd.md
           - ICheckMovies Builders: files/builders/icheckmovies.md
-          - FlixPatrol Builders: files/builders/flixpatrol.md
           - BoxOfficeMojo Builders: files/builders/mojo.md
           - Reciperr Builders: files/builders/reciperr.md
           - StevenLu Builders: files/builders/stevenlu.md

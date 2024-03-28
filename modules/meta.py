@@ -440,6 +440,7 @@ class DataFile:
                                 optional.append(f"{final_key}_encoded")
 
                     sort_name = None
+                    sort_mapping = None
                     if "move_prefix" in template or "move_collection_prefix" in template:
                         prefix = None
                         if "move_prefix" in template:
@@ -450,12 +451,16 @@ class DataFile:
                             prefix = template["move_collection_prefix"]
                         if prefix:
                             for op in util.get_list(prefix):
-                                if variables[name_var].startswith(f"{op} "):
+                                if not sort_name and variables[name_var].startswith(f"{op} "):
                                     sort_name = f"{variables[name_var][len(op):].strip()}, {op}"
-                                    break
+                                if not sort_mapping and variables["mapping_name"].startswith(f"{op} "):
+                                    sort_mapping = f"{variables['mapping_name'][len(op):].strip()}, {op}"
+                                if sort_name and sort_mapping:
+                                  break
                         else:
                             raise Failed(f"{self.data_type} Error: template sub-attribute move_prefix is blank")
                     variables[f"{self.data_type.lower()}_sort"] = sort_name if sort_name else variables[name_var]
+                    variables["mapping_sort"] = sort_mapping if sort_mapping else variables["mapping_name"]
 
                     for key, value in variables.copy().items():
                         if "<<" in key and ">>" in key:
@@ -1173,7 +1178,7 @@ class MetadataFile(DataFile):
                         if "<<library_typeU>>" in title_format:
                             title_format = title_format.replace("<<library_typeU>>", library.type)
                         if "limit" in self.temp_vars and "<<limit>>" in title_format:
-                            title_format = title_format.replace("<<limit>>", self.temp_vars["limit"])
+                            title_format = title_format.replace("<<limit>>", str(self.temp_vars["limit"]))
                         template_variables = util.parse("Config", "template_variables", dynamic, parent=map_name, methods=methods, datatype="dictdict") if "template_variables" in methods else {}
                         if "template" in methods:
                             template_names = util.parse("Config", "template", dynamic, parent=map_name, methods=methods, datatype="strlist")
@@ -1924,6 +1929,29 @@ class MetadataFile(DataFile):
                                                              title=f"{item.title} Season {season.seasonNumber}",
                                                              image_name=f"Season{'0' if season.seasonNumber < 10 else ''}{season.seasonNumber}",
                                                              folder_name=folder_name, style_data=season_style_data)
+
+                        advance_edits = {}
+                        prefs = None
+                        for advance_edit in util.advance_tags_to_edit["Season"]:
+                            if advance_edit in season_methods:
+                                if season_dict[season_methods[advance_edit]]:
+                                    ad_key, options = plex.item_advance_keys[f"item_{advance_edit}"]
+                                    method_data = str(season_dict[season_methods[advance_edit]]).lower()
+                                    if prefs is None:
+                                        prefs = [p.id for p in season.preferences()]
+                                    if method_data not in options:
+                                        logger.error(f"{self.type_str} Error: {meta[methods[advance_edit]]} {advance_edit} attribute invalid")
+                                    elif ad_key in prefs and getattr(season, ad_key) != options[method_data]:
+                                        advance_edits[ad_key] = options[method_data]
+                                        logger.info(f"Metadata: {advance_edit} updated to {method_data}")
+                                else:
+                                    logger.error(f"{self.type_str} Error: {advance_edit} attribute is blank")
+                        if advance_edits:
+                            if self.library.edit_advance(season, advance_edits):
+                                updated = True
+                                logger.info("Advanced Metadata Update Successful")
+                            else:
+                                logger.error("Advanced Metadata Update Failed")
                         if ups:
                             updated = True
                         logger.info(f"Season {season_id} of {mapping_name} Metadata Update {'Complete' if updated else 'Not Needed'}")

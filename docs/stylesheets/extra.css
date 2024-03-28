@@ -19,7 +19,7 @@ strong {
 }
 
 table tr td code {
-  white-space: nowrap;
+  white-space: pre;
 }
 
 .md-banner {
@@ -67,6 +67,12 @@ table tr td code {
 .md-typeset h4 {
     font-weight: bold;
     color: #0e8a6a;
+    text-transform: uppercase;
+}
+
+.md-typeset h6 {
+    font-size: .01em;
+    color: transparent;
     text-transform: uppercase;
 }
 
@@ -295,7 +301,6 @@ table.dualTable td, table.dualTable th {
 
 /* Custom tooltips */
 .md-tooltip {
-    background-color: var(--md-primary-fg-color);
     border-radius: 6px;
 }
 

@@ -2,7 +2,7 @@ import os, re, time
 from arrapi import ArrException
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from modules import anidb, anilist, flixpatrol, icheckmovies, imdb, letterboxd, mal, mojo, plex, radarr, reciperr, sonarr, tautulli, tmdb, trakt, tvdb, mdblist, util
+from modules import anidb, anilist, icheckmovies, imdb, letterboxd, mal, mojo, plex, radarr, reciperr, sonarr, tautulli, tmdb, trakt, tvdb, mdblist, util
 from modules.util import Failed, FilterFailed, NonExisting, NotScheduled, NotScheduledRange, Deleted
 from modules.overlay import Overlay
 from modules.poster import PMMImage
@@ -16,7 +16,7 @@ logger = util.logger
 
 advance_new_agent = ["item_metadata_language", "item_use_original_title"]
 advance_show = ["item_episode_sorting", "item_keep_episodes", "item_delete_episodes", "item_season_display", "item_episode_sorting"]
-all_builders = anidb.builders + anilist.builders + flixpatrol.builders + icheckmovies.builders + imdb.builders + \
+all_builders = anidb.builders + anilist.builders + icheckmovies.builders + imdb.builders + \
                letterboxd.builders + mal.builders + mojo.builders + plex.builders + reciperr.builders + tautulli.builders + \
                tmdb.builders + trakt.builders + tvdb.builders + mdblist.builders + radarr.builders + sonarr.builders
 show_only_builders = [
@@ -153,7 +153,7 @@ custom_sort_builders = [
     "trakt_recommended_personal", "trakt_recommended_daily", "trakt_recommended_weekly", "trakt_recommended_monthly",
     "trakt_recommended_yearly", "trakt_recommended_all", "trakt_watched_daily", "trakt_watched_weekly",
     "trakt_watched_monthly", "trakt_watched_yearly", "trakt_watched_all",
-    "tautulli_popular", "tautulli_watched", "mdblist_list", "letterboxd_list", "icheckmovies_list", "flixpatrol_top",
+    "tautulli_popular", "tautulli_watched", "mdblist_list", "letterboxd_list", "icheckmovies_list",
     "anilist_top_rated", "anilist_popular", "anilist_trending", "anilist_search", "anilist_userlist",
     "mal_all", "mal_airing", "mal_upcoming", "mal_tv", "mal_movie", "mal_ova", "mal_special", "mal_search",
     "mal_popular", "mal_favorite", "mal_suggested", "mal_userlist", "mal_season", "mal_genre", "mal_studio",
@@ -1035,8 +1035,6 @@ class CollectionBuilder:
                     self._anidb(method_name, method_data)
                 elif method_name in anilist.builders:
                     self._anilist(method_name, method_data)
-                elif method_name in flixpatrol.builders:
-                    self._flixpatrol(method_name, method_data)
                 elif method_name in icheckmovies.builders:
                     self._icheckmovies(method_name, method_data)
                 elif method_name in letterboxd.builders:
@@ -1468,16 +1466,6 @@ class CollectionBuilder:
                 new_dictionary["sort_by"] = util.parse(self.Type, "sort_by", dict_data, methods=dict_methods, parent=method_name, default="score", options=anilist.sort_options)
                 new_dictionary["limit"] = util.parse(self.Type, "limit", dict_data, datatype="int", methods=dict_methods, default=0, parent=method_name)
                 self.builders.append((method_name, new_dictionary))
-
-    def _flixpatrol(self, method_name, method_data):
-        for dict_data in util.parse(self.Type, method_name, method_data, datatype="listdict"):
-            dict_methods = {dm.lower(): dm for dm in dict_data}
-            self.builders.append((method_name, {
-                "platform": util.parse(self.Type, "platform", dict_data, methods=dict_methods, parent=method_name, options=self.config.FlixPatrol.platforms),
-                "location": util.parse(self.Type, "location", dict_data, methods=dict_methods, parent=method_name, default="world", options=self.config.FlixPatrol.locations),
-                "in_the_last": util.parse(self.Type, "in_the_last", dict_data, datatype="int", methods=dict_methods, parent=method_name, default=1, maximum=30),
-                "limit": util.parse(self.Type, "limit", dict_data, datatype="int", methods=dict_methods, parent=method_name, default=10, maximum=10)
-            }))
 
     def _icheckmovies(self, method_name, method_data):
         if method_name.startswith("icheckmovies_list"):
@@ -2010,7 +1998,7 @@ class CollectionBuilder:
                     elif self.library.is_show and discover_attr in tmdb.discover_movie_only:
                         raise Failed(f"{self.Type} Error: {method_name} {discover_method} attribute only works for movie libraries")
                     elif discover_attr == "region":
-                        new_dictionary[discover_attr] = util.parse(self.Type, discover_method, discover_data, parent=method_name, regex=("^[A-Z]{2}$", "US"))
+                        new_dictionary[discover_attr] = util.parse(self.Type, discover_method, discover_data.upper(), parent=method_name, regex=("^[A-Z]{2}$", "US"))
                     elif discover_attr == "sort_by":
                         options = tmdb.discover_movie_sort if self.library.is_movie else tmdb.discover_tv_sort
                         new_dictionary[lower_method] = util.parse(self.Type, discover_method, discover_data, parent=method_name, options=options)
@@ -2026,7 +2014,7 @@ class CollectionBuilder:
                             raise Failed(f"{self.Type} Error: {method_name} {discover_method} attribute: must be used with certification_country")
                     elif discover_attr == "watch_region":
                         if "with_watch_providers" in dict_data or "without_watch_providers" in dict_data or "with_watch_monetization_types" in dict_data:
-                            new_dictionary[lower_method] = discover_data
+                            new_dictionary[lower_method] = discover_data.upper()
                         else:
                             raise Failed(f"{self.Type} Error: {method_name} {discover_method} attribute: must be used with either with_watch_providers, without_watch_providers, or with_watch_monetization_types")
                     elif discover_attr == "with_watch_monetization_types":
@@ -2211,8 +2199,6 @@ class CollectionBuilder:
             ids = self.config.TVDb.get_tvdb_ids(method, value)
         elif "imdb" in method:
             ids = self.config.IMDb.get_imdb_ids(method, value, self.language)
-        elif "flixpatrol" in method:
-            ids = self.config.FlixPatrol.get_tmdb_ids(method, value, self.library.is_movie)
         elif "icheckmovies" in method:
             ids = self.config.ICheckMovies.get_imdb_ids(method, value, self.language)
         elif "letterboxd" in method:
@@ -2663,7 +2649,7 @@ class CollectionBuilder:
                 for name, key in names:
                     if name not in used and re.compile(reg).search(name):
                         used.append(name)
-                        valid_list.append((name, key) if plex_search else key)
+                        valid_list.append((name, key) if plex_search else name)
             if not valid_list:
                 error = f"Plex Error: {attribute}: No matches found with regex pattern {data}"
                 if self.details["show_options"]:

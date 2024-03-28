@@ -90,6 +90,10 @@
                 "optimize": {
                     "description": "true/false - If 'true', optimizes database on this Plex server",
                     "type": "boolean"
+                },
+                "verify_ssl": {
+                    "description": "Turn SSL Verification on or off for only Plex.",
+                    "type": "boolean"
                 }
             },
             "required": [
@@ -944,7 +948,7 @@
             "properties": {
                 "pmm": {
                     "type": "string",
-                    "enum": ["actor", "anilist","aspect","audio_language","bafta","based","basic","berlinale","cannes","cesar","choice","collectionless","content_rating_au","content_rating_cs","content_rating_de","content_rating_mal","content_rating_uk","content_rating_us","continent","country","decade","director","emmy","flixpatrol","franchise","genre","golden","imdb","myanimelist","network","nfr","oscars","other_chart","pca","producer","razzie","region","resolution","sag","seasonal","separator_award","separator_chart","spirit","streaming","studio","subtitle_language","sundance","tautulli","tiff","tmdb","trakt","universe","venice","writer","year"]
+                    "enum": ["actor", "anilist","aspect","audio_language","bafta","based","basic","berlinale","cannes","cesar","choice","collectionless","content_rating_au","content_rating_cs","content_rating_de","content_rating_nz","content_rating_mal","content_rating_uk","content_rating_us","continent","country","decade","director","emmy","flixpatrol","franchise","genre","golden","imdb","myanimelist","network","nfr","oscars","other_chart","pca","producer","razzie","region","resolution","sag","seasonal","separator_award","separator_chart","spirit","streaming","studio","subtitle_language","sundance","tautulli","tiff","tmdb","trakt","universe","venice","writer","year"]
                 },
                 "schedule": {
                     "type": "string"
@@ -969,7 +973,7 @@
             "properties": {
                 "pmm": {
                     "type": "string",
-                    "enum": ["aspect","audio_codec","commonsense","content_rating_uk","content_rating_us_movie","content_rating_us_show","direct_play","episode_info","language_count","flixpatrol","languages","mediastinger","network","ratings","resolution","ribbon","runtimes","status","streaming","studio","versions","video_format"]
+                    "enum": ["aspect","audio_codec","commonsense","content_rating_au","content_rating_de","content_rating_nz","content_rating_uk","content_rating_us_movie","content_rating_us_show","direct_play","episode_info","language_count","flixpatrol","languages","mediastinger","network","ratings","resolution","ribbon","runtimes","status","streaming","studio","versions","video_format"]
                 },
                 "remove_overlays": {
                     "type": "boolean"
@@ -1563,7 +1567,7 @@
                 "horizontal_align": { "type": "string", "enum": ["left","center","right"] },
                 "horizontal_offset": { "type": "integer", "minimum": 0 },
                 "horizontal_position": { "type": "string", "enum": ["left","left2","center","center_left","center_right","right","right2"] },
-                "languages": { "type": "string", "pattern": "^[a-z]{2}$" },
+                "languages": { "type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z]{2}$" }},
                 "last": { "type": "integer", "exclusiveMinimum": 0 },
                 "limit": { "type": "integer", "exclusiveMinimum": 0 },
                 "location": { "type": "string", "enum": ["world","albania","argentina","armenia","australia","austria","azerbaijan","bahamas","bahrain","bangladesh","belarus","belgium","belize","benin","bolivia","bosnia_and_herzegovina","botswana","brazil","bulgaria","burkina_faso","cambodia","canada","chile","colombia","costa_rica","croatia","cyprus","czech_republic","denmark","dominican_republic","ecuador","egypt","estonia","finland","france","gabon","germany","ghana","greece","guatemala","guinea_bissau","haiti","honduras","hong_kong","hungary","iceland","india","indonesia","ireland","israel","italy","ivory_coast","jamaica","japan","jordan","kazakhstan","kenya","kuwait","kyrgyzstan","laos","latvia","lebanon","lithuania","luxembourg","malaysia","maldives","mali","malta","mexico","moldova","mongolia","montenegro","morocco","mozambique","namibia","netherlands","new_zealand","nicaragua","niger","nigeria","north_macedonia","norway","oman","pakistan","panama","papua_new_guinea","paraguay","peru","philippines","poland","portugal","qatar","romania","russia","rwanda","salvador","saudi_arabia","senegal","serbia","singapore","slovakia","slovenia","south_africa","south_korea","spain","sri_lanka","sweden","switzerland","taiwan","tajikistan","tanzania","thailand","togo","trinidad_and_tobago","turkey","turkmenistan","uganda","ukraine","united_arab_emirates","united_kingdom","united_states","uruguay","uzbekistan","venezuela","vietnam","zambia","zimbabwe"] },
