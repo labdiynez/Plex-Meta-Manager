@@ -17,25 +17,13 @@ class Cache:
                     logger.info(f"Initializing cache database at {self.cache_path}")
                 else:
                     logger.info(f"Using cache database at {self.cache_path}")
-                cursor.execute("DROP TABLE IF EXISTS guids")
-                cursor.execute("DROP TABLE IF EXISTS guid_map")
-                cursor.execute("DROP TABLE IF EXISTS imdb_to_tvdb_map")
-                cursor.execute("DROP TABLE IF EXISTS tmdb_to_tvdb_map")
-                cursor.execute("DROP TABLE IF EXISTS imdb_map")
-                cursor.execute("DROP TABLE IF EXISTS mdb_data")
-                cursor.execute("DROP TABLE IF EXISTS mdb_data2")
-                cursor.execute("DROP TABLE IF EXISTS mdb_data3")
-                cursor.execute("DROP TABLE IF EXISTS mdb_data4")
-                cursor.execute("DROP TABLE IF EXISTS omdb_data")
-                cursor.execute("DROP TABLE IF EXISTS omdb_data2")
-                cursor.execute("DROP TABLE IF EXISTS tvdb_data")
-                cursor.execute("DROP TABLE IF EXISTS tvdb_data2")
-                cursor.execute("DROP TABLE IF EXISTS tmdb_show_data")
-                cursor.execute("DROP TABLE IF EXISTS overlay_ratings")
-                cursor.execute("DROP TABLE IF EXISTS anidb_data")
-                cursor.execute("DROP TABLE IF EXISTS anidb_data2")
-                cursor.execute("DROP TABLE IF EXISTS anidb_data3")
-                cursor.execute("DROP TABLE IF EXISTS mal_data")
+                for old_table in [
+                    "guids", "guid_map", "imdb_to_tvdb_map", "tmdb_to_tvdb_map", "imdb_map",
+                    "mdb_data", "mdb_data2", "mdb_data3", "mdb_data4", "omdb_data", "omdb_data2",
+                    "tvdb_data", "tvdb_data2", "tvdb_data3", "tmdb_show_data", "tmdb_show_data2",
+                    "overlay_ratings", "anidb_data", "anidb_data2", "anidb_data3", "mal_data"
+                ]:
+                    cursor.execute(f"DROP TABLE IF EXISTS {old_table}")
                 cursor.execute(
                     """CREATE TABLE IF NOT EXISTS guids_map (
                     key INTEGER PRIMARY KEY,
@@ -187,7 +175,7 @@ class Cache:
                     expiration_date TEXT)"""
                 )
                 cursor.execute(
-                    """CREATE TABLE IF NOT EXISTS tmdb_show_data2 (
+                    """CREATE TABLE IF NOT EXISTS tmdb_show_data3 (
                     key INTEGER PRIMARY KEY,
                     tmdb_id INTEGER UNIQUE,
                     title TEXT,
@@ -214,11 +202,28 @@ class Cache:
                     expiration_date TEXT)"""
                 )
                 cursor.execute(
-                    """CREATE TABLE IF NOT EXISTS tvdb_data3 (
+                    """CREATE TABLE IF NOT EXISTS tmdb_episode_data (
+                    key INTEGER PRIMARY KEY,
+                    tmdb_id INTEGER UNIQUE,
+                    title TEXT,
+                    air_date TEXT,
+                    overview TEXT,
+                    episode_number INTEGER,
+                    season_number INTEGER,
+                    still_url TEXT,
+                    vote_count INTEGER,
+                    vote_average REAL,
+                    imdb_id TEXT,
+                    tvdb_id INTEGER,
+                    expiration_date TEXT)"""
+                )
+                cursor.execute(
+                    """CREATE TABLE IF NOT EXISTS tvdb_data4 (
                     key INTEGER PRIMARY KEY,
                     tvdb_id INTEGER UNIQUE,
                     type TEXT,
                     title TEXT,
+                    status TEXT,
                     summary TEXT,
                     poster_url TEXT,
                     background_url TEXT,
@@ -669,7 +674,7 @@ class Cache:
         with sqlite3.connect(self.cache_path) as connection:
             connection.row_factory = sqlite3.Row
             with closing(connection.cursor()) as cursor:
-                cursor.execute("SELECT * FROM tmdb_show_data2 WHERE tmdb_id = ?", (tmdb_id,))
+                cursor.execute("SELECT * FROM tmdb_show_data3 WHERE tmdb_id = ?", (tmdb_id,))
                 row = cursor.fetchone()
                 if row:
                     tmdb_dict["title"] = row["title"] if row["title"] else ""
@@ -703,8 +708,8 @@ class Cache:
         with sqlite3.connect(self.cache_path) as connection:
             connection.row_factory = sqlite3.Row
             with closing(connection.cursor()) as cursor:
-                cursor.execute("INSERT OR IGNORE INTO tmdb_show_data2(tmdb_id) VALUES(?)", (obj.tmdb_id,))
-                update_sql = "UPDATE tmdb_show_data2 SET title = ?, original_title = ?, studio = ?, overview = ?, tagline = ?, imdb_id = ?, " \
+                cursor.execute("INSERT OR IGNORE INTO tmdb_show_data3(tmdb_id) VALUES(?)", (obj.tmdb_id,))
+                update_sql = "UPDATE tmdb_show_data3 SET title = ?, original_title = ?, studio = ?, overview = ?, tagline = ?, imdb_id = ?, " \
                              "poster_url = ?, backdrop_url = ?, vote_count = ?, vote_average = ?, language_iso = ?, " \
                              "language_name = ?, genres = ?, keywords = ?, first_air_date = ?, last_air_date = ?, status = ?, " \
                              "type = ?, tvdb_id = ?, countries = ?, seasons = ?, expiration_date = ? WHERE tmdb_id = ?"
@@ -717,18 +722,62 @@ class Cache:
                     expiration_date.strftime("%Y-%m-%d"), obj.tmdb_id
                 ))
 
+    def query_tmdb_episode(self, tmdb_id, season_number, episode_number, expiration):
+        tmdb_dict = {}
+        expired = None
+        with sqlite3.connect(self.cache_path) as connection:
+            connection.row_factory = sqlite3.Row
+            with closing(connection.cursor()) as cursor:
+                cursor.execute(
+                    "SELECT * FROM tmdb_episode_data WHERE tmdb_id = ? AND season_number = ? AND episode_number = ?",
+                    (tmdb_id, season_number, episode_number)
+                )
+                row = cursor.fetchone()
+                if row:
+                    tmdb_dict["title"] = row["title"] if row["title"] else ""
+                    tmdb_dict["air_date"] = datetime.strptime(row["air_date"], "%Y-%m-%d") if row["air_date"] else None
+                    tmdb_dict["overview"] = row["overview"] if row["overview"] else ""
+                    tmdb_dict["still_url"] = row["still_url"] if row["still_url"] else ""
+                    tmdb_dict["vote_count"] = row["vote_count"] if row["vote_count"] else 0
+                    tmdb_dict["vote_average"] = row["vote_average"] if row["vote_average"] else 0
+                    tmdb_dict["imdb_id"] = row["imdb_id"] if row["imdb_id"] else ""
+                    tmdb_dict["tvdb_id"] = row["tvdb_id"] if row["tvdb_id"] else None
+                    datetime_object = datetime.strptime(row["expiration_date"], "%Y-%m-%d")
+                    time_between_insertion = datetime.now() - datetime_object
+                    expired = time_between_insertion.days > expiration
+        return tmdb_dict, expired
+
+    def update_tmdb_episode(self, expired, obj, expiration):
+        expiration_date = datetime.now() if expired is True else (datetime.now() - timedelta(days=random.randint(1, expiration)))
+        with sqlite3.connect(self.cache_path) as connection:
+            connection.row_factory = sqlite3.Row
+            with closing(connection.cursor()) as cursor:
+                cursor.execute(
+                    "INSERT OR IGNORE INTO tmdb_episode_data(tmdb_id, season_number, episode_number) VALUES(?, ?, ?)",
+                    (obj.tmdb_id, obj.season_number, obj.episode_number)
+                )
+                update_sql = "UPDATE tmdb_episode_data SET title = ?, air_date = ?, overview = ?, still_url = ?, " \
+                             "vote_count = ?, vote_average = ?, imdb_id = ?, tvdb_id = ?, " \
+                             "expiration_date = ? WHERE tmdb_id = ? AND season_number = ? AND episode_number = ?"
+                cursor.execute(update_sql, (
+                    obj.title, obj.air_date.strftime("%Y-%m-%d") if obj.air_date else None, obj.overview, obj.still_url,
+                    obj.vote_count, obj.vote_average, obj.imdb_id, obj.tvdb_id,
+                    expiration_date.strftime("%Y-%m-%d"), obj.tmdb_id, obj.season_number, obj.episode_number
+                ))
+
     def query_tvdb(self, tvdb_id, is_movie, expiration):
         tvdb_dict = {}
         expired = None
         with sqlite3.connect(self.cache_path) as connection:
             connection.row_factory = sqlite3.Row
             with closing(connection.cursor()) as cursor:
-                cursor.execute("SELECT * FROM tvdb_data3 WHERE tvdb_id = ? and type = ?", (tvdb_id, "movie" if is_movie else "show"))
+                cursor.execute("SELECT * FROM tvdb_data4 WHERE tvdb_id = ? and type = ?", (tvdb_id, "movie" if is_movie else "show"))
                 row = cursor.fetchone()
                 if row:
                     tvdb_dict["tvdb_id"] = int(row["tvdb_id"]) if row["tvdb_id"] else 0
                     tvdb_dict["type"] = row["type"] if row["type"] else ""
                     tvdb_dict["title"] = row["title"] if row["title"] else ""
+                    tvdb_dict["status"] = row["status"] if row["status"] else ""
                     tvdb_dict["summary"] = row["summary"] if row["summary"] else ""
                     tvdb_dict["poster_url"] = row["poster_url"] if row["poster_url"] else ""
                     tvdb_dict["background_url"] = row["background_url"] if row["background_url"] else ""
@@ -744,12 +793,12 @@ class Cache:
         with sqlite3.connect(self.cache_path) as connection:
             connection.row_factory = sqlite3.Row
             with closing(connection.cursor()) as cursor:
-                cursor.execute("INSERT OR IGNORE INTO tvdb_data3(tvdb_id, type) VALUES(?, ?)", (obj.tvdb_id, "movie" if obj.is_movie else "show"))
-                update_sql = "UPDATE tvdb_data3 SET title = ?, summary = ?, poster_url = ?, background_url = ?, " \
+                cursor.execute("INSERT OR IGNORE INTO tvdb_data4(tvdb_id, type) VALUES(?, ?)", (obj.tvdb_id, "movie" if obj.is_movie else "show"))
+                update_sql = "UPDATE tvdb_data4 SET title = ?, status = ?, summary = ?, poster_url = ?, background_url = ?, " \
                              "release_date = ?, genres = ?, expiration_date = ? WHERE tvdb_id = ? AND type = ?"
                 tvdb_date = f"{str(obj.release_date.year).zfill(4)}-{str(obj.release_date.month).zfill(2)}-{str(obj.release_date.day).zfill(2)}" if obj.release_date else None
                 cursor.execute(update_sql, (
-                    obj.title, obj.summary, obj.poster_url, obj.background_url, tvdb_date, "|".join(obj.genres),
+                    obj.title, obj.status, obj.summary, obj.poster_url, obj.background_url, tvdb_date, "|".join(obj.genres),
                     expiration_date.strftime("%Y-%m-%d"), obj.tvdb_id, "movie" if obj.is_movie else "show"
                 ))
 
