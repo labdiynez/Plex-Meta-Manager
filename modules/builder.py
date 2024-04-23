@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from modules import anidb, anilist, icheckmovies, imdb, letterboxd, mal, mojo, plex, radarr, reciperr, sonarr, tautulli, tmdb, trakt, tvdb, mdblist, util
 from modules.util import Failed, FilterFailed, NonExisting, NotScheduled, NotScheduledRange, Deleted
 from modules.overlay import Overlay
-from modules.poster import PMMImage
+from modules.poster import KometaImage
 from plexapi.audio import Artist, Album, Track
 from plexapi.exceptions import NotFound
 from plexapi.video import Movie, Show, Season, Episode
@@ -44,7 +44,7 @@ scheduled_boolean = ["visible_library", "visible_home", "visible_shared"]
 string_details = ["sort_title", "content_rating", "name_mapping"]
 ignored_details = [
     "smart_filter", "smart_label", "smart_url", "run_again", "schedule", "sync_mode", "template", "variables", "test", "suppress_overlays",
-    "delete_not_scheduled", "tmdb_person", "build_collection", "collection_order", "builder_level", "overlay", "pmm_poster",
+    "delete_not_scheduled", "tmdb_person", "build_collection", "collection_order", "builder_level", "overlay", "kometa_poster",
     "validate_builders", "libraries", "sync_to_users", "exclude_users", "collection_name", "playlist_name", "name", "limit",
     "blank_collection", "allowed_library_types", "run_definition", "delete_playlist", "ignore_blank_results", "only_run_on_create",
     "delete_collections_named", "tmdb_person_offset", "append_label", "key_name", "translation_key", "translation_prefix", "tmdb_birthday"
@@ -479,14 +479,14 @@ class CollectionBuilder:
 
         self.posters = {}
         self.backgrounds = {}
-        if not self.overlay and "pmm_poster" in methods:
+        if not self.overlay and "kometa_poster" in methods:
             logger.debug("")
-            logger.debug("Validating Method: pmm_poster")
-            if self.data[methods["pmm_poster"]] is None:
-                logger.error(f"{self.Type} Error: pmm_poster attribute is blank")
-            logger.debug(f"Value: {data[methods['pmm_poster']]}")
+            logger.debug("Validating Method: kometa_poster")
+            if self.data[methods["kometa_poster"]] is None:
+                logger.error(f"{self.Type} Error: kometa_poster attribute is blank")
+            logger.debug(f"Value: {data[methods['kometa_poster']]}")
             try:
-                self.posters["pmm_poster"] = PMMImage(self.config, self.data[methods["pmm_poster"]], "pmm_poster", playlist=self.playlist)
+                self.posters["kometa_poster"] = KometaImage(self.config, self.data[methods["kometa_poster"]], "kometa_poster", playlist=self.playlist)
             except Failed as e:
                 logger.error(e)
 
@@ -957,7 +957,7 @@ class CollectionBuilder:
                         raise Failed(f"{self.Type} Error: collection_order: {ts} is invalid. Options: {', '.join(sorts)}")
                     self.custom_sort.append(ts)
             if test_sort not in plex.collection_order_options + ["custom.asc", "custom.desc"] and not self.custom_sort:
-                raise Failed(f"{self.Type} Error: {test_sort} collection_order invalid\n\trelease (Order Collection by release dates)\n\talpha (Order Collection Alphabetically)\n\tcustom.asc/custom.desc (Custom Order Collection)\n\tOther sorting options can be found at https://github.com/meisnate12/Plex-Meta-Manager/wiki/Smart-Builders#sort-options")
+                raise Failed(f"{self.Type} Error: {test_sort} collection_order invalid\n\trelease (Order Collection by release dates)\n\talpha (Order Collection Alphabetically)\n\tcustom.asc/custom.desc (Custom Order Collection)\n\tOther sorting options can be found at https://github.com/Kometa-Team/Kometa/wiki/Smart-Builders#sort-options")
 
         if self.smart:
             self.custom_sort = None
@@ -1181,9 +1181,10 @@ class CollectionBuilder:
     def _poster(self, method_name, method_data):
         if method_name == "url_poster":
             try:
-                image_response = self.config.get(method_data, headers=util.header())
-                if image_response.status_code >= 400 or image_response.headers["Content-Type"] not in util.image_content_types:
-                    raise ConnectionError
+                if not method_data.startswith("https://theposterdb.com/api/assets/"):
+                    image_response = self.config.get(method_data, headers=util.header())
+                    if image_response.status_code >= 400 or image_response.headers["Content-Type"] not in util.image_content_types:
+                        raise ConnectionError
                 self.posters[method_name] = method_data
             except ConnectionError:
                 logger.warning(f"{self.Type} Warning: No Poster Found at {method_data}")
@@ -1579,6 +1580,8 @@ class CollectionBuilder:
                         new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, parent=method_name)
                     elif search_attr == "type":
                         new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name, options=imdb.title_type_options)
+                    elif search_attr == "topic":
+                        new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name, options=imdb.topic_options)
                     elif search_attr == "release":
                         new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="date", parent=method_name, date_return="%Y-%m-%d")
                     elif search_attr == "rating":
@@ -1642,7 +1645,7 @@ class CollectionBuilder:
                                 countries.append(str(country))
                         if countries:
                             new_dictionary[lower_method] = countries
-                    elif search_attr in ["keyword", "language"]:
+                    elif search_attr in ["keyword", "language", "alternate_version", "crazy_credit", "location", "goof", "plot", "quote", "soundtrack", "trivia"]:
                         new_dictionary[lower_method] = util.parse(self.Type, search_method, search_data, datatype="lowerlist", parent=method_name)
                     elif search_attr == "cast":
                         casts = []
@@ -3353,9 +3356,9 @@ class CollectionBuilder:
             remove_tags = self.details["label.remove"] if "label.remove" in self.details else None
             sync_tags = self.details["label.sync"] if "label.sync" in self.details else None
             if sync_tags:
-                sync_tags.append("PMM")
+                sync_tags.append("Kometa")
             else:
-                add_tags.append("PMM")
+                add_tags.append("Kometa")
             tag_results = self.library.edit_tags('label', self.obj, add_tags=add_tags, remove_tags=remove_tags, sync_tags=sync_tags, do_print=False)
             if tag_results:
                 batch_display += f"\n{tag_results}"
@@ -3450,7 +3453,7 @@ class CollectionBuilder:
         self.collection_background = util.pick_image(self.obj.title, self.backgrounds, self.library.prioritize_assets, self.library.download_url_assets, asset_location, is_poster=False)
 
         clean_temp = False
-        if isinstance(self.collection_poster, PMMImage):
+        if isinstance(self.collection_poster, KometaImage):
             clean_temp = True
             item_vars = {"title": self.name, "titleU": self.name.upper(), "titleL": self.name.lower()}
             self.collection_poster = self.collection_poster.save(item_vars)

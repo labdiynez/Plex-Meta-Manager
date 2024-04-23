@@ -114,14 +114,14 @@ class DataFile:
                 file_path = file_path[:-5]
         if not translation and not file_path.endswith((".yml", ".yaml")):
             file_path = f"{file_path}.yml"
-        if file_type in ["URL", "Git", "Repo"] or (images and file_type == "PMM Default"):
+        if file_type in ["URL", "Git", "Repo"] or (images and file_type == "Default"):
             if file_type == "Repo" and not self.config.custom_repo:
                 raise Failed("Config Error: No custom_repo defined")
             if file_type == "URL":
                 content_path = file_path
             elif file_type == "Repo":
                 content_path = f"{self.config.custom_repo}{file_path}"
-            elif file_type == "PMM Default":
+            elif file_type == "Default":
                 content_path = f"{self.config.GitHub.images_raw_url}{folder}{file_path}"
             else:
                 content_path = f"{self.config.GitHub.configs_url}{file_path}"
@@ -133,7 +133,7 @@ class DataFile:
                 raise Failed(f"URL Error: No file found at {content_path}")
             yaml = YAML(input_data=response.content, check_empty=True)
         else:
-            if file_type == "PMM Default":
+            if file_type == "Default":
                 if not overlay and file_path.startswith(("movie/", "chart/", "award/")):
                     file_path = file_path[6:]
                 elif not overlay and file_path.startswith(("show/", "both/")):
@@ -153,7 +153,7 @@ class DataFile:
             content_path = os.path.abspath(os.path.join(file_path, "default.yml") if translation else file_path)
             dir_path = file_path
             if not os.path.exists(content_path):
-                if file_type == "PMM Default":
+                if file_type == "Default":
                     raise Failed(f"File Error: Default does not exist {file_path}")
                 else:
                     raise Failed(f"File Error: File does not exist {content_path}")
@@ -406,6 +406,15 @@ class DataFile:
                                                 error_text = f'in {var_value}'
                                         elif str(con_var_value) == str(var_value):
                                             error_text = f'is "{var_value}"'
+                                elif var_key.endswith(".notdefault"):
+                                    var_name = var_key[:-11]
+                                    if var_name in variables or var_name in default:
+                                        con_var_value = variables[var_name] if var_name in variables else default[var_name]
+                                        if isinstance(var_value, list):
+                                            if con_var_value in var_value:
+                                                error_text = f'in {var_value}'
+                                        elif str(con_var_value) == str(var_value):
+                                            error_text = f'is "{var_value}"'
                                 elif var_key in variables or var_key in default:
                                     con_var_value = variables[var_key] if var_key in variables else default[var_key]
                                     if isinstance(var_value, list):
@@ -614,7 +623,7 @@ class MetadataFile(DataFile):
         self.style_priority = []
         if self.file_style == "image":
             self.metadata = {}
-            if self.type == "PMM Default":
+            if self.type == "Default":
                 if self.path.endswith(".yml"):
                     self.path = self.path[:-4]
                 elif self.path.endswith(".yaml"):
@@ -2160,7 +2169,7 @@ class MetadataFile(DataFile):
                 if str(meta[methods["f1_language"]]).lower() in ergast.translations:
                     f1_language = str(meta[methods["f1_language"]]).lower()
                 else:
-                    logger.error(f"{self.type_str} Error: f1_language must be a language code PMM has a translation for. Options: {ergast.translations}")
+                    logger.error(f"{self.type_str} Error: f1_language must be a language code Kometa has a translation for. Options: {ergast.translations}")
             logger.info(f"Setting {item.title} of {self.type_str} to F1 Season {f1_season}")
             races = self.config.Ergast.get_races(f1_season, f1_language)
             race_lookup = {r.round: r for r in races}
