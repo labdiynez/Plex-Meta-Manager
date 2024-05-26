@@ -61,7 +61,8 @@ class Overlays:
                 logger.ghost(f"Restoring: {i}/{len(remove_overlays)} {item_title}")
                 self.remove_overlay(item, item_title, "Overlay", [
                     os.path.join(self.library.overlay_backup, f"{item.ratingKey}.png"),
-                    os.path.join(self.library.overlay_backup, f"{item.ratingKey}.jpg")
+                    os.path.join(self.library.overlay_backup, f"{item.ratingKey}.jpg"),
+                    os.path.join(self.library.overlay_backup, f"{item.ratingKey}.webp")
                 ])
             logger.exorcise()
         else:
@@ -79,13 +80,6 @@ class Overlays:
                 if not _trakt_ratings:
                     raise Failed
                 return _trakt_ratings
-
-            reverse_anidb = {}
-            for k, v in self.library.anidb_map.items():
-                reverse_anidb[v] = k
-            reverse_mal = {}
-            for k, v in self.library.mal_map.items():
-                reverse_mal[v] = k
 
             for i, (over_key, (item, over_names)) in enumerate(sorted(key_to_overlays.items(), key=lambda io: self.library.get_item_sort_title(io[1][0])), 1):
                 item_title = self.library.get_item_sort_title(item, atr="title")
@@ -176,11 +170,15 @@ class Overlays:
                             os.remove(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.png"))
                         if os.path.exists(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.jpg")):
                             os.remove(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.jpg"))
+                        if os.path.exists(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.webp")):
+                            os.remove(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.webp"))
                     elif has_overlay:
                         if os.path.exists(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.png")):
                             has_original = os.path.join(self.library.overlay_backup, f"{item.ratingKey}.png")
                         elif os.path.exists(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.jpg")):
                             has_original = os.path.join(self.library.overlay_backup, f"{item.ratingKey}.jpg")
+                        elif os.path.exists(os.path.join(self.library.overlay_backup, f"{item.ratingKey}.webp")):
+                            has_original = os.path.join(self.library.overlay_backup, f"{item.ratingKey}.webp")
                         if self.library.reset_overlays:
                             reset_list = self.library.reset_overlays
                         elif has_original is None and not self.library.reset_overlays:
@@ -296,10 +294,10 @@ class Overlays:
                                                         raise Failed("No Trakt User Rating Found")
                                                 elif str(format_var).startswith("mdb"):
                                                     mdb_item = None
-                                                    if self.config.Mdblist.limit is False:
+                                                    if self.config.MDBList.limit is False:
                                                         if self.library.is_show and tvdb_id:
                                                             try:
-                                                                mdb_item = self.config.Mdblist.get_series(tvdb_id)
+                                                                mdb_item = self.config.MDBList.get_series(tvdb_id)
                                                             except LimitReached as err:
                                                                 logger.debug(err)
                                                             except Failed as err:
@@ -309,7 +307,7 @@ class Overlays:
                                                                 raise
                                                         if self.library.is_movie and tmdb_id:
                                                             try:
-                                                                mdb_item = self.config.Mdblist.get_movie(tmdb_id)
+                                                                mdb_item = self.config.MDBList.get_movie(tmdb_id)
                                                             except LimitReached as err:
                                                                 logger.debug(err)
                                                             except Failed as err:
@@ -319,7 +317,7 @@ class Overlays:
                                                                 raise
                                                         if imdb_id and not mdb_item:
                                                             try:
-                                                                mdb_item = self.config.Mdblist.get_imdb(imdb_id)
+                                                                mdb_item = self.config.MDBList.get_imdb(imdb_id)
                                                             except LimitReached as err:
                                                                 logger.debug(err)
                                                             except Failed as err:
@@ -353,13 +351,7 @@ class Overlays:
                                                         found_rating = mdb_item.score / 10 if mdb_item.score else None
 
                                                 elif str(format_var).startswith(("anidb", "mal")):
-                                                    anidb_id = None
-                                                    if item.ratingKey in reverse_anidb:
-                                                        anidb_id = reverse_anidb[item.ratingKey]
-                                                    elif tvdb_id in self.config.Convert._tvdb_to_anidb:
-                                                        anidb_id = self.config.Convert._tvdb_to_anidb[tvdb_id]
-                                                    elif imdb_id in self.config.Convert._imdb_to_anidb:
-                                                        anidb_id = self.config.Convert._imdb_to_anidb[imdb_id]
+                                                    anidb_id = self.config.Convert.ids_to_anidb(self.library, item.ratingKey, tvdb_id, imdb_id, tmdb_id)
 
                                                     if str(format_var).startswith("anidb"):
                                                         if anidb_id:
@@ -373,8 +365,8 @@ class Overlays:
                                                         else:
                                                             raise Failed(f"No AniDB ID for Guid: {item.guid}")
                                                     else:
-                                                        if item.ratingKey in reverse_mal:
-                                                            mal_id = reverse_mal[item.ratingKey]
+                                                        if item.ratingKey in self.library.reverse_mal:
+                                                            mal_id = self.library.reverse_mal[item.ratingKey]
                                                         elif not anidb_id:
                                                             raise Failed(f"Convert Warning: No AniDB ID to Convert to MyAnimeList ID for Guid: {item.guid}")
                                                         elif anidb_id not in self.config.Convert._anidb_to_mal:
@@ -507,8 +499,14 @@ class Overlays:
                                             else:
                                                 overlay_box = current_overlay.get_coordinates((canvas_width, canvas_height), box=current_overlay.image.size, new_cords=cord)
                                             new_poster.paste(current_overlay.image, overlay_box, current_overlay.image)
-                                temp = os.path.join(self.library.overlay_folder, "temp.jpg")
-                                new_poster.save(temp, exif=exif_tags)
+                                ext = "webp" if self.library.overlay_artwork_filetype.startswith("webp") else self.library.overlay_artwork_filetype
+                                temp = os.path.join(self.library.overlay_folder, f"temp.{ext}")
+                                if self.library.overlay_artwork_quality and self.library.overlay_artwork_filetype in ["jpg", "webp_lossy"]:
+                                    new_poster.save(temp, exif=exif_tags, quality=self.library.overlay_artwork_quality)
+                                elif self.library.overlay_artwork_filetype == "webp_lossless":
+                                    new_poster.save(temp, exif=exif_tags, lossless=True)
+                                else:
+                                    new_poster.save(temp, exif=exif_tags)
                                 self.library.upload_poster(item, temp)
                                 self.library.edit_tags("label", item, add_tags=["Overlay"], do_print=False)
                                 poster_compare = poster.compare if poster else item.thumb

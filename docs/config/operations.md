@@ -157,12 +157,16 @@ You can create individual blocks of operations by using a list under `operations
     
     **Accepted Values:** Source or List of sources to use in that order
     
+    ???+ tip "Note on `mdb` sources"
+
+        MDBList is not a live reflection of third-party sites such as CommonSense and Trakt. The data on MDBList is often days, weeks and months out of date as it is only periodically refreshed. As such, the data that Kometa applies using `mdb_` operations applies may not be the same as you see if you visit those third-party sources directly.
+
     <table class="clearTable">
-      <tr><td>`mdb`</td><td>Use MdbList for Content Ratings</td></tr>
-      <tr><td>`mdb_commonsense`</td><td>Use Common Sense Rating through MDbList for Content Ratings</td></tr>
-      <tr><td>`mdb_commonsense0`</td><td>Use Common Sense Rating with Zero Padding through MDbList for Content Ratings</td></tr>
-      <tr><td>`mdb_age_rating`</td><td>Use MDbList Age Rating for Content Ratings</td></tr>
-      <tr><td>`mdb_age_rating0`</td><td>Use MDbList Age Rating with Zero Padding for Content Ratings</td></tr>
+      <tr><td>`mdb`</td><td>Use MDBList for Content Ratings</td></tr>
+      <tr><td>`mdb_commonsense`</td><td>Use Common Sense Rating through MDBList for Content Ratings</td></tr>
+      <tr><td>`mdb_commonsense0`</td><td>Use Common Sense Rating with Zero Padding through MDBList for Content Ratings</td></tr>
+      <tr><td>`mdb_age_rating`</td><td>Use MDBList Age Rating for Content Ratings</td></tr>
+      <tr><td>`mdb_age_rating0`</td><td>Use MDBList Age Rating with Zero Padding for Content Ratings</td></tr>
       <tr><td>`omdb`</td><td>Use IMDb through OMDb for Content Ratings</td></tr>
       <tr><td>`mal`</td><td>Use MyAnimeList for Content Ratings</td></tr>
       <tr><td>`lock`</td><td>Lock Content Rating Field</td></tr>
@@ -274,13 +278,17 @@ You can create individual blocks of operations by using a list under `operations
     **Attribute:** `mass_originally_available_update`
     
     **Accepted Values:** Source or List of sources to use in that order
-    
+
+    ???+ tip "Note on `mdb` sources"
+
+        MDBList is not a live reflection of third-party sites such as CommonSense and Trakt. The data on MDBList is often days, weeks and months out of date as it is only periodically refreshed. As such, the data that Kometa applies using `mdb_` operations applies may not be the same as you see if you visit those third-party sources directly.
+
     <table class="clearTable">
       <tr><td>`tmdb`</td><td>Use TMDb Release Date</td></tr>
       <tr><td>`tvdb`</td><td>Use TVDb Release Date</td></tr>
       <tr><td>`omdb`</td><td>Use IMDb Release Date through OMDb</td></tr>
-      <tr><td>`mdb`</td><td>Use MdbList Release Date</td></tr>
-      <tr><td>`mdb_digital`</td><td>Use MdbList Digital Release Date</td></tr>
+      <tr><td>`mdb`</td><td>Use MDBList Release Date</td></tr>
+      <tr><td>`mdb_digital`</td><td>Use MDBList Digital Release Date</td></tr>
       <tr><td>`anidb`</td><td>Use AniDB Release Date</td></tr>
       <tr><td>`mal`</td><td>Use MyAnimeList Release Date</td></tr>
       <tr><td>`lock`</td><td>Lock Originally Available Field</td></tr>
@@ -297,6 +305,49 @@ You can create individual blocks of operations by using a list under `operations
           TV Shows:
             operations:
               mass_originally_available_update: 
+                - mdb_digital
+                - mdb
+                - 1900-01-01
+        ```
+
+###### Mass Added At Update
+
+??? blank "`mass_added_at_update` - Updates the added at date of every item in the library.<a class="headerlink" href="#mass-added-at-update" title="Permanent link">¶</a>"
+
+    <div id="mass-added-at-update" />Updates every item's added at date in the library to the chosen site's date.
+
+    <hr style="margin: 0px;">
+    
+    **Attribute:** `mass_added_at_update`
+    
+    **Accepted Values:** Source or List of sources to use in that order
+
+    ???+ tip "Note on `mdb` sources"
+
+        MDBList is not a live reflection of third-party sites such as CommonSense and Trakt. The data on MDBList is often days, weeks and months out of date as it is only periodically refreshed. As such, the data that Kometa applies using `mdb_` operations applies may not be the same as you see if you visit those third-party sources directly.
+
+    <table class="clearTable">
+      <tr><td>`tmdb`</td><td>Use TMDb Release Date</td></tr>
+      <tr><td>`tvdb`</td><td>Use TVDb Release Date</td></tr>
+      <tr><td>`omdb`</td><td>Use IMDb Release Date through OMDb</td></tr>
+      <tr><td>`mdb`</td><td>Use MDBList Release Date</td></tr>
+      <tr><td>`mdb_digital`</td><td>Use MDBList Digital Release Date</td></tr>
+      <tr><td>`anidb`</td><td>Use AniDB Release Date</td></tr>
+      <tr><td>`mal`</td><td>Use MyAnimeList Release Date</td></tr>
+      <tr><td>`lock`</td><td>Lock Added At Field</td></tr>
+      <tr><td>`unlock`</td><td>Unlock Added At Field</td></tr>
+      <tr><td>`remove`</td><td>Remove Added At and Lock Field</td></tr>
+      <tr><td>`reset`</td><td>Remove Added At and Unlock Field</td></tr>
+      <tr><td colspan="2">Any String in the Format: YYYY-MM-DD for Added At (<code>2022-05-28</code>)</td></tr>
+    </table>                                                      
+
+    ???+ example "Example"
+
+        ```yaml
+        libraries:
+          TV Shows:
+            operations:
+              mass_added_at_update: 
                 - mdb_digital
                 - mdb
                 - 1900-01-01
@@ -324,23 +375,27 @@ You can create individual blocks of operations by using a list under `operations
     **Attribute:** `mass_audience_rating_update`/`mass_critic_rating_update`/`mass_user_rating_update`
     
     **Accepted Values:** Source or List of sources to use in that order
-    
+
+    ???+ tip "Note on `mdb` sources"
+
+        MDBList is not a live reflection of third-party sites such as CommonSense and Trakt. The data on MDBList is often days, weeks and months out of date as it is only periodically refreshed. As such, the data that Kometa applies using `mdb_` operations applies may not be the same as you see if you visit those third-party sources directly.
+
     <table class="clearTable">
       <tr><td>`tmdb`</td><td>Use TMDb Rating</td></tr>
       <tr><td>`imdb`</td><td>Use IMDb Rating</td></tr>
       <tr><td>`trakt_user`</td><td>Use Trakt User's Personal Rating</td></tr>
       <tr><td>`omdb`</td><td>Use IMDbRating through OMDb</td></tr>
-      <tr><td>`mdb`</td><td>Use MdbList Score</td></tr>
-      <tr><td>`mdb_average`</td><td>Use MdbList Average Score</td></tr>
-      <tr><td>`mdb_imdb`</td><td>Use IMDb Rating through MDbList</td></tr>
-      <tr><td>`mdb_metacritic`</td><td>Use Metacritic Rating through MDbList</td></tr>
-      <tr><td>`mdb_metacriticuser`</td><td>Use Metacritic User Rating through MDbList</td></tr>
-      <tr><td>`mdb_trakt`</td><td>Use Trakt Rating through MDbList</td></tr>
-      <tr><td>`mdb_tomatoes`</td><td>Use Rotten Tomatoes Rating through MDbList</td></tr>
-      <tr><td>`mdb_tomatoesaudience`</td><td>Use Rotten Tomatoes Audience Rating through MDbList</td></tr>
-      <tr><td>`mdb_tmdb`</td><td>Use TMDb Rating through MDbList</td></tr>
-      <tr><td>`mdb_letterboxd`</td><td>Use Letterboxd Rating through MDbList</td></tr>
-      <tr><td>`mdb_myanimelist`</td><td>Use MyAnimeList Rating through MDbList</td></tr>
+      <tr><td>`mdb`</td><td>Use MDBList Score</td></tr>
+      <tr><td>`mdb_average`</td><td>Use MDBList Average Score</td></tr>
+      <tr><td>`mdb_imdb`</td><td>Use IMDb Rating through MDBList</td></tr>
+      <tr><td>`mdb_metacritic`</td><td>Use Metacritic Rating through MDBList</td></tr>
+      <tr><td>`mdb_metacriticuser`</td><td>Use Metacritic User Rating through MDBList</td></tr>
+      <tr><td>`mdb_trakt`</td><td>Use Trakt Rating through MDBList</td></tr>
+      <tr><td>`mdb_tomatoes`</td><td>Use Rotten Tomatoes Rating through MDBList</td></tr>
+      <tr><td>`mdb_tomatoesaudience`</td><td>Use Rotten Tomatoes Audience Rating through MDBList</td></tr>
+      <tr><td>`mdb_tmdb`</td><td>Use TMDb Rating through MDBList</td></tr>
+      <tr><td>`mdb_letterboxd`</td><td>Use Letterboxd Rating through MDBList</td></tr>
+      <tr><td>`mdb_myanimelist`</td><td>Use MyAnimeList Rating through MDBList</td></tr>
       <tr><td>`anidb_rating`</td><td>Use AniDB Rating</td></tr>
       <tr><td>`anidb_average`</td><td>Use AniDB Average</td></tr>
       <tr><td>`anidb_score`</td><td>Use AniDB Review Score</td></tr>
@@ -411,15 +466,10 @@ You can create individual blocks of operations by using a list under `operations
           TV Shows:
             operations:
               mass_episode_audience_rating_update: 
-                - mdb
-                - mdb_average
+                - tmdb
                 - 2.0
               mass_episode_critic_rating_update: 
                 - imdb
-                - omdb
-                - 2.0
-              mass_episode_user_rating_update: 
-                - trakt_user
                 - 2.0
         ```
 

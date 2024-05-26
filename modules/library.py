@@ -31,7 +31,9 @@ class Library(ABC):
         self.show_map = {}
         self.imdb_map = {}
         self.anidb_map = {}
+        self.reverse_anidb = {}
         self.mal_map = {}
+        self.reverse_mal = {}
         self.movie_rating_key_map = {}
         self.show_rating_key_map = {}
         self.imdb_rating_key_map = {}
@@ -81,6 +83,8 @@ class Library(ABC):
         self.only_filter_missing = params["only_filter_missing"]
         self.ignore_ids = params["ignore_ids"]
         self.ignore_imdb_ids = params["ignore_imdb_ids"]
+        self.overlay_artwork_quality = params["overlay_artwork_quality"]
+        self.overlay_artwork_filetype = params["overlay_artwork_filetype"]
         self.assets_for_all = params["assets_for_all"]
         self.assets_for_all_collections = False
         self.delete_collections = params["delete_collections"]
@@ -95,6 +99,7 @@ class Library(ABC):
         self.mass_content_rating_update = params["mass_content_rating_update"]
         self.mass_original_title_update = params["mass_original_title_update"]
         self.mass_originally_available_update = params["mass_originally_available_update"]
+        self.mass_added_at_update = params["mass_added_at_update"]
         self.mass_imdb_parental_labels = params["mass_imdb_parental_labels"]
         self.mass_poster_update = params["mass_poster_update"]
         self.mass_background_update = params["mass_background_update"]
@@ -122,7 +127,7 @@ class Library(ABC):
         self.items_library_operation = True if self.assets_for_all or self.mass_genre_update or self.remove_title_parentheses \
                                                or self.mass_audience_rating_update or self.mass_critic_rating_update or self.mass_user_rating_update \
                                                or self.mass_episode_audience_rating_update or self.mass_episode_critic_rating_update or self.mass_episode_user_rating_update \
-                                               or self.mass_content_rating_update or self.mass_originally_available_update or self.mass_original_title_update\
+                                               or self.mass_content_rating_update or self.mass_originally_available_update or self.mass_added_at_update or self.mass_original_title_update\
                                                or self.mass_imdb_parental_labels or self.genre_mapper or self.content_rating_mapper or self.mass_studio_update\
                                                or self.radarr_add_all_existing or self.sonarr_add_all_existing or self.mass_poster_update or self.mass_background_update else False
         self.library_operation = True if self.items_library_operation or self.delete_collections or self.mass_collection_mode \
@@ -237,7 +242,7 @@ class Library(ABC):
         return poster_uploaded, background_uploaded
 
     def get_id_from_maps(self, key):
-        key = str(key)
+        key = int(key)
         if key in self.movie_rating_key_map:
             return self.movie_rating_key_map[key]
         elif key in self.show_rating_key_map:
@@ -375,13 +380,37 @@ class Library(ABC):
                     id_type, main_id, imdb_id = self.config.Convert.get_id(item, self)
                 if main_id:
                     if id_type == "movie":
-                        self.movie_rating_key_map[key] = main_id[0]
+                        if len(main_id) > 1:
+                            for _id in main_id:
+                                try:
+                                    self.config.TMDb.get_movie(_id)
+                                    self.movie_rating_key_map[key] = _id
+                                    break
+                                except Failed:
+                                    pass
+                        else:
+                            self.movie_rating_key_map[key] = main_id[0]
                         util.add_dict_list(main_id, key, self.movie_map)
                     elif id_type == "show":
-                        self.show_rating_key_map[key] = main_id[0]
+                        if len(main_id) > 1:
+                            for _id in main_id:
+                                try:
+                                    self.config.Convert.tvdb_to_tmdb(_id, fail=True)
+                                    self.show_rating_key_map[key] = _id
+                                    break
+                                except Failed:
+                                    pass
+                        else:
+                            self.show_rating_key_map[key] = main_id[0]
                         util.add_dict_list(main_id, key, self.show_map)
                 if imdb_id:
                     self.imdb_rating_key_map[key] = imdb_id[0]
                     util.add_dict_list(imdb_id, key, self.imdb_map)
+        self.reverse_anidb = {}
+        for k, v in self.anidb_map.items():
+            self.reverse_anidb[v] = k
+        self.reverse_mal = {}
+        for k, v in self.mal_map.items():
+            self.reverse_mal[v] = k
         logger.info("")
         logger.info(f"Processed {len(items)} {self.type}s")

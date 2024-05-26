@@ -1,21 +1,22 @@
 # Requirements Update (requirements will need to be reinstalled)
-Updated gitpython requirement to 3.1.43
+Updated PlexAPI requirement to 4.15.13
 
 # Removed Features
 
 # New Features
-Add Page Topics Options to `imdb_search`
-Add `lxml` Docker Version using an old lxml version that supports more cpus
+Checks requirement versions to print a message if one needs to be updated
+Added the `mass_added_at_update` operation to mass set the Added At field of Movies and Shows.
+Add automated Anime Aggregations for AniDB matching
 
 # Updates
-Let conditional `.not` and `.exists` work with default variables
+Changed the `overlay_artwork_filetype` Setting to accept `webp_lossy` and `webp_lossless` while the old attribute `webp` will be treated as `webp_lossy`.
 
 # Defaults
 
 # Bug Fixes
-Fixes #1965 `download_url_assets` was causing `url_background` to upload as a poster
-Fixes #1969 Ignore validating TPDb links
+Fixes #2034 `anilist_userlist` `score` attribute wasn't being validated correctly
+Fixes #1367 Error when trying to symlink the logs folder
+Fixes #2028 TMDb IDs were being ignored on the report
+Fixes a bug when parsing a comma-separated string of ints
 
 Various other Minor Fixes
-
-Closed legacy issues on GitHub

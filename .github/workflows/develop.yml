@@ -3,13 +3,41 @@ name: Docker Develop Release
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
 
 jobs:
 
-  docker:
+  verify-changes:
     runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.list-changes.outputs.build }}
+    steps:
+
+      - name: Check Out Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: develop
+
+      - name: Get changes
+        id: get-changes
+        run: echo "files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
+
+      - name: List changed files
+        id: list-changes
+        run: |
+            for file in ${{ steps.get-changes.outputs.files }}; do
+                if [[ $file =~ ^(defaults|fonts|modules|kometa.py|requirements.txt|.dockerignore|Dockerfile).*$ ]] ; then
+                    echo "$file will trigger docker build"
+                    echo "build=true" >> $GITHUB_OUTPUT
+                else
+                    echo "$file will not trigger docker build"
+                fi
+            done
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [ verify-changes ]
+    if: needs.verify-changes.outputs.build == 'true'
     steps:
 
       - name: Check Out Repo
@@ -46,55 +74,48 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and Push lxml Version
-        id: docker_build_lxml
-        uses: docker/build-push-action@v5
-        with:
-          context: ./
-          file: ./Dockerfile.lxml
-          build-args: |
-            "BRANCH_NAME=develop"
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: true
-          tags: kometateam/kometa:lxml-develop
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Send Discord Commit Notification
-        uses: Kometa-Team/discord-notifications@master
-        with:
-          webhook_id_token: ${{ secrets.DEVELOP_WEBHOOK }}
-          title: Commits
-          message: "<@&954835263731949623> - An update to Kometa has been published and is available to users of the **develop** branch.\n\nWe **strongly** recommend users who previously switched to the `nightly` branch to resolve any previous issues to now switch back to the `develop` branch now."
-          commits: "true"
-          username: Kobota
-          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/logo.png
-          author: ${{ secrets.REPO_NAME }} Develop Release
-          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/release.png
-
       - name: Discord Success Notification
         uses: Kometa-Team/discord-notifications@master
         if: success()
         with:
           webhook_id_token: ${{ secrets.BUILD_WEBHOOK }}
-          title: "${{ secrets.REPO_NAME }} develop: **Build Successful**"
-          url: https://github.com/Kometa-Team/${{ secrets.REPO_NAME }}/actions/runs/${{ github.run_id }}
-          color: 844716
-          username: Kobota
-          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/logo.png
-          author: Docker
-          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/docker.png
+          title: "${{ vars.REPO_NAME }} develop: ${{ vars.TEXT_SUCCESS }}"
+          url: https://github.com/Kometa-Team/${{ vars.REPO_NAME }}/actions/runs/${{ github.run_id }}
+          color: ${{ vars.COLOR_SUCCESS }}
+          username: ${{ vars.BOT_NAME }}
+          avatar_url: ${{ vars.BOT_IMAGE }}
+          author: ${{ vars.DOCKER_NAME }}
+          author_icon_url: ${{ vars.DOCKER_IMAGE }}
 
       - name: Discord Failure Notification
         uses: Kometa-Team/discord-notifications@master
         if: failure()
         with:
           webhook_id_token: ${{ secrets.BUILD_WEBHOOK }}
-          message: <@&1079153184007790652>
-          title: "${{ secrets.REPO_NAME }} develop: **Build Failed**"
-          url: https://github.com/Kometa-Team/${{ secrets.REPO_NAME }}/actions/runs/${{ github.run_id }}
-          color: 14879811
-          username: Kobota
-          avatar_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/logo.png
-          author: Docker
-          author_icon_url: https://raw.githubusercontent.com/Kometa-Team/Kometa/develop/.github/docker.png
+          message: ${{ vars.BUILD_FAILURE_ROLE }}
+          title: "${{ vars.REPO_NAME }} develop: ${{ vars.TEXT_FAILURE }}"
+          url: https://github.com/Kometa-Team/${{ vars.REPO_NAME }}/actions/runs/${{ github.run_id }}
+          color: ${{ vars.COLOR_FAILURE }}
+          username: ${{ vars.BOT_NAME }}
+          avatar_url: ${{ vars.BOT_IMAGE }}
+          author: ${{ vars.DOCKER_NAME }}
+          author_icon_url: ${{ vars.DOCKER_IMAGE }}
+
+  commit-notification:
+    runs-on: ubuntu-latest
+    needs: [ docker-build, verify-changes ]
+    if: ${{ success() && needs.verify-changes.outputs.build == 'true' }}
+    steps:
+
+      - name: Send Discord Commit Notification
+        uses: Kometa-Team/discord-notifications@master
+        with:
+          webhook_id_token: ${{ secrets.DEVELOP_WEBHOOK }}
+          title: ${{ vars.TEXT_COMMITS }}
+          message: "<@&954835263731949623> - An update to Kometa has been published and is available to users of the **develop** branch.\n\nWe **strongly** recommend users who previously switched to the `nightly` branch to resolve any previous issues to now switch back to the `develop` branch now."
+          commits: "true"
+          color: ${{ vars.COLOR_SUCCESS }}
+          username: ${{ vars.BOT_NAME }}
+          avatar_url: ${{ vars.BOT_IMAGE }}
+          author: ${{ vars.REPO_NAME }} Develop Release
+          author_icon_url: ${{ vars.RELEASE_IMAGE }}
