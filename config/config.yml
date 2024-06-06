@@ -1,11 +1,11 @@
 libraries:
-    Movies:                                                               # ชื่อไลบรารี่เพล็กซ์ เช่น Movies
-      overlay_files:
-      - pmm: resolution
+  Movies:                                                               # ชื่อไลบรารี่เพล็กซ์ เช่น Movies
+    overlay_files:
+      - default: resolution
         template_variables:
           use_edition: false
-      - pmm: audio_codec
-      - pmm: ratings
+      - default: audio_codec
+      - default: ratings
         template_variables:
           rating1: user
           rating2: critic
@@ -13,11 +13,8 @@ libraries:
           rating1_image: rt_tomato
           rating2_image: imdb
           rating3_image: tmdb
-      - pmm: flixpatrol
-        template_variables:
-          location: thailand
-      - pmm: commonsense
-      - pmm: languages
+      - default: commonsense
+      - default: languages
         template_variables:
           languages:
             - en
@@ -26,7 +23,7 @@ libraries:
             - ko
             - th
           style: square
-      - pmm: languages
+      - default: languages
         template_variables:
           languages:
             - en
@@ -36,59 +33,14 @@ libraries:
             - th
           use_subtitles: true
           style: square
-      - pmm: streaming         
-    Movies Operations:                                                  # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
-      library_name: Movies                                              # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
-      schedule: weekly(monday)
-      operations:
-        mass_user_rating_update: mdb_tomatoes
-        mass_critic_rating_update: imdb
-        mass_audience_rating_update: tmdb
-    # 4K:                                                               # กรณีใช้งานกับไลบรารี่อื่น ๆ เช่น 4K หากต้องการใช้งานลบโค้ดคอมเม้นออกครับ
-    #   overlay_files:
-    #   - pmm: resolution
-    #     template_variables:
-    #       use_edition: false
-    #   - pmm: audio_codec
-    #   - pmm: ratings
-    #     template_variables:
-    #       rating1: user
-    #       rating2: critic
-    #       rating3: audience
-    #       rating1_image: rt_tomato
-    #       rating2_image: imdb
-    #       rating3_image: tmdb
-    #   - pmm: flixpatrol
-    #     template_variables:
-    #       location: thailand
-    #   - pmm: commonsense
-    #   - pmm: languages
-    #     template_variables:
-    #       languages:
-    #         - en
-    #         - ja
-    #         - cn
-    #         - ko
-    #         - th
-    #       style: square
-    #   - pmm: languages
-    #     template_variables:
-    #       languages:
-    #         - en
-    #         - ja
-    #         - cn
-    #         - ko
-    #         - th
-    #       use_subtitles: true
-    #       style: square
-    #   - pmm: streaming        
-    # 4K Operations:                                                  # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
-    #   library_name: 4K                                              # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
-    #   schedule: weekly(monday)
-    #   operations:
-    #     mass_user_rating_update: mdb_tomatoes
-    #     mass_critic_rating_update: imdb
-    #     mass_audience_rating_update: tmdb
+      - default: streaming         
+      Movies Operations:                                                  # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
+        library_name: Movies                                              # แก้ไข Movies เป็นชื่อไลบรารี่ของตนเอง
+        schedule: weekly(monday)
+        operations:
+          mass_user_rating_update: mdb_tomatoes
+          mass_critic_rating_update: imdb
+          mass_audience_rating_update: tmdb
 settings:
   cache: true
   cache_expiration: 60
