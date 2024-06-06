@@ -2,6 +2,7 @@ AAC
 accessModes
 Addon
 Adlib
+AFI's
 Amblin
 analytics
 AniDB
@@ -19,6 +20,7 @@ Arrowverse
 Atmos
 Avenir
 BAFTA
+Bambara
 BBFC
 bearlikelion
 Berlinale
@@ -56,6 +58,7 @@ customizable
 customizations
 César
 dbader
+d'Or
 de
 deva
 DIIIVOY
@@ -121,6 +124,7 @@ img
 includer
 init
 integrations
+ints
 io
 iteratively
 Jinja
@@ -176,6 +180,7 @@ microsoft
 mikenobbs
 minikube
 mnt
+Mojo's
 monetization
 Mossi
 MPAA
@@ -201,6 +206,7 @@ OMDb
 oscar
 OSX
 ozzy
+Palme
 pathing
 PCM
 PersistentVolumeClaim
@@ -246,6 +252,7 @@ SciFi
 ScudLee
 SDTV
 SemVer
+setuptools
 ShawShank
 Skywalker
 Sohjiro

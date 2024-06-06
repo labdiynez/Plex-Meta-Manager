@@ -756,7 +756,7 @@ The available setting attributes which can be set at each level are outlined bel
         
         ```yaml
         settings:
-          tvdb_language: en
+          tvdb_language: eng
         ```
 
 ??? blank "`ignore_ids` - List of TMDb/TVDb IDs to ignore.<a class="headerlink" href="#ignore-ids" title="Permanent link">¶</a>"
@@ -932,31 +932,6 @@ The available setting attributes which can be set at each level are outlined bel
           - overlays
           - operations
           - metadata
-        ```
-
-??? blank "`verify_ssl` - Turn SSL Verification on or off.<a class="headerlink" href="#verify-ssl" title="Permanent link">¶</a>"
-
-    <div id="verify-ssl" />Turn SSL Verification on or off.
-    
-    ???+ note
-    
-        set to false if your log file shows any errors similar to "SSL: CERTIFICATE_VERIFY_FAILED"
-
-    <hr style="margin: 0px;">
-    
-    **Attribute:** `verify_ssl`
-
-    **Levels with this Attribute:** Global
-    
-    **Accepted Values:** `true` or `false`
-
-    **Default Value:** `true`
-
-    ???+ example "Example"
-        
-        ```yaml
-        settings:
-          verify_ssl: false
         ```
 
 ??? blank "`custom_repo` - Used to set up the custom `repo` [file block type](files.md#location-types-and-paths).<a class="headerlink" href="#custom-repo" title="Permanent link">¶</a>"
